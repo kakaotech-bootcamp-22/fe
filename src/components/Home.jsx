@@ -1,9 +1,23 @@
 // src/components/Home.jsx
-import React from "react";
+import React, { useState } from "react";
 import "./Home.css";
 import mainImage from "../assets/home/home_image.jpeg";
 
-const Home = () => {
+const Home = ({ onCheckURL }) => {
+  const [url, setUrl] = useState('');
+
+  const handleInputChange = (e) => {
+    setUrl(e.target.value);
+  }
+
+  const handleCheckButtonClick = () => {
+    if (url) {
+      onCheckURL(url);
+    } else {
+      alert("URL을 입력해주세요.");
+    }
+  };
+
   return (
     <div className="home-container">
       <div className="search-section">
@@ -11,8 +25,10 @@ const Home = () => {
           type="text"
           placeholder="검사를 원하는 포스트의 URL을 붙여넣으세요!"
           className="url-input"
+          value={url}
+          onChange={handleInputChange}
         />
-        <button className="search-button">검사하기</button>
+        <button className="search-button" onClick={handleCheckButtonClick}>검사하기</button>
       </div>
 
       <div className="content-section">

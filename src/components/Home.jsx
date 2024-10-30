@@ -11,11 +11,20 @@ const Home = ({ onCheckURL }) => {
   }
 
   const handleCheckButtonClick = () => {
-    if (url) {
-      onCheckURL(url);
-    } else {
-      alert("URL을 입력해주세요.");
+    if (!url) {
+      alert('URL을 입력해주세요!');
+      return;
     }
+
+    // 네이버 블로그 형식이 맞는지 검사 (https://blog.naver.com/{블로그아이디}/{작성글ID})
+    const naverBlogUrlPattern = /^https:\/\/blog\.naver\.com\/[a-zA-Z0-9_-]+\/[0-9]+$/;
+    if (!naverBlogUrlPattern.test(url)) {
+      alert('올바른 네이버 블로그 URL을 입력해주세요! 다른 블로그는 추후 서비스 예정입니다.');
+      return;
+    }
+
+    // URL 형식이 맞다면 검사 요청 수행
+    onCheckURL(url);
   };
 
   return (

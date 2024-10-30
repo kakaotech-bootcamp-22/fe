@@ -1,7 +1,7 @@
 // src/components/Home.jsx
 import React from "react";
 import "./Home.css";
-import mainImage from "../assets/navbar/navbar_image.png";
+import mainImage from "../assets/home/home_image.jpeg";
 
 const Home = () => {
   return (

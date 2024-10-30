@@ -29,7 +29,8 @@ const Home = ({ onCheckURL }) => {
 
   return (
     <div className="home-container">
-      <div className="search-section">
+      {/* Rectangle 1 - 검색 영역 */}
+      <div className="search-section-wrapper">
         <input
           type="text"
           placeholder="검사를 원하는 포스트의 URL을 붙여넣으세요!"
@@ -40,15 +41,19 @@ const Home = ({ onCheckURL }) => {
         <button className="search-button" onClick={handleCheckButtonClick}>검사하기</button>
       </div>
 
+      {/* Rectangle 2 - 이미지 및 설명 카드 영역 */}
       <div className="content-section">
-        <img src={mainImage} alt="무한도전 짤" className="main-image" />
-        <div className="description">
+        <div className="card main-image-card">
+          <img src={mainImage} alt="무한도전 짤" className="main-image" />
+        </div>
+        <div className="card description-card">
           <h2>
-          내가 본 블로그 리뷰가 돈을 받고 작성된 리뷰일 수 있다고? 🙉
-          신뢰할 수 있는 리뷰인지 함께 확인해보아요! 💬</h2>
+            내가 본 블로그 리뷰가 돈을 받고 작성된 리뷰일 수 있다고? 🙉
+            신뢰할 수 있는 리뷰인지 함께 확인해보아요! 💬
+          </h2>
           <p>우리 서비스는 AI 기술로 가짜 리뷰를 똑똑하게 찾아드립니다. 
-              BERT 언어 모델을 활용해 텍스트를 분석하고, 신뢰하기 어려운 리뷰를 걸러내 진짜 리뷰만 남겨드려요. 
-              사용자 분들이 믿을 수 있는 리뷰를 통해 현명한 선택을 하실 수 있도록 도와드리겠습니다!
+            BERT 언어 모델을 활용해 텍스트를 분석하고, 신뢰하기 어려운 리뷰를 걸러내 진짜 리뷰만 남겨드려요. 
+            사용자 분들이 믿을 수 있는 리뷰를 통해 현명한 선택을 하실 수 있도록 도와드리겠습니다!
           </p>
         </div>
       </div>

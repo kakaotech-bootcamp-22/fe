@@ -1,85 +1,106 @@
 /* src/components/Home.css */
 
 .home-container {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-  }
-  
-  .home-header {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #ddd;
+    width: 100%;
+    padding: 0;
+    margin: 80px auto 0 auto; /* 네비게이션 바 높이만큼 간격 추가 */
+    box-sizing: border-box;
   }
   
-  .home-header h1 {
-    font-size: 24px;
-    font-weight: bold;
-  }
   
-  .login-button {
-    background-color: #4CAF50; /* 로그인 버튼 색상 */
-    color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .search-section {
+  /* Rectangle 1 - 검색 영역 */
+  .search-section-wrapper {
+    width: 1165px;
+    height: 131px;
+    background-color: #e0f7de;
+    border-top-left-radius: 50px;
+    border-top-right-radius: 50px;
     display: flex;
+    align-items: center;
     justify-content: center;
-    align-items: center;
-    background-color: #e0f7de; /* 연한 녹색 배경 */
-    padding: 20px;
-    border-radius: 8px;
-    margin-top: 20px;
+    box-sizing: border-box;
   }
   
   .url-input {
     width: 70%;
-    padding: 10px;
+    height: 48px; /* 높이 설정 */
+    padding: 0 15px; /* 세로 패딩 제거, 좌우 패딩 유지 */
     border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-right: 10px;
+    border-radius: 9999px; /* 완전한 둥근 모서리 */
+    margin-right: 15px;
+    font-size: 16px;
+    box-sizing: border-box; /* 패딩 포함 크기 조정 */
   }
   
   .search-button {
-    background-color: #4CAF50; /* 검사하기 버튼 색상 */
+    height: 48px; /* 높이 설정 */
+    background-color: #4CAF50;
     color: white;
-    padding: 10px 20px;
+    padding: 0 25px; /* 세로 패딩 제거, 좌우 패딩 유지 */
     border: none;
-    border-radius: 4px;
+    border-radius: 70px;
     cursor: pointer;
+    font-size: 18px;
+    box-sizing: border-box; /* 패딩 포함 크기 조정 */
   }
   
+  
+  /* Rectangle 2 - 이미지 및 설명 카드 영역 */
   .content-section {
+    width: 1165px;
+    height: 510px;
+    background-color: rgba(217, 217, 217, 0.52);
+    border-bottom-left-radius: 50px;
+    border-bottom-right-radius: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .card {
+    width: 479px;
+    height: 300px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 15px;
+  }
+  
+  .main-image-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   
   .main-image {
-    width: 200px;
-    height: auto;
-    border-radius: 8px;
-    margin-right: 20px;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 10px;
   }
   
-  .description {
-    max-width: 400px;
+  .description-card {
+    text-align: left;
   }
   
-  .description h2 {
+  .description-card h2 {
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 10px;
   }
   
-  .description p {
+  .description-card p {
     font-size: 14px;
-    line-height: 1.5;
-    color: #666;
-  }  
+    line-height: 1.6;
+    color: #333;
+  }
+  

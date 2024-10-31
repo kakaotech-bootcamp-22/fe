@@ -1,5 +1,11 @@
+/* src/App.css */
+
 .App {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* 화면 전체 높이 */
+  align-items: center;
+  justify-content: center; /* 수직 중앙 정렬 */
 }
 
 .App-logo {

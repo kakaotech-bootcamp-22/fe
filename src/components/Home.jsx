@@ -12,7 +12,7 @@ const Home = ({ onCheckURL }) => {
 
   const handleCheckButtonClick = () => {
     if (!url) {
-      alert('URL을 입력해주세요!');
+      alert('URL을 입력해주세요.');
       return;
     }
 
@@ -27,17 +27,26 @@ const Home = ({ onCheckURL }) => {
     onCheckURL(url);
   };
 
+  const clearInput = () => {
+    setUrl('');
+  };
+
   return (
     <div className="home-container">
       {/* Rectangle 1 - 검색 영역 */}
       <div className="search-section-wrapper">
-        <input
-          type="text"
-          placeholder="검사를 원하는 포스트의 URL을 붙여넣으세요!"
-          className="url-input"
-          value={url}
-          onChange={handleInputChange}
-        />
+        <div className="input-wrapper">
+          <input
+            type="text"
+            placeholder="검사를 원하는 포스트의 URL을 붙여넣으세요!"
+            className="url-input"
+            value={url}
+            onChange={handleInputChange}
+          />
+          {url && (
+            <button className="clear-button" onClick={clearInput}>x</button>
+          )}
+        </div>
         <button className="search-button" onClick={handleCheckButtonClick}>검사하기</button>
       </div>
 

@@ -5,14 +5,21 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
-    background-color: #ffffff; /* 흰색 배경 */
+    min-height: 80vh; /* 위치를 살짝 위로 올리기 */
+    margin-top: -50px; /* 위로 조정하여 자연스럽게 보이도록 */
   }
   
   .loading-image {
-    width: 120px;
+    width: 150px; /* 이미지 크기를 더 키우기 */
     height: auto;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .loading-text {
+    font-size: 24px; /* 텍스트 크기 확대 */
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
   }
   
   .dots {
@@ -24,20 +31,15 @@
   }
   
   .dot {
-    width: 15px;
-    height: 15px;
-    margin: 0 5px;
+    width: 18px; /* 로딩 점 크기 확대 */
+    height: 18px;
+    margin: 0 8px;
     border-radius: 50%;
-    background-color: #d3d3d3; /* 비활성화된 동그라미 색상 */
+    background-color: #4CAF50; /* 활성화된 점 색상 */
     transition: background-color 0.3s ease;
   }
   
-  .dot.active {
-    background-color: #4CAF50; /* 활성화된 동그라미 색상 */
+  .dot:not(.active) {
+    background-color: #d3d3d3; /* 비활성화된 점 색상 */
   }
   
-  .loading-text {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-  }  

@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import "./Navbar.css";
 import navbarImage from "../../assets/navbar/navbar_image.png"; // 실제 파일 경로에 맞게 수정
 import profileImage from "../../assets/navbar/profile_image.png";
+import { useLocation, useNavigate } from 'react-router-dom';
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <nav className="navbar">
@@ -34,7 +36,7 @@ const Navbar = () => {
         </div>
       ) : (
         // 로그인되지 않았을 때
-        <button className="login-button">로그인/가입</button>
+        <button onClick={()=> navigate("/login-signup")} className="login-button">로그인/가입</button>
       )}
     </nav>
   );

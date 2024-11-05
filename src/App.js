@@ -5,6 +5,7 @@ import Home from "./components/Home";
 import Navbar from "./components/Navbar/Navbar";
 import Loading from "./components/Loading/Loading";
 import ResultPage from "./components/Result/Result";
+import LoginPage from "./pages/login/LoginPage";
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,6 +32,9 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
+        {/* 로그인 및 회원가입 */}
+        <Route path="/login-signup" element={<LoginPage/>}/>
+
         {/* 로딩 상태에 따른 페이지 전환 */}
         <Route
           path="/"

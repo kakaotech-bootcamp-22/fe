@@ -5,6 +5,7 @@ import Home from "./components/Home";
 import Navbar from "./components/Navbar/Navbar";
 import Loading from "./components/Loading/Loading";
 import ResultPage from "./components/Result/Result";
+import Review from "./components/Review/Review";
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -44,6 +45,7 @@ function App() {
             )
           }
         />
+        <Route path="/review" element={<Review />} />
       </Routes>
     </Router>
   );

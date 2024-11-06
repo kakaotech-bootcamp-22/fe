@@ -47,6 +47,13 @@ export default function Review() {
     fetchUrl();
   }, []);
 
+  const handleTextChange = (e) => {
+    const inputText = e.target.value;
+    if (inputText.length <= 200) {
+      setReviewText(inputText);
+    }
+  };
+
   const reviews = [
     {
       id: 1,
@@ -202,7 +209,7 @@ export default function Review() {
         <textarea
           placeholder="해당 페이지에 대한 리뷰를 등록해주세요."
           value={reviewText}
-          onChange={(e) => setReviewText(e.target.value)}
+          onChange={handleTextChange}
           className="review-textarea"
         />
         <div className="form-footer">

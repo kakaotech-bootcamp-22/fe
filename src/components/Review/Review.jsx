@@ -116,11 +116,13 @@ export default function Review() {
             ))}
         </div>
         <div className="review-summary">
-          <span>대부분</span>
-          <span className="highlight"> 찐 리뷰를 남겼다고 </span>
-          <span>남겨줬어요</span>
           <div className="character-avatar">
             <img src={ryanImage} alt="Default Avatar" className="review-img" />
+          </div>
+          <div className="review-text">
+            <span>대부분</span>
+            <span className="highlight"> 찐 리뷰를 남겼다</span>
+            <span>고 남겨줬어요</span>
           </div>
         </div>
       </div>

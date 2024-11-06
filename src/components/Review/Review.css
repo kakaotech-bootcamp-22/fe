@@ -78,6 +78,7 @@
 }
 
 .review-summary {
+  display: flex;
   text-align: center;
   font-size: 18px;
 }
@@ -87,9 +88,16 @@
   font-weight: 500;
 }
 
+.review-text {
+  padding: 35px 20px 0 15px;
+  text-align: left;
+  justify-content: flex-start; /* 텍스트를 왼쪽 정렬 */
+}
+
 .character-avatar {
   display: flex;
   justify-content: center;
+  margin-left: 60px;
 }
 
 .avatar {
@@ -105,8 +113,8 @@
 }
 
 .review-img {
-  width: 80px;
-  height: 90px;
+  width: 100px;
+  height: 115px;
 }
 
 .avatar-img {
@@ -114,7 +122,7 @@
 }
 
 .progress {
-  width: 100%;
+  width: 250px;
   background-color: rgb(239, 239, 239);
   height: 17px;
   border-radius: 14px;
@@ -176,7 +184,7 @@
 
 .review-stars {
   flex: 0 0 auto; /* 왼쪽 영역 고정 크기 */
-  align-self: flex-start; /* 위쪽 정렬 */
+  align-self: center; /* 위쪽 정렬 */
   margin-right: 10px;
 }
 
@@ -212,7 +220,6 @@
 
 .review-author {
   display: flex;
-  flex-direction: column; /* 상하 배열 설정 */
   align-items: center; /* 중앙 정렬 */
   gap: 13px;
 }
@@ -231,7 +238,7 @@
 .review-date {
   color: #a0aec0;
   font-size: 14px;
-  align-self: flex-start;
+  align-self: center;
 }
 
 .like-button {
@@ -242,7 +249,7 @@
   gap: 4px; /* 아이콘과 숫자 간격 조절 */
   cursor: pointer;
   font-size: 14px;
-  align-self: flex-end; /* 아래쪽 정렬 */
+  align-self: center; /* 아래쪽 정렬 */
   margin-right: 20px;
 }
 
@@ -261,9 +268,8 @@
 }
 
 .star-rating {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
+  margin-left: 10px;
 }
 
 .star-button {

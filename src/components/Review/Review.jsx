@@ -3,6 +3,7 @@ import "./Review.css";
 import heartImage from "../../assets/review/heart.png";
 import ryanImage from "../../assets/review/ryan_image.png";
 import defaultProfileImage from "../../assets/review/default_profile.png";
+
 const Star = ({ filled, onClick }) => (
   <svg
     onClick={onClick}
@@ -157,7 +158,8 @@ export default function Review() {
           <div key={review.id} className="review-item">
             <div className="review-stars">{renderStars(review.rating)}</div>
             <div className="review-content-wrapper">
-              <span className="trust-label">신뢰도: 찐이에요</span>
+              <span className="trust-label">{review.rating}점</span>{" "}
+              {/* 별점만 표시 */}
               <p className="review-content">{review.content}</p>
             </div>
             <button className="like-button">

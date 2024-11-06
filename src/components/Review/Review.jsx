@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // react-router-dom에서 useNavigate 가져오기
+
 import "./Review.css";
 import heartImage from "../../assets/review/heart.png";
 import ryanImage from "../../assets/review/ryan_image.png";
 import defaultProfileImage from "../../assets/review/default_profile.png";
+import previousBtn from "../../assets/review/previous_btn.png";
 
 const Star = ({ filled, onClick }) => (
   <svg
@@ -32,6 +35,7 @@ export default function Review() {
   const [reviewText, setReviewText] = useState("");
   const [selectedSort, setSelectedSort] = useState("베스트순");
   const [url, setUrl] = useState("blog.naver.com/kakao_food_fighter");
+  const navigate = useNavigate(); // 뒤로 가기 기능을 위한 useNavigate 훅 사용
 
   // 백엔드에서 URL 가져오기
   useEffect(() => {
@@ -220,6 +224,9 @@ export default function Review() {
           <button className="submit-button">등록</button>
         </div>
       </div>
+      <button className="back-button" onClick={() => navigate(-1)}>
+        <img src={previousBtn} alt="뒤로 가기" className="back-arrow-icon" />
+      </button>
     </div>
   );
 }

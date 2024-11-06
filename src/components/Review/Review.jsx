@@ -205,6 +205,7 @@ export default function Review() {
               <Star filled={star <= rating} />
             </button>
           ))}
+          <span className="rating-score">({rating}/5)</span>
         </div>
         <textarea
           placeholder="해당 페이지에 대한 리뷰를 등록해주세요."

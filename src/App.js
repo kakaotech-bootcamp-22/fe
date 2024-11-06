@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar/Navbar";
 import Loading from "./components/Loading/Loading";
 import ResultPage from "./components/Result/Result";
 import LoginPage from "./pages/login/LoginPage";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -29,27 +30,29 @@ function App() {
   };
 
   return (
-    <Router>
-      <Navbar />
-      <Routes>
-        {/* 로그인 및 회원가입 */}
-        <Route path="/login-signup" element={<LoginPage/>}/>
+    <AuthProvider>
+      <Router>
+        <Navbar />
+        <Routes>
+          {/* 로그인 및 회원가입 */}
+          <Route path="/login-signup" element={<LoginPage />} />
 
-        {/* 로딩 상태에 따른 페이지 전환 */}
-        <Route
-          path="/"
-          element={
-            isLoading ? (
-              <Loading />
-            ) : resultData ? (
-              <ResultPage data={resultData} />
-            ) : (
-              <Home onCheckURL={handleCheckURL} />
-            )
-          }
-        />
-      </Routes>
-    </Router>
+          {/* 로딩 상태에 따른 페이지 전환 */}
+          <Route
+            path="/"
+            element={
+              isLoading ? (
+                <Loading />
+              ) : resultData ? (
+                <ResultPage data={resultData} />
+              ) : (
+                <Home onCheckURL={handleCheckURL} />
+              )
+            }
+          />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 

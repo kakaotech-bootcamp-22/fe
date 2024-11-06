@@ -44,7 +44,7 @@ const Navbar = () => {
           {/* <Link to="/criteria">검사 기준</Link> */}
           검사 기준
         </li>
-        <li>{/* <Link to="/profile">내 정보</Link> */}내 정보</li>
+        <li onClick={() => navigate("/mypage")}>내 정보</li>
       </ul>
       {token ? (
         // 로그인 상태일 때

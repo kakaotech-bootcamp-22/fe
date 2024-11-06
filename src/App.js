@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar/Navbar";
 import Loading from "./components/Loading/Loading";
 import ResultPage from "./components/Result/Result";
 import LoginPage from "./pages/login/LoginPage";
+import MyPage from "./pages/mypage/MyPage";
 import { AuthProvider } from "./context/AuthContext";
 
 function App() {
@@ -36,6 +37,10 @@ function App() {
         <Routes>
           {/* 로그인 및 회원가입 */}
           <Route path="/login-signup" element={<LoginPage />} />
+
+          {/* 마이페이지 */}
+          <Route path="/mypage" element={<MyPage />} />
+
 
           {/* 로딩 상태에 따른 페이지 전환 */}
           <Route

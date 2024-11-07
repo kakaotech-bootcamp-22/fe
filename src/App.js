@@ -1,12 +1,14 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import React, { useState } from "react";
 import "./App.css";
-import Home from "./components/Home";
+import Home from "./components/Home"; 
 import Navbar from "./components/Navbar/Navbar";
 import Loading from "./components/Loading/Loading";
 import ResultPage from "./components/Result/Result";
 import LoginPage from "./pages/login/LoginPage";
 import { AuthProvider } from "./context/AuthContext";
+
+import Review from "./components/Review/Review";
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +38,8 @@ function App() {
         <Routes>
           {/* 로그인 및 회원가입 */}
           <Route path="/login-signup" element={<LoginPage />} />
-
+          {/* 리뷰 */}  
+          <Route path="/review" element={<Review />} />
           {/* 로딩 상태에 따른 페이지 전환 */}
           <Route
             path="/"

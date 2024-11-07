@@ -63,7 +63,7 @@ export const KakaologinButton = styled.button`
 
 export const GoogleloginButton = styled.button`
     margin-top: 30px; /* 버튼 위에 빈 공간 추가 */
-    width: 360px; 
+    width: 366px; 
     height: auto;
     border-radius: 10px;
     border: none;

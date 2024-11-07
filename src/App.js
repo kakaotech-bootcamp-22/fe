@@ -9,6 +9,7 @@ import LoginPage from "./pages/login/LoginPage";
 import MyPage from "./pages/mypage/MyPage";
 import EditMyPage from "./pages/mypage/EditMyPage";
 import { AuthProvider } from "./context/AuthContext";
+import Review from "./components/Review/Review";
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -32,13 +33,15 @@ function App() {
   };
 
   return (
+
     <AuthProvider>
       <Router>
         <Navbar />
         <Routes>
           {/* 로그인 및 회원가입 */}
           <Route path="/login-signup" element={<LoginPage />} />
-
+          {/* 리뷰 */}  
+          <Route path="/review" element={<Review />} />
           {/* 마이페이지 */}
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/edit-mypage" element={<EditMyPage />} />

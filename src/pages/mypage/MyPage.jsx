@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import tmpProfileImage from "../../assets/login/babyCat.png";
 import KakaoIcon from "../../assets/mypage/kakaotalk_sharing_btn_small.png";
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 const EntireContainer = styled.div`
@@ -144,6 +145,7 @@ const KakaoText = styled.span`
 
 
 function MyPage(props) {
+    const navigate = useNavigate();
 
     return (
         <EntireContainer>
@@ -161,7 +163,7 @@ function MyPage(props) {
                         <ProfileName>판교쩝쩝박사</ProfileName>
                         <ProfileEmail>22day@kakao.com</ProfileEmail>
                     </ProfileDetails>
-                    <EditButton>수정</EditButton>
+                    <EditButton onClick={() => navigate("/edit-mypage")}>수정</EditButton>
                 </ProfileInfo>
                 <InfoBoxes>
                     <InfoBox>

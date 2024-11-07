@@ -4,8 +4,11 @@ export const Container = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-`;
+    height: calc(100vh - 60px); /* 예: 네비게이션 바 높이가 60px일 경우 */
+    padding: 20px;
+    overflow: auto; /* 내용이 초과될 경우 스크롤 추가 */
+    box-sizing: border-box; /* 패딩 포함하여 박스 크기 계산 */
+`
 
 export const ContainerVertical = styled.div`
     flex-direction: column;

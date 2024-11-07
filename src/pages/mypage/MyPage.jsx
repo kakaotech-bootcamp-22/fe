@@ -18,7 +18,10 @@ const ProfileContainer = styled.div`
   padding: 20px;
   background-color: #ffffff;
   text-align: center;
-  min-height: 100vh
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* 위아래로 공간을 분배 */
 `
 
 /* 프로필 정보 */
@@ -105,11 +108,9 @@ const FooterButton = styled.button`
   border-radius: 5px;
   cursor: pointer;
   background-color: #ffffff;
-  position: absolute;
-  bottom: 20px; /* 하단에서 20px 떨어짐 */
   cursor: pointer;
   text-decoration: underline; /* 텍스트 밑줄 추가 */
-  
+  margin-top: auto; /* 나머지 공간을 채우기 위해 추가 */
 `;
 
 const EntireTitle = styled.h1`
@@ -185,7 +186,9 @@ function MyPage(props) {
                         </InfoBoxCount>
                     </InfoBox>
                 </InfoBoxes>
-                <FooterButton>회원탈퇴</FooterButton>
+                <>
+                    <FooterButton>회원탈퇴</FooterButton>
+                </>
             </ProfileContainer>
         </EntireContainer>
     );

@@ -109,6 +109,7 @@ const FooterButton = styled.button`
   bottom: 20px; /* 하단에서 20px 떨어짐 */
   cursor: pointer;
   text-decoration: underline; /* 텍스트 밑줄 추가 */
+  
 `;
 
 const EntireTitle = styled.h1`
@@ -171,11 +172,17 @@ function MyPage(props) {
                 <InfoBoxes>
                     <InfoBox>
                         <InfoBoxTitle>발견한 가짜 리뷰</InfoBoxTitle>
-                        <InfoBoxCount>{findedReview}개</InfoBoxCount>
+                        <InfoBoxCount>
+                            {findedReview}
+                            <span style={{ fontWeight: 'normal' }}>개</span>
+                        </InfoBoxCount>
                     </InfoBox>
                     <InfoBox>
                         <InfoBoxTitle>작성한 후기</InfoBoxTitle>
-                        <InfoBoxCount>{writedReview}개</InfoBoxCount>
+                        <InfoBoxCount>
+                            {writedReview}
+                            <span style={{ fontWeight: 'normal' }}>개</span>
+                        </InfoBoxCount>
                     </InfoBox>
                 </InfoBoxes>
                 <FooterButton>회원탈퇴</FooterButton>

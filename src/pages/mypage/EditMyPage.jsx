@@ -64,8 +64,9 @@ function EditMyPage(props) {
                                 <Input
                                     value={tempNickname}
                                     onChange={handleInputChange}
-                                    style={{ marginRight: 10 }}
+                                    style={{ marginRight: 20 }}
                                 />
+                                <ChangeButton onClick={() => handleSave()}>저장</ChangeButton>
                             </>
                         ) : (
                             <>

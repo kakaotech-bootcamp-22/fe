@@ -88,7 +88,7 @@ export const ChangeButton = styled.button`
   border-radius: 15px;
   padding: 5px 10px;
   cursor: pointer;
-
+  min-width: 50px;
   &:hover {
     background-color: #e0e0e0;
   }

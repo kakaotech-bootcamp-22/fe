@@ -145,6 +145,9 @@ const KakaoText = styled.span`
 
 
 function MyPage(props) {
+
+    const [findedReview, setfindedReview] = useState("13");
+    const [writedReview, setwritedReview] = useState("4");
     const navigate = useNavigate();
 
     return (
@@ -168,11 +171,11 @@ function MyPage(props) {
                 <InfoBoxes>
                     <InfoBox>
                         <InfoBoxTitle>발견한 가짜 리뷰</InfoBoxTitle>
-                        <InfoBoxCount>13개</InfoBoxCount>
+                        <InfoBoxCount>{findedReview}개</InfoBoxCount>
                     </InfoBox>
                     <InfoBox>
                         <InfoBoxTitle>작성한 후기</InfoBoxTitle>
-                        <InfoBoxCount>4개</InfoBoxCount>
+                        <InfoBoxCount>{writedReview}개</InfoBoxCount>
                     </InfoBox>
                 </InfoBoxes>
                 <FooterButton>회원탈퇴</FooterButton>

@@ -14,7 +14,7 @@ import {
     ButtonContainer,
     CustomButton,
     UserTypeIcon,
-  } from './MyPageStyles'; 
+  } from './EditMyPage.styles.js'; 
 
 import tmpProfileImage from "../../assets/login/babyCat.png";
 import KakaoIcon from "../../assets/mypage/kakaotalk_sharing_btn_small.png";

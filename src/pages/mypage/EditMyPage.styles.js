@@ -1,12 +1,12 @@
 import styled from "styled-components";
 
-const EntireContainer = styled.div`
+export const EntireContainer = styled.div`
   background-color: #f5f5f5;
   text-align: center;
   min-height: 100vh
 `
 
-const ProfileContainer = styled.div`
+export const ProfileContainer = styled.div`
   max-width: 500px;
   margin: 0 auto;
   padding: 20px;
@@ -15,7 +15,7 @@ const ProfileContainer = styled.div`
   
 `;
 
-const ProfileContainerDetail = styled.div`
+export const ProfileContainerDetail = styled.div`
   max-width: 500px;
   margin: 20px auto;
   padding: 20px;
@@ -24,12 +24,12 @@ const ProfileContainerDetail = styled.div`
   
 `;
 
-const ProfileHeader = styled.h2`
+export const ProfileHeader = styled.h2`
   text-align: left;
   margin-bottom: 80px;
 `;
 
-const ProfileImageContainer = styled.div`
+export const ProfileImageContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center; 
@@ -38,7 +38,7 @@ const ProfileImageContainer = styled.div`
   
 `;
 
-const ProfileImage = styled.img`
+export const ProfileImage = styled.img`
   width: 100px;
   height: 100px;
   border-radius: 50%;
@@ -46,7 +46,7 @@ const ProfileImage = styled.img`
   margin-bottom: 10px;
 `;
 
-const InfoRow = styled.div`
+export const InfoRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -58,7 +58,7 @@ const InfoRow = styled.div`
   }
 `;
 
-const InfoRowProfile = styled.div`
+export const InfoRowProfile = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -68,21 +68,21 @@ const InfoRowProfile = styled.div`
   }
 `;
 
-const Label = styled.span`
+export const Label = styled.span`
   font-weight: bold;
   text-align: left;
   flex: 0 0 120px; // 고정 너비로 설정 (원하는 크기로 변경 가능)
   width: 120px;
 `;
 
-const Value = styled.span`
+export const Value = styled.span`
   flex: 2;
   display: flex; // 추가
   justify-content: space-between; // 추가: 아이템을 양쪽 끝으로 정렬
   align-items: center; // 추가: 수직 가운데 정렬
 `;
 
-const ChangeButton = styled.button`
+export const ChangeButton = styled.button`
   background-color: #f1f1f1;
   border: 1px solid #ccc;
   border-radius: 15px;
@@ -95,14 +95,14 @@ const ChangeButton = styled.button`
 `;
 
 
-const ButtonContainer = styled.div`
+export const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
   gap: 10px;
   margin-top: 60px;
 `;
 
-const CustomButton = styled.button`
+export const CustomButton = styled.button`
   padding: 10px 20px;
   border: none;
   border-radius: 20px;
@@ -124,7 +124,7 @@ const CustomButton = styled.button`
   }
 `;
 
-const UserTypeIcon = styled.img`
+export const UserTypeIcon = styled.img`
   width: 30px;
   height: 30px;
   border-radius: 90px;

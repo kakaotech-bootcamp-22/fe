@@ -22,8 +22,9 @@ import {
 import tmpProfileImage from "../../assets/login/babyCat.png";
 import KakaoIcon from "../../assets/mypage/kakaotalk_sharing_btn_small.png";
 import cameraIcon from "../../assets/mypage/IconButton.png"; // 카메라 아이콘 이미지 경로
-import { Button, message, Space, Input } from 'antd';
+import { Button, message, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { Flex, Input, Typography } from 'antd';
 
 function EditMyPage(props) {
     const [isEditing, setIsEditing] = useState(false);
@@ -95,9 +96,14 @@ function EditMyPage(props) {
                         {isEditing ? (
                             <>
                                 <Input
-                                    value={tempNickname}
-                                    onChange={handleInputChange}
+                                    count={{
+                                        show: true,
+                                        max: 20,
+                                        
+                                    }}
                                     style={{ marginRight: 20 }}
+                                    onChange={handleInputChange}
+                                    defaultValue={tempNickname}
                                 />
                                 <ChangeButton onClick={() => handleSave()}>저장</ChangeButton>
                             </>

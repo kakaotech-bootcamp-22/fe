@@ -14,10 +14,14 @@ import {
     ButtonContainer,
     CustomButton,
     UserTypeIcon,
-  } from './EditMyPage.styles.js'; 
+    ChangeImageButton,
+    CameraIcon,
+
+} from './EditMyPage.styles.js';
 
 import tmpProfileImage from "../../assets/login/babyCat.png";
 import KakaoIcon from "../../assets/mypage/kakaotalk_sharing_btn_small.png";
+import cameraIcon from "../../assets/mypage/IconButton.png"; // 카메라 아이콘 이미지 경로
 import { Button, message, Space, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
@@ -25,6 +29,8 @@ function EditMyPage(props) {
     const [isEditing, setIsEditing] = useState(false);
     const [nickname, setNickname] = useState("판교쩝쩝박사");
     const [tempNickname, setTempNickname] = useState(nickname); // 임시 값 저장
+    const [profileImage, setProfileImage] = useState(tmpProfileImage);
+
 
     const navigate = useNavigate();
 
@@ -43,18 +49,45 @@ function EditMyPage(props) {
         setIsEditing(false); // 편집 모드 종료
     };
 
+    const handleImageChange = (event) => {
+        if (event.target.files && event.target.files.length > 0) {
+            const file = event.target.files[0]; // 선택된 파일
+            const reader = new FileReader();
+
+            reader.onloadend = () => {
+                setProfileImage(reader.result); // 선택된 이미지로 프로필 이미지 업데이트
+            };
+
+            reader.readAsDataURL(file); // 파일을 데이터 URL로 읽기
+        } else {
+            console.error("No file selected"); // 파일이 선택되지 않은 경우 로그 출력
+        }
+    };
+
     return (
+
         <EntireContainer>
             <ProfileContainer>
                 <ProfileHeader>내 프로필 수정</ProfileHeader>
-
                 <ProfileContainerDetail>
                     <InfoRowProfile>
                         <Label>프로필 사진</Label>
                     </InfoRowProfile>
                     <InfoRow>
                         <ProfileImageContainer>
-                            <ProfileImage src={tmpProfileImage} alt="Profile" />
+                            <ProfileImage src={profileImage} alt="Profile" />
+                            <ChangeImageButton onClick={handleImageChange}>
+                                <label htmlFor="file-input" style={{ cursor: "pointer", background: "none", border: "none" }}>
+                                    <CameraIcon src={cameraIcon} alt="Change Profile" />
+                                </label>
+                                <input
+                                    type="file"
+                                    id="file-input"
+                                    accept="image/*" // 이미지 파일만 선택 가능
+                                    onChange={handleImageChange}
+                                    style={{ display: "none" }} // 파일 입력 숨기기
+                                />
+                            </ChangeImageButton>
                         </ProfileImageContainer>
                     </InfoRow>
                     <InfoRow>

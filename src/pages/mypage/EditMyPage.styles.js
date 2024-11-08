@@ -33,7 +33,7 @@ export const ProfileImageContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center; 
-  width: 100%; // 추가
+  position: relative; /* 자식 요소의 절대 위치를 기준으로 설정 */
   margin-bottom: 20px;
   
 `;
@@ -48,7 +48,7 @@ export const ProfileImage = styled.img`
 
 export const InfoRow = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding: 10px 0;
   border-bottom: 1px solid #e0e0e0;
@@ -129,4 +129,24 @@ export const UserTypeIcon = styled.img`
   height: 30px;
   border-radius: 90px;
   object-fit: cover;
+`;
+
+
+
+export const ChangeImageButton = styled.button`
+  position: absolute;
+  top: 0; /* 이미지 아래쪽 위치 조정 */
+  right: 10%; /* 이미지 오른쪽 위치 조정 */
+  background-color: rgba(255, 255, 255, 0);
+  border: none;
+  border-radius: 50%;
+  padding: 5px;
+  cursor: pointer;
+  z-index: 10; /* 다른 요소들 위에 표시되도록 z-index 추가 */
+`;
+
+
+export const CameraIcon = styled.img`
+  width: 24px; /* 카메라 아이콘 크기 */
+  height: 24px; /* 카메라 아이콘 크기 */
 `;

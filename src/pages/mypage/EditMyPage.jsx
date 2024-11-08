@@ -112,24 +112,6 @@ function EditMyPage(props) {
                         <Label>닉네임</Label>
                         {isEditing ? (
                             <>
-
-                                {/* <Input
-                                    count={{
-                                        show: true,
-                                        max: 20,
-
-                                    }}
-                                    style={{ marginRight: 20, flex: 1 }}
-                                    onChange={handleInputChange}
-                                    defaultValue={tempNickname}
-                                    maxLength={20}
-
-                                />
-                                {errorMessage && (
-                                    <div style={{ color: 'red', marginTop: '5px', fontSize: '12px' }}>{errorMessage}</div>
-                                )}
-
-                                <ChangeButton onClick={() => handleSave()}>저장</ChangeButton> */}
                                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                                     <Input
                                         count={{
@@ -149,7 +131,6 @@ function EditMyPage(props) {
                                     )}
                                 </div>
                                 <ChangeButton onClick={handleSave}>저장</ChangeButton>
-
 
                             </>
                         ) : (

@@ -104,6 +104,7 @@ function EditMyPage(props) {
                                     style={{ marginRight: 20 }}
                                     onChange={handleInputChange}
                                     defaultValue={tempNickname}
+                                    maxLength={20}
                                 />
                                 <ChangeButton onClick={() => handleSave()}>저장</ChangeButton>
                             </>

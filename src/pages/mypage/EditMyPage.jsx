@@ -31,6 +31,7 @@ function EditMyPage(props) {
     const [nickname, setNickname] = useState("판교쩝쩝박사");
     const [tempNickname, setTempNickname] = useState(nickname); // 임시 값 저장
     const [profileImage, setProfileImage] = useState(tmpProfileImage);
+    const [errorMessage, setErrorMessage] = useState("");
 
 
     const navigate = useNavigate();
@@ -40,11 +41,27 @@ function EditMyPage(props) {
     };
 
     const handleInputChange = (e) => {
-        setTempNickname(e.target.value);
+        const value = e.target.value;
+
+        // 유효성 검사: 한글, 영어, 숫자 조합 확인
+        const isValid = /^[a-zA-Z0-9가-힣]*$/.test(value);
+        if (!isValid) {
+            setErrorMessage("닉네임은 한글, 영어 또는 숫자만 사용할 수 있습니다."); // 에러 메시지 설정
+        } else {
+            setErrorMessage(""); // 에러 메시지 초기화
+        }
+
+        setTempNickname(value); // 입력값 업데이트
     };
 
     const handleSave = () => {
         // 저장 로직 실행
+
+        if (errorMessage) {
+            message.error("유효한 닉네임을 입력해주세요."); // 에러가 있을 때 메시지 표시
+            return;
+        }
+
         setNickname(tempNickname); // 닉네임 갱신
         message.success("변경이 완료되었습니다!"); // 성공 메시지 표시
         setIsEditing(false); // 편집 모드 종료
@@ -91,22 +108,49 @@ function EditMyPage(props) {
                             </ChangeImageButton>
                         </ProfileImageContainer>
                     </InfoRow>
-                    <InfoRow>
+                    <InfoRow style={{ display: 'flex', alignItems: 'center' }}>
                         <Label>닉네임</Label>
                         {isEditing ? (
                             <>
-                                <Input
+
+                                {/* <Input
                                     count={{
                                         show: true,
                                         max: 20,
-                                        
+
                                     }}
-                                    style={{ marginRight: 20 }}
+                                    style={{ marginRight: 20, flex: 1 }}
                                     onChange={handleInputChange}
                                     defaultValue={tempNickname}
                                     maxLength={20}
+
                                 />
-                                <ChangeButton onClick={() => handleSave()}>저장</ChangeButton>
+                                {errorMessage && (
+                                    <div style={{ color: 'red', marginTop: '5px', fontSize: '12px' }}>{errorMessage}</div>
+                                )}
+
+                                <ChangeButton onClick={() => handleSave()}>저장</ChangeButton> */}
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                    <Input
+                                        count={{
+                                            show: true,
+                                            max: 20,
+
+                                        }}
+                                        value={tempNickname}
+                                        onChange={handleInputChange}
+                                        style={{ width: 270, flex: 1 }}
+                                        maxLength={20}
+                                    />
+                                    {errorMessage && (
+                                        <div style={{ color: 'red', marginTop: '5px', marginRight:'35px', fontSize: '12px' }}>
+                                            {errorMessage}
+                                        </div>
+                                    )}
+                                </div>
+                                <ChangeButton onClick={handleSave}>저장</ChangeButton>
+
+
                             </>
                         ) : (
                             <>
@@ -132,7 +176,7 @@ function EditMyPage(props) {
                     </ButtonContainer>
                 </ProfileContainerDetail>
             </ProfileContainer>
-        </EntireContainer>
+        </EntireContainer >
     );
 }
 

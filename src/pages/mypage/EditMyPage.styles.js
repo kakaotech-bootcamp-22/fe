@@ -136,7 +136,7 @@ export const UserTypeIcon = styled.img`
 export const ChangeImageButton = styled.button`
   position: absolute;
   top: 0; /* 이미지 아래쪽 위치 조정 */
-  right: 10%; /* 이미지 오른쪽 위치 조정 */
+  right: 0%; /* 이미지 오른쪽 위치 조정 */
   background-color: rgba(255, 255, 255, 0);
   border: none;
   border-radius: 50%;
@@ -147,6 +147,6 @@ export const ChangeImageButton = styled.button`
 
 
 export const CameraIcon = styled.img`
-  width: 24px; /* 카메라 아이콘 크기 */
-  height: 24px; /* 카메라 아이콘 크기 */
+  width: 30px; /* 카메라 아이콘 크기 */
+  height: 340x; /* 카메라 아이콘 크기 */
 `;

@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import React, { useState } from "react";
 import "./App.css";
-import Home from "./components/Home";
+import Home from "./components/Home"; 
 import Navbar from "./components/Navbar/Navbar";
 import Loading from "./components/Loading/Loading";
 import ResultPage from "./components/Result/Result";
@@ -33,7 +33,6 @@ function App() {
   };
 
   return (
-
     <AuthProvider>
       <Router>
         <Navbar />
@@ -42,10 +41,10 @@ function App() {
           <Route path="/login-signup" element={<LoginPage />} />
           {/* 리뷰 */}  
           <Route path="/review" element={<Review />} />
+
           {/* 마이페이지 */}
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/edit-mypage" element={<EditMyPage />} />
-
 
           {/* 로딩 상태에 따른 페이지 전환 */}
           <Route

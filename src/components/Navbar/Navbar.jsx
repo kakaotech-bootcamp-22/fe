@@ -2,21 +2,21 @@ import React, { useState, useEffect } from "react";
 import "./Navbar.css";
 import navbarImage from "../../assets/navbar/navbar_image.png"; // 실제 파일 경로에 맞게 수정
 import profileImage from "../../assets/navbar/profile_image.png";
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-
 
 const Navbar = () => {
   const { token, login, logout } = useAuth();
   // console.log("Navbar token:", token);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [accessToken, setAccessToken] = useState(null);
+  const [showLogout, setShowLogout] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isRedirected, setIsRedirected] = useState(false); // 리디렉션 여부 상태 추가
 
 
   const handleProfileClick = () => {
-    setIsDropdownOpen((prevState) => !prevState); // 드롭다운 열고 닫기
+    setShowLogout(!showLogout);
   };
 
   const navigate = useNavigate();
@@ -53,19 +53,27 @@ const Navbar = () => {
       </ul>
       {token ? (
         // 로그인 상태일 때
-        <div className="profile-container">
+        <div className="profile-container" onClick={handleProfileClick}>
           <img src={profileImage} alt="profile" className="profile-icon" />
           <span className="dropdown-icon"></span>
 
-          {isDropdownOpen && (
-            <div className="dropdown-menu">
-              <button onClick={logout}>로그아웃</button>
-            </div>
+          {showLogout && (
+            <button
+              className="logout-button"
+              onClick={() => setIsLoggedIn(false)}
+            >
+              로그아웃
+            </button>
           )}
         </div>
       ) : (
         // 로그인되지 않았을 때
-        <button onClick={() => navigate("/login-signup")} className="login-button">로그인/가입</button>
+        <button
+          onClick={() => navigate("/login-signup")}
+          className="login-button"
+        >
+          로그인/가입
+        </button>
       )}
     </nav>
   );

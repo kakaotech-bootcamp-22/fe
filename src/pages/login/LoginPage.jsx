@@ -6,6 +6,7 @@ import kakaologinImage from "../../assets/login/kakao_login_large_narrow.png"
 import googleloginImage from "../../assets/login/google_logo.png"
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useAuth } from "../../context/AuthContext";
+import axios from 'axios';
 
 import {
     Container,
@@ -19,7 +20,7 @@ import {
     KakaologinButton,
     GoogleloginButton,
     GoogleLoginText,
-  } from './LoginPage.style.js'; 
+} from './LoginPage.style.js';
 
 
 
@@ -28,8 +29,10 @@ function LoginPage(props) {
     const { login } = useAuth();
     const [isKakaoInitialized, setIsKakaoInitialized] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [kakaoCode, setKakaoCode] = useState("");
 
     useEffect(() => {
+        console.log("useEffect 실행됨");
         // Kakao SDK 초기화
         const { Kakao } = window;
         if (Kakao) {
@@ -42,19 +45,51 @@ function LoginPage(props) {
             setErrorMessage("Kakao SDK 로드에 실패했습니다.");
         }
 
-        // 리다이렉트된 경우 토큰 처리
-        if (Kakao && Kakao.Auth.getAccessToken()) {
-            const token = Kakao.Auth.getAccessToken();
-            login(token); // `AuthProvider`에 토큰 저장
-            console.log("카카오 로그인 성공 - 토큰:", token);
-        }
+        // // 리다이렉트된 경우 토큰 처리
+        // const token = Kakao && Kakao.Auth.getAccessToken();
+        // if (token) {
+        //     login(token); // `AuthProvider`에 토큰 저장
+        //     console.log("카카오 로그인 성공 - 토큰:", token);
 
-    }, [login]); // `login`을 의존성으로 추가
+        //     // axios 요청 추가 
+        //     axios
+        //         .post("http://localhost:8080/auth/kakao/token", {
+        //             token: token,
+        //         })
+        //         .then((response) => {
+        //             console.log("백엔드 응답:", response.data);
+        //         })
+        //         .catch((error) => {
+        //             console.error("백엔드와 통신 중 에러 발생:", error);
+        //         });
+        // }
+
+        //     // 리다이렉트된 경우 인가 코드 확인
+        //     const urlParams = new URLSearchParams(window.location.search);
+        //     const code = urlParams.get('code');
+        //     if (code) {
+        //         setKakaoCode(code);  // 받은 인가 코드를 상태에 저장
+        //         console.log("Received Kakao authorization code:", code);
+
+        //         // 받은 인가 코드를 백엔드로 전송하여 토큰을 요청
+        //         axios
+        //             .post("http://localhost:8080/auth/kakao/token", { code: code })
+        //             .then((response) => {
+        //                 console.log("백엔드 응답:", response.data);
+        //                 // 받은 액세스 토큰 등을 상태나 Context에 저장
+        //             })
+        //             .catch((error) => {
+        //                 console.error("백엔드와 통신 중 에러 발생:", error);
+        //             });
+        //     }
+        // }, [login]); // `login`을 의존성으로 추가
+    });
 
     const handleLogin = () => {
         const { Kakao } = window;
         if (!Kakao || !Kakao.isInitialized()) {
             setErrorMessage("Kakao SDK가 로드되지 않았거나 초기화되지 않았습니다.");
+            console.log("Kakao SDK가 제대로 로드되지 않았거나 초기화되지 않았습니다.");
             return;
         }
 
@@ -65,7 +100,7 @@ function LoginPage(props) {
     };
 
     const handleLogout = () => {
-        const { Kakao } = window; 
+        const { Kakao } = window;
         Kakao.Auth.logout(() => {
             // 로그아웃 후 페이지 새로고침
             window.location.reload();

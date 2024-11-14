@@ -12,6 +12,8 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [accessToken, setAccessToken] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isRedirected, setIsRedirected] = useState(false); // 리디렉션 여부 상태 추가
+
 
   const handleProfileClick = () => {
     setIsDropdownOpen((prevState) => !prevState); // 드롭다운 열고 닫기
@@ -19,10 +21,13 @@ const Navbar = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    //console.log("현재 token 상태:", token);
-  }, [token]);
-  
+   // 로그인 후 페이지 이동을 한 번만 할 수 있도록 처리
+   useEffect(() => {
+    if (token) {
+      navigate("/home"); // 로그인 후 리디렉션
+    }
+  }, [token, navigate]); // `token`이 변경될 때만 리디렉션 시도
+
 
 
   return (

@@ -3,7 +3,12 @@ import "./Navbar.css";
 import navbarImage from "../../assets/navbar/navbar_image.png"; // 실제 파일 경로에 맞게 수정
 import profileImage from "../../assets/navbar/profile_image.png";
 const Navbar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [showLogout, setShowLogout] = useState(false);
+
+  const handleProfileClick = () => {
+    setShowLogout(!showLogout);
+  };
 
   return (
     <nav className="navbar">
@@ -28,9 +33,17 @@ const Navbar = () => {
       </ul>
       {isLoggedIn ? (
         // 로그인 상태일 때
-        <div className="profile-container">
+        <div className="profile-container" onClick={handleProfileClick}>
           <img src={profileImage} alt="profile" className="profile-icon" />
           <span className="dropdown-icon"></span>
+          {showLogout && (
+            <button
+              className="logout-button"
+              onClick={() => setIsLoggedIn(false)}
+            >
+              로그아웃
+            </button>
+          )}
         </div>
       ) : (
         // 로그인되지 않았을 때

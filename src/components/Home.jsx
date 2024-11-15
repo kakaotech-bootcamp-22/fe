@@ -10,25 +10,7 @@ const Home = ({ onCheckURL }) => {
   const [url, setUrl] = useState('');
   const [accessToken, setAccessToken] = useState(null);
   const { token, login, logout } = useAuth();
-  const [isKakaoInitialized, setIsKakaoInitialized] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
-  // const sendHello = () => {
-  //   axios.post('http://localhost:8080/api/sayHello', {
-  //     message: '안녕하세요!'
-  //   }, {
-  //     headers: {
-  //       'Content-Type': 'application/json'
-  //     }
-  //   })
-  //     .then(response => {
-  //       console.log('백엔드 응답!!!!:', response.data);
-  //     })
-  //     .catch(error => {
-  //       console.error('백엔드로 메시지 전송 중 에러 발생!!!!:', error);
-  //     });
-  // };
-
 
   useEffect(() => {
     // URL에서 'code' 파라미터를 가져오기
@@ -36,67 +18,25 @@ const Home = ({ onCheckURL }) => {
     const code = urlParams.get("code");
 
     if (code) {
-      console.log("Received Kakao authorization code(인가코드):", code);
+      //console.log("Received Kakao authorization code(인가코드):", code);
 
       // 받은 인가 코드를 백엔드로 보내어 액세스 토큰 요청
       axios.post('http://localhost:8080/auth/kakao/token', { code: code })
         .then(response => {
-          console.log("백엔드 응답:", response.data);
-          setAccessToken(response.data.accessToken); // 받은 액세스 토큰을 상태에 저장
+          // JWT 토큰을 Context에 저장하여 로그인 처리
+          if (response.data.jwtToken) {
+            login(response.data.jwtToken, response.data.nickname, response.data.profileImage); // `AuthContext`의 `login` 메서드 호출
+          }
         })
         .catch(error => {
-          console.error("백엔드와 통신 중 에러 발생:", error);
+          //console.error("백엔드와 통신 중 에러 발생:", error);
           setErrorMessage("로그인에 실패했습니다.");
         });
     } else {
-      console.log("인가 코드가 없습니다.");
+      //console.log("인가 코드가 없습니다.");
     }
   }, []); // 한 번만 실행되도록 빈 배열을 의존성 배열에 추가
   
-
-  //   const { Kakao } = window;
-  //   if (Kakao) {
-  //     if (!Kakao.isInitialized()) {
-  //       Kakao.init("826a723547312cf55037f1bf217f293b");
-  //       console.log("Kakao SDK initialized:", Kakao.isInitialized());
-  //     }
-
-  //     // 리다이렉트된 경우 토큰 처리
-  //     const token = Kakao.Auth.getAccessToken();
-  //     if (token) {
-  //       setAccessToken(token);
-  //       login(token);
-  //       console.log("카카오 로그인 성공 - 토큰:", token);
-
-  //       //백엔드로 토큰 전송
-  //       axios.post('http://localhost:8080/auth/kakao/token', { token }, {
-  //         withCredentials: true
-  //       })
-  //         .then(response => {
-  //           console.log("백엔드 응답:", response.data);
-  //         })
-  //         .catch(error => {
-  //           console.error('백엔드와 통신 중 에러 발생:', error);
-  //         });
-
-  //       // 백엔드로 토큰 전송 (axios 인스턴스 사용)
-  //       //     axiosInstance.post('/auth/kakao/token', { token })
-  //       //     .then(response => {
-  //       //         // 성공적으로 처리된 경우
-  //       //         console.log("백엔드 응답:", response.data);
-  //       //     })
-  //       //     .catch(error => {
-  //       //         // 에러 처리
-  //       //         console.error('백엔드와 통신 중 에러 발생:', error);
-  //       //     });
-  //       //   }
-  //       // } else {
-  //       //   setErrorMessage("Kakao SDK 로드에 실패했습니다.");
-  //       // }
-  //       // }, [login]);
-  //     }
-  //   }
-  // });
   const handleInputChange = (e) => {
     setUrl(e.target.value);
   }
@@ -121,21 +61,6 @@ const Home = ({ onCheckURL }) => {
   const clearInput = () => {
     setUrl('');
   };
-
-
-  // {/* 추후 jwt 테스트용 코드 */ }
-
-  // const checkUserStatus = () => {
-  //   const { Kakao } = window;
-  //   const token = Kakao.Auth.getAccessToken();
-  //   if (token) {
-  //     console.log("현재 액세스 토큰이 있습니다:", token);
-  //     setAccessToken(token);
-  //   } else {
-  //     console.log("액세스 토큰이 없습니다.");
-  //     // refreshToken();
-  //   }
-  // };
 
   return (
     <div className="home-container">
@@ -172,10 +97,6 @@ const Home = ({ onCheckURL }) => {
           </p>
         </div>
       </div>
-      {/* 추후 jwt 테스트용 코드 */}
-      {/* <button onClick={checkUserStatus}>나를 눌러봐</button> */}
-      {/* <button onClick={sendHello}>안녕? 보내기</button> */}
-
     </div>
   );
 };

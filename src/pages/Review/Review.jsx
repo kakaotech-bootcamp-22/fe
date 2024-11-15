@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // react-router-dom에서 useNavigate 가져오기
+import { useNavigate } from "react-router-dom";
 
 import "./Review.css";
 import heartImage from "../../assets/review/heart.png";
@@ -35,9 +35,31 @@ export default function Review() {
   const [reviewText, setReviewText] = useState("");
   const [selectedSort, setSelectedSort] = useState("베스트순");
   const [url, setUrl] = useState("blog.naver.com/kakao_food_fighter");
-  const navigate = useNavigate(); // 뒤로 가기 기능을 위한 useNavigate 훅 사용
+  const [reviews, setReviews] = useState([
+    {
+      id: 1,
+      rating: 5,
+      date: "2024.03.19",
+      content:
+        "이 블로거 본 내돈내산으로 찐 리뷰만 남겨 주셔서 좋아요. 전 구독 했음.",
+      author: "농구하는 너구리",
+      profileImage: "",
+      likes: 5,
+    },
+    {
+      id: 2,
+      rating: 5,
+      date: "2024.03.19",
+      content:
+        "이 블로거 본 내돈내산으로 찐 리뷰만 남겨 주셔서 좋아요. 전 구독 했음.",
+      author: "농구하는 너구리",
+      profileImage: "",
+      likes: 3,
+    },
+  ]);
 
-  // 백엔드에서 URL 가져오기
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchUrl = async () => {
       try {
@@ -59,26 +81,13 @@ export default function Review() {
     }
   };
 
-  const reviews = [
-    {
-      id: 1,
-      rating: 5,
-      date: "2024.03.19",
-      content:
-        "이 블로거 본 내돈내산으로 찐 리뷰만 남겨 주셔서 좋아요. 전 구독 했음.",
-      author: "농구하는 너구리",
-      profileImage: "", // 프로필 이미지 URL 추가
-    },
-    {
-      id: 2,
-      rating: 5,
-      date: "2024.03.19",
-      content:
-        "이 블로거 본 내돈내산으로 찐 리뷰만 남겨 주셔서 좋아요. 전 구독 했음.",
-      author: "농구하는 너구리",
-      profileImage: "", // 프로필 이미지 URL 추가
-    },
-  ];
+  const handleLikeClick = (id) => {
+    setReviews((prevReviews) =>
+      prevReviews.map((review) =>
+        review.id === id ? { ...review, likes: review.likes + 1 } : review
+      )
+    );
+  };
 
   const ratingStats = {
     5: 0,
@@ -162,12 +171,15 @@ export default function Review() {
           <div key={review.id} className="review-item">
             <div className="review-stars">{renderStars(review.rating)}</div>
             <div className="review-content-wrapper">
-              <span className="trust-label">{review.rating}점</span>{" "}
-              {/* 별점만 표시 */}
+              <span className="trust-label">{review.rating}점</span>
               <p className="review-content">{review.content}</p>
             </div>
-            <button className="like-button">
-              <img src={heartImage} alt="Heart" className="heart-icon" /> 5
+            <button
+              className="like-button"
+              onClick={() => handleLikeClick(review.id)}
+            >
+              <img src={heartImage} alt="Heart" className="heart-icon" />{" "}
+              {review.likes}
             </button>
             <div className="review-info">
               <div className="review-author">

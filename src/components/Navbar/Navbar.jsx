@@ -6,14 +6,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const Navbar = () => {
-  const { token, login, logout } = useAuth();
-  // console.log("Navbar token:", token);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [accessToken, setAccessToken] = useState(null);
+  const { isLoggedIn, logout, nickname, profileImage } = useAuth(); // AuthContext의 isLoggedIn 상태 사용
   const [showLogout, setShowLogout] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isRedirected, setIsRedirected] = useState(false); // 리디렉션 여부 상태 추가
-
 
   const handleProfileClick = () => {
     setShowLogout(!showLogout);
@@ -21,14 +15,9 @@ const Navbar = () => {
 
   const navigate = useNavigate();
 
-   // 로그인 후 페이지 이동을 한 번만 할 수 있도록 처리
-   useEffect(() => {
-    if (token) {
-      navigate("/home"); // 로그인 후 리디렉션
-    }
-  }, [token, navigate]); // `token`이 변경될 때만 리디렉션 시도
+  useEffect(() => {
 
-
+  }); 
 
   return (
     <nav className="navbar">
@@ -51,7 +40,7 @@ const Navbar = () => {
         </li>
         <li onClick={() => navigate("/mypage")}>내 정보</li>
       </ul>
-      {token ? (
+      {isLoggedIn ? (
         // 로그인 상태일 때
         <div className="profile-container" onClick={handleProfileClick}>
           <img src={profileImage} alt="profile" className="profile-icon" />
@@ -60,7 +49,7 @@ const Navbar = () => {
           {showLogout && (
             <button
               className="logout-button"
-              onClick={() => setIsLoggedIn(false)}
+              onClick={logout}
             >
               로그아웃
             </button>

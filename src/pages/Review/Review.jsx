@@ -35,6 +35,14 @@ export default function Review() {
   const [reviewText, setReviewText] = useState("");
   const [selectedSort, setSelectedSort] = useState("베스트순");
   const [url, setUrl] = useState("blog.naver.com/kakao_food_fighter");
+  const [ratingStats, setRatingStats] = useState({
+    1: 1,
+    2: 10,
+    3: 15,
+    4: 30,
+    5: 40,
+  });
+  const [totalReviews, setTotalReviews] = useState(100);
   const [reviews, setReviews] = useState([
     {
       id: 1,
@@ -89,14 +97,6 @@ export default function Review() {
     );
   };
 
-  const ratingStats = {
-    5: 0,
-    4: 90,
-    3: 0,
-    2: 0,
-    1: 0,
-  };
-
   const sortOptions = ["베스트순", "최근 등록순", "평점 높은순", "평점 낮은순"];
   const totalPages = 5;
 
@@ -127,14 +127,19 @@ export default function Review() {
         <div className="rating-distribution">
           <p className="star-rating">별점</p>
           {Object.entries(ratingStats)
-            .reverse()
-            .map(([rating, percentage]) => (
-              <div key={rating} className="rating-row">
-                <span className="rating-label">{rating}점</span>
-                <Progress value={percentage} />
-                <span className="rating-percentage">{percentage}%</span>
-              </div>
-            ))}
+            .sort(([a], [b]) => b - a) // 높은 점수부터 정렬
+            .map(([rating, count]) => {
+              const percentage = totalReviews
+                ? Math.round((count / totalReviews) * 100)
+                : 0;
+              return (
+                <div key={rating} className="rating-row">
+                  <span className="rating-label">{rating}점</span>
+                  <Progress value={percentage} />
+                  <span className="rating-percentage">{percentage}%</span>
+                </div>
+              );
+            })}
         </div>
         <div className="review-summary">
           <div className="character-avatar">
@@ -150,7 +155,7 @@ export default function Review() {
 
       <hr className="hr" />
       <div className="sort-container">
-        <span className="review-count">유저리뷰 ({reviews.length})</span>
+        <span className="review-count">유저리뷰 ({totalReviews})</span>
         <div className="sort-options">
           {sortOptions.map((option) => (
             <button

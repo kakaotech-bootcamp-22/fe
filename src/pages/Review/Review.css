@@ -1,3 +1,4 @@
+/* 기존 스타일 유지 */
 .review-system {
   margin: 0 50px;
   background-color: white;
@@ -84,8 +85,6 @@
   font-size: 18px;
 }
 
-.review-summary {
-}
 .highlight {
   color: #4caf50;
   font-weight: bold;
@@ -123,6 +122,18 @@
 .avatar-img {
   border-radius: 50%;
 }
+
+/* 수정된 부분 시작 */
+.review-author span {
+  width: 150px; /* 고정 너비 설정 */
+  white-space: nowrap; /* 텍스트를 한 줄로 유지 */
+  overflow: hidden; /* 넘치는 텍스트 숨기기 */
+  text-overflow: ellipsis; /* 생략 부호(...) 표시 */
+  font-size: 16px; /* 텍스트 크기 */
+  font-weight: 500; /* 텍스트 두께 */
+  color: #333; /* 텍스트 색상 */
+}
+/* 수정된 부분 끝 */
 
 .progress {
   width: 250px;
@@ -179,7 +190,6 @@
 .review-item {
   border-bottom: 1px solid #e2e8f0;
   padding: 15px 0;
-  /* padding-bottom: 24px; */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -187,7 +197,7 @@
 
 .review-stars {
   flex: 0 0 auto; /* 왼쪽 영역 고정 크기 */
-  align-self: center; /* 위쪽 정렬 */
+  align-self: center;
   margin-right: 10px;
 }
 
@@ -228,7 +238,14 @@
 }
 
 .review-author span {
-  color: #a0aec0;
+  /* 수정된 부분: 고정 너비 및 텍스트 오버플로우 처리 */
+  width: 150px; /* 원하는 고정 너비로 설정 */
+  white-space: nowrap; /* 텍스트를 한 줄로 유지 */
+  overflow: hidden; /* 넘치는 텍스트 숨기기 */
+  text-overflow: ellipsis; /* 생략 부호(...) 표시 */
+  font-size: 16px; /* 텍스트 크기 */
+  font-weight: 500; /* 텍스트 두께 */
+  color: #333; /* 텍스트 색상 */
 }
 
 .author-details {
@@ -242,6 +259,7 @@
   color: #a0aec0;
   font-size: 14px;
   align-self: center;
+  width: 75px;
 }
 
 .like-button {

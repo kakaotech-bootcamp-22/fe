@@ -6,8 +6,9 @@ import Navbar from "./components/Navbar/Navbar";
 import Loading from "./components/Loading/Loading";
 import ResultPage from "./components/Result/Result";
 import LoginPage from "./pages/login/LoginPage";
+import MyPage from "./pages/mypage/MyPage";
+import EditMyPage from "./pages/mypage/EditMyPage";
 import { AuthProvider } from "./context/AuthContext";
-
 import Review from "./components/Review/Review";
 
 function App() {
@@ -40,6 +41,11 @@ function App() {
           <Route path="/login-signup" element={<LoginPage />} />
           {/* 리뷰 */}  
           <Route path="/review" element={<Review />} />
+
+          {/* 마이페이지 */}
+          <Route path="/mypage" element={<MyPage />} />
+          <Route path="/edit-mypage" element={<EditMyPage />} />
+
           {/* 로딩 상태에 따른 페이지 전환 */}
           <Route
             path="/"

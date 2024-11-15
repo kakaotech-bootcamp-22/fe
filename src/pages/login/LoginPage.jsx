@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+
 import loginImage from "../../assets/login/babyCat.png"
 import kakaologinImage from "../../assets/login/kakao_login_large_narrow.png"
 import googleloginImage from "../../assets/login/google_logo.png"
@@ -19,6 +21,7 @@ import {
     GoogleloginButton,
     GoogleLoginText,
 } from './LoginPage.style.js';
+
 
 
 

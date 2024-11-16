@@ -53,15 +53,6 @@ function LoginPage(props) {
 
     };
 
-    const handleLogout = () => {
-        const { Kakao } = window;
-        Kakao.Auth.logout(() => {
-            // 로그아웃 후 페이지 새로고침
-            window.location.reload();
-        });
-    }
-
-
     return (
         <Container>
             <Background>

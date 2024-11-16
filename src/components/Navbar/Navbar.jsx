@@ -4,6 +4,7 @@ import navbarImage from "../../assets/navbar/navbar_image.png"; // 실제 파일
 import profileImage from "../../assets/navbar/profile_image.png";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import axios from 'axios';
 
 const Navbar = () => {
   const { isLoggedIn, logout, nickname, profileImage } = useAuth(); // AuthContext의 isLoggedIn 상태 사용
@@ -15,9 +16,24 @@ const Navbar = () => {
 
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    // 로그아웃 요청 서버로 보내기
+    axios.post('http://localhost:8080/auth/logout', {}, { withCredentials: true })
+      .then(response => {
+        console.log(response.data);  // 서버에서 성공 메시지 받기
+        logout(); // AuthContext 상태 리셋
+
+        // 카카오 로그아웃
+        navigate("/login-signup")
+      })
+      .catch(error => {
+          console.error("로그아웃 중 에러 발생", error);
+      });
+  };
+
   useEffect(() => {
 
-  }); 
+  });
 
   return (
     <nav className="navbar">
@@ -49,7 +65,7 @@ const Navbar = () => {
           {showLogout && (
             <button
               className="logout-button"
-              onClick={logout}
+              onClick={handleLogout}
             >
               로그아웃
             </button>

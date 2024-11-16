@@ -8,8 +8,7 @@ import axios from 'axios';
 
 const Home = ({ onCheckURL }) => {
   const [url, setUrl] = useState('');
-  const [accessToken, setAccessToken] = useState(null);
-  const { token, login, logout } = useAuth();
+  const { isLoggedIn, login, logout, nickname, profileImage, accessToken } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -19,13 +18,13 @@ const Home = ({ onCheckURL }) => {
 
     if (code) {
       //console.log("Received Kakao authorization code(인가코드):", code);
-
       // 받은 인가 코드를 백엔드로 보내어 액세스 토큰 요청
       axios.post('http://localhost:8080/auth/kakao/token', { code: code })
         .then(response => {
           // JWT 토큰을 Context에 저장하여 로그인 처리
+
           if (response.data.jwtToken) {
-            login(response.data.jwtToken, response.data.nickname, response.data.profileImage); // `AuthContext`의 `login` 메서드 호출
+            login(response.data.jwtToken, response.data.nickname, response.data.profileImage); 
           }
         })
         .catch(error => {
@@ -34,9 +33,20 @@ const Home = ({ onCheckURL }) => {
         });
     } else {
       //console.log("인가 코드가 없습니다.");
+
+      axios.get('http://localhost:8080/auth/status', { withCredentials: true })
+        .then(response => {
+          if (response.data.isLoggedIn) {
+            // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
+            login(response.data.jwtToken, response.data.nickname, response.data.userImage);
+          }
+        })
+        .catch(error => {
+          setErrorMessage("로그인 상태를 확인할 수 없습니다.");
+        });
     }
   }, []); // 한 번만 실행되도록 빈 배열을 의존성 배열에 추가
-  
+
   const handleInputChange = (e) => {
     setUrl(e.target.value);
   }

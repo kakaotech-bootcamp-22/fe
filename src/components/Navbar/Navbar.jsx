@@ -7,7 +7,7 @@ import { useAuth } from "../../context/AuthContext";
 import axios from 'axios';
 
 const Navbar = () => {
-  const { isLoggedIn, logout, nickname, profileImage } = useAuth(); // AuthContext의 isLoggedIn 상태 사용
+  const { isLoggedIn, logout, nickname, profileImage, platform } = useAuth(); // AuthContext의 isLoggedIn 상태 사용
   const [showLogout, setShowLogout] = useState(false);
 
   const handleProfileClick = () => {
@@ -17,22 +17,31 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // 로그아웃 요청 서버로 보내기
-    axios.post('http://localhost:8080/auth/logout', {}, { withCredentials: true })
+    if (platform === "kakao"){
+      axios.post('http://localhost:8080/auth/logout/kakao', {}, { withCredentials: true })
       .then(response => {
         console.log(response.data);  // 서버에서 성공 메시지 받기
         logout(); // AuthContext 상태 리셋
-
-        // 카카오 로그아웃
         navigate("/login-signup")
       })
       .catch(error => {
-          console.error("로그아웃 중 에러 발생", error);
+          console.error("카카오 로그아웃 중 에러 발생", error);
       });
+
+    }else if (platform === "google"){
+      axios.post('http://localhost:8080/auth/logout/google', {}, { withCredentials: true })
+      .then(response => {
+        console.log(response.data);  // 서버에서 성공 메시지 받기
+        logout(); // AuthContext 상태 리셋
+        navigate("/login-signup")
+      })
+      .catch(error => {
+          console.error("구글 로그아웃 중 에러 발생", error);
+      });
+    }
   };
 
   useEffect(() => {
-
   });
 
   return (

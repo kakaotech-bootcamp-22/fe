@@ -21,18 +21,20 @@ import {
 
 import tmpProfileImage from "../../assets/login/babyCat.png";
 import KakaoIcon from "../../assets/mypage/kakaotalk_sharing_btn_small.png";
+import GoogleIcon from "../../assets/mypage/web_neutral_rd_na@4x.png";
 import cameraIcon from "../../assets/mypage/IconButton.png"; // 카메라 아이콘 이미지 경로
 import { Button, message, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { Flex, Input, Typography } from 'antd';
+import { useAuth } from "../../context/AuthContext";
 
 function EditMyPage(props) {
-    const [isEditing, setIsEditing] = useState(false);
-    const [nickname, setNickname] = useState("판교쩝쩝박사");
-    const [tempNickname, setTempNickname] = useState(nickname); // 임시 값 저장
-    const [profileImage, setProfileImage] = useState(tmpProfileImage);
-    const [errorMessage, setErrorMessage] = useState("");
 
+    const { isLoggedIn, login, logout, nickname, profileImage, platform } = useAuth();
+    const [isEditing, setIsEditing] = useState(false);
+    const [newNickname, setNickname] = useState(nickname);
+    const [newPofileImage, setProfileImage] = useState(profileImage);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const navigate = useNavigate();
 
@@ -51,7 +53,7 @@ function EditMyPage(props) {
             setErrorMessage(""); // 에러 메시지 초기화
         }
 
-        setTempNickname(value); // 입력값 업데이트
+        setNickname(value); // 입력값 업데이트
     };
 
     const handleSave = () => {
@@ -62,7 +64,7 @@ function EditMyPage(props) {
             return;
         }
 
-        setNickname(tempNickname); // 닉네임 갱신
+        setNickname(nickname); // 닉네임 갱신
         message.success("변경이 완료되었습니다!"); // 성공 메시지 표시
         setIsEditing(false); // 편집 모드 종료
     };
@@ -119,13 +121,13 @@ function EditMyPage(props) {
                                             max: 20,
 
                                         }}
-                                        value={tempNickname}
+                                        value={nickname}
                                         onChange={handleInputChange}
                                         style={{ width: 270, flex: 1 }}
                                         maxLength={20}
                                     />
                                     {errorMessage && (
-                                        <div style={{ color: 'red', marginTop: '5px', marginRight:'35px', fontSize: '12px' }}>
+                                        <div style={{ color: 'red', marginTop: '5px', marginRight: '35px', fontSize: '12px' }}>
                                             {errorMessage}
                                         </div>
                                     )}
@@ -142,10 +144,18 @@ function EditMyPage(props) {
                     </InfoRow>
                     <InfoRow>
                         <Label>이메일</Label>
-                        <Value>
-                            22day@kakao.com
-                            <UserTypeIcon src={KakaoIcon} alt="Kakao Icon" />
-                        </Value>
+                        {platform === "kakao" ? (
+                            <Value>
+                                tmp@kakao.com
+                                <UserTypeIcon src={KakaoIcon} alt="Kakao Icon" />
+                            </Value>
+                        ) : (
+                            <Value>
+                                tmp@gmail.com
+                                <UserTypeIcon src={GoogleIcon} alt="Kakao Icon" />
+                            </Value>
+                        )}
+
                     </InfoRow>
                     <InfoRow>
                         <Label>가입일자</Label>

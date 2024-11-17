@@ -8,23 +8,20 @@ import axios from 'axios';
 
 const Home = ({ onCheckURL }) => {
   const [url, setUrl] = useState('');
-  const { isLoggedIn, login, logout, nickname, profileImage, accessToken } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
+  const { isLoggedIn, login, logout, nickname, profileImage, platform } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    // URL에서 'code' 파라미터를 가져오기
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get("code");
-
     if (code) {
       //console.log("Received Kakao authorization code(인가코드):", code);
       // 받은 인가 코드를 백엔드로 보내어 액세스 토큰 요청
       axios.post('http://localhost:8080/auth/kakao/token', { code: code })
         .then(response => {
           // JWT 토큰을 Context에 저장하여 로그인 처리
-
           if (response.data.jwtToken) {
-            login(response.data.jwtToken, response.data.nickname, response.data.profileImage); 
+            login(response.data.jwtToken, response.data.nickname, response.data.profileImage, response.data.platform);
           }
         })
         .catch(error => {
@@ -32,13 +29,11 @@ const Home = ({ onCheckURL }) => {
           setErrorMessage("로그인에 실패했습니다.");
         });
     } else {
-      //console.log("인가 코드가 없습니다.");
-
       axios.get('http://localhost:8080/auth/status', { withCredentials: true })
         .then(response => {
           if (response.data.isLoggedIn) {
             // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
-            login(response.data.jwtToken, response.data.nickname, response.data.userImage);
+            login(response.data.jwtToken, response.data.nickname, response.data.userImage, response.data.platform);
           }
         })
         .catch(error => {

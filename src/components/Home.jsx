@@ -3,30 +3,44 @@ import React, { useEffect, useState } from "react";
 import "./Home.css";
 import mainImage from "../assets/home/home_image.jpeg";
 import { useAuth } from "../context/AuthContext";
+import axios from 'axios';
+
 
 const Home = ({ onCheckURL }) => {
   const [url, setUrl] = useState('');
-  const [accessToken, setAccessToken] = useState(null);
-  const { token, login, logout } = useAuth();
-  
+  const { isLoggedIn, login, logout, nickname, profileImage, platform } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    const { Kakao } = window;
-    // Kakao SDK 초기화 여부 확인 후 초기화
-    if (Kakao && !Kakao.isInitialized()) {
-      Kakao.init("826a723547312cf55037f1bf217f293b"); // 실제 자바스크립트 키로 변경
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get("code");
+    if (code) {
+      //console.log("Received Kakao authorization code(인가코드):", code);
+      // 받은 인가 코드를 백엔드로 보내어 액세스 토큰 요청
+      axios.post('http://localhost:8080/auth/kakao/token', { code: code })
+        .then(response => {
+          // JWT 토큰을 Context에 저장하여 로그인 처리
+          if (response.data.jwtToken) {
+            login(response.data.jwtToken, response.data.nickname, response.data.profileImage, response.data.platform);
+          }
+        })
+        .catch(error => {
+          //console.error("백엔드와 통신 중 에러 발생:", error);
+          setErrorMessage("로그인에 실패했습니다.");
+        });
+    } else {
+      axios.get('http://localhost:8080/auth/status', { withCredentials: true })
+        .then(response => {
+          if (response.data.isLoggedIn) {
+            // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
+            login(response.data.jwtToken, response.data.nickname, response.data.userImage, response.data.platform);
+          }
+        })
+        .catch(error => {
+          setErrorMessage("로그인 상태를 확인할 수 없습니다.");
+        });
     }
-
-    // 토큰 확인
-    // const token = Kakao.Auth.getAccessToken();
-    // if (token) {
-    //   setAccessToken(token);
-    //   console.log("현재 액세스 토큰:", token);
-    // } else {
-    //   console.log("로그인되지 않았거나 토큰이 없습니다.");
-    // }
-
-  }, []);
+  }, []); // 한 번만 실행되도록 빈 배열을 의존성 배열에 추가
 
   const handleInputChange = (e) => {
     setUrl(e.target.value);
@@ -51,37 +65,6 @@ const Home = ({ onCheckURL }) => {
 
   const clearInput = () => {
     setUrl('');
-  };
-
-
-  {/* 추후 jwt 테스트용 코드 */}
-
-  // const checkUserStatus = () => {
-  //   const { Kakao } = window;
-  //   const token = Kakao.Auth.getAccessToken();
-  //   if (token) {
-  //     console.log("현재 액세스 토큰이 있습니다:", token);
-  //     setAccessToken(token);
-  //   } else {
-  //     console.log("액세스 토큰이 없습니다.");
-  //     refreshToken();
-  //   }
-  // };
-
-  const refreshToken = () => {
-    const { Kakao } = window;
-    if (Kakao && Kakao.isInitialized() && Kakao.Auth?.login) {
-      Kakao.Auth.login({
-        success: (authObj) => {
-          console.log("새로운 액세스 토큰이 발급되었습니다:", authObj.access_token);
-        },
-        fail: (err) => {
-          console.error("로그인 갱신 실패:", err);
-        },
-      });
-    } else {
-      console.error("Kakao SDK가 초기화되지 않았거나 로그인 메서드가 없습니다.");
-    }
   };
 
   return (
@@ -119,9 +102,6 @@ const Home = ({ onCheckURL }) => {
           </p>
         </div>
       </div>
-      {/* 추후 jwt 테스트용 코드 */}
-      {/* <button onClick={checkUserStatus}>나를 눌러봐</button> */}
-
     </div>
   );
 };

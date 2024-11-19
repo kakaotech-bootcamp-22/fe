@@ -31,7 +31,7 @@ const Home = ({ onCheckURL }) => {
     } else {
       axios.get('http://localhost:8080/auth/status', { withCredentials: true })
         .then(response => {
-          if (response.data.isLoggedIn) {
+          if (response.data.loggedIn) {
             // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
             login(response.data.jwtToken, response.data.nickname, response.data.userImage, response.data.platform, response.data.createdAt);
           }

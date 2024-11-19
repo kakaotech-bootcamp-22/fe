@@ -27,14 +27,18 @@ import { Button, message, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { Flex, Input, Typography } from 'antd';
 import { useAuth } from "../../context/AuthContext";
+import imageCompression from 'browser-image-compression';
+
 
 function EditMyPage(props) {
 
-    const { isLoggedIn, login, logout, nickname, profileImage, platform } = useAuth();
+    const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [newNickname, setNickname] = useState(nickname);
-    const [newPofileImage, setProfileImage] = useState(profileImage);
+    const [newProfileImage, setProfileImage] = useState(profileImage);
     const [errorMessage, setErrorMessage] = useState("");
+    const [previewImage, setPreviewImage] = useState(profileImage); // 미리보기 이미지 상태 
+
 
     const navigate = useNavigate();
 
@@ -56,32 +60,73 @@ function EditMyPage(props) {
         setNickname(value); // 입력값 업데이트
     };
 
-    const handleSave = () => {
-        // 저장 로직 실행
+    const handleImageChange = async (event) => {
+        if (event.target.files && event.target.files.length > 0) {
+            const file = event.target.files[0]; // 선택된 파일
 
+            try {
+                // 이미지 압축 설정
+                const options = {
+                    maxSizeMB: 0.5, // 최대 크기 설정
+                    maxWidthOrHeight: 300, // 최대 너비 또는 높이 설정
+                    useWebWorker: true, // 웹 워커 사용 설정 
+                };
+
+                const compressedFile = await imageCompression(file, options);
+
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    console.log('File successfully read:', reader.result); 
+                    setProfileImage(reader.result); 
+                };
+                reader.readAsDataURL(compressedFile);
+            } catch (error) {
+                console.error("Error compressing image:", error);
+                message.error("이미지 압축 중 오류가 발생했습니다.");
+            }
+        } else {
+            console.error("No file selected"); // 파일이 선택되지 않은 경우 출력
+        }
+    };
+
+    const handleSave = async () => {
+        // 저장 로직 실행
         if (errorMessage) {
-            message.error("유효한 닉네임을 입력해주세요."); // 에러가 있을 때 메시지 표시
+            message.error("유효한 닉네임을 입력해주세요.");
             return;
         }
 
-        setNickname(nickname); // 닉네임 갱신
-        message.success("변경이 완료되었습니다!"); // 성공 메시지 표시
-        setIsEditing(false); // 편집 모드 종료
-    };
+        try {
+            // 파일과 닉네임 동시 전송
+            const formData = new FormData();
+            formData.append('nickname', newNickname);
+            if (newProfileImage) {
+                formData.append('profileImage', newProfileImage);
+            }
 
-    const handleImageChange = (event) => {
-        if (event.target.files && event.target.files.length > 0) {
-            const file = event.target.files[0]; // 선택된 파일
-            const reader = new FileReader();
+            const response = await fetch('/api/update-profile', {
+                method: 'POST',
+                body: formData,
+            });
 
-            reader.onloadend = () => {
-                setProfileImage(reader.result); // 선택된 이미지로 프로필 이미지 업데이트
-            };
-
-            reader.readAsDataURL(file); // 파일을 데이터 URL로 읽기
-        } else {
-            console.error("No file selected"); // 파일이 선택되지 않은 경우 로그 출력
+            if (response.ok) {
+                const result = await response.json();
+                message.success("변경이 완료되었습니다!");
+                setNickname(result.updatedNickname);
+                setProfileImage(result.updatedProfileImage);
+            } else {
+                message.error("프로필을 업데이트하는 데 실패했습니다.");
+                setNickname(nickname);
+                setProfileImage(profileImage);
+            }
+        } catch (error) {
+            console.error("Error updating profile:", error);
+            message.error("프로필 업데이트 중 오류가 발생했습니다.");
+            setNickname(nickname);
+            setProfileImage(profileImage);
         }
+        setIsEditing(false);
+
     };
 
     return (
@@ -95,7 +140,7 @@ function EditMyPage(props) {
                     </InfoRowProfile>
                     <InfoRow>
                         <ProfileImageContainer>
-                            <ProfileImage src={profileImage} alt="Profile" />
+                            <ProfileImage src={newProfileImage} alt="Profile" />
                             <ChangeImageButton onClick={handleImageChange}>
                                 <label htmlFor="file-input" style={{ cursor: "pointer", background: "none", border: "none" }}>
                                     <CameraIcon src={cameraIcon} alt="Change Profile" />
@@ -121,7 +166,7 @@ function EditMyPage(props) {
                                             max: 20,
 
                                         }}
-                                        value={nickname}
+                                        value={newNickname}
                                         onChange={handleInputChange}
                                         style={{ width: 270, flex: 1 }}
                                         maxLength={20}
@@ -137,7 +182,7 @@ function EditMyPage(props) {
                             </>
                         ) : (
                             <>
-                                <Value>{nickname}</Value>
+                                <Value>{newNickname}</Value>
                                 <ChangeButton onClick={() => toggleEdit()}>변경</ChangeButton>
                             </>
                         )}
@@ -159,7 +204,7 @@ function EditMyPage(props) {
                     </InfoRow>
                     <InfoRow>
                         <Label>가입일자</Label>
-                        <Value>2024.10.20</Value>
+                        <Value>{createdAt}</Value>
                     </InfoRow>
                     <ButtonContainer>
                         <CustomButton onClick={() => navigate("/mypage")}>취소</CustomButton>
@@ -169,6 +214,6 @@ function EditMyPage(props) {
             </ProfileContainer>
         </EntireContainer >
     );
-}
+};
 
 export default EditMyPage;

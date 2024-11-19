@@ -61,6 +61,7 @@ function LoginPage(props) {
         const signIn = useGoogleLogin({
             onSuccess: (res) => {
                 axios.post('http://localhost:8080/auth/google/token', {
+                    
                     access_token: res.access_token,
                 })
                     .then(response => {

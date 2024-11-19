@@ -171,6 +171,8 @@ function MyPage(props) {
   const [writedReview, setwritedReview] = useState("4");
   const [errorMessage, setErrorMessage] = useState("");
   const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt } = useAuth();
+  const [newNickname, setNickname] = useState(nickname);
+  const [newProfileImage, setProfileImage] = useState(profileImage);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -192,9 +194,12 @@ function MyPage(props) {
     } else {
       axios.get('http://localhost:8080/auth/status', { withCredentials: true })
         .then(response => {
-          if (response.data.isLoggedIn) {
+          if (response.data.loggedIn) {
             // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
             login(response.data.jwtToken, response.data.nickname, response.data.userImage, response.data.platform, response.data.createdAt);
+            // setNickname(response.data.nickname)
+            // setProfileImage(response.data.userImage)
+
           }
         })
         .catch(error => {
@@ -203,8 +208,7 @@ function MyPage(props) {
     }
   }, []); // 한 번만 실행되도록 빈 배열을 의존성 배열에 추가
 
-  console.log(nickname, profileImage, platform, createdAt, 'nickname, profileImage, platform, createdAt')
-
+  
 
   return (
     <EntireContainer>

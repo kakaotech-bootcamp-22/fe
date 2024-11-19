@@ -7,7 +7,7 @@ import { useAuth } from "../../context/AuthContext";
 import axios from 'axios';
 
 const Navbar = () => {
-  const { isLoggedIn, logout, nickname, profileImage, platform } = useAuth(); // AuthContext의 isLoggedIn 상태 사용
+  const { isLoggedIn, logout, nickname, profileImage, platform, createdAt } = useAuth(); // AuthContext의 isLoggedIn 상태 사용
   const [showLogout, setShowLogout] = useState(false);
 
   const handleProfileClick = () => {

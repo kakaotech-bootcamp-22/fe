@@ -8,7 +8,7 @@ import axios from 'axios';
 
 const Home = ({ onCheckURL }) => {
   const [url, setUrl] = useState('');
-  const { isLoggedIn, login, logout, nickname, profileImage, platform } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
+  const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const Home = ({ onCheckURL }) => {
         .then(response => {
           // JWT 토큰을 Context에 저장하여 로그인 처리
           if (response.data.jwtToken) {
-            login(response.data.jwtToken, response.data.nickname, response.data.profileImage, response.data.platform);
+            login(response.data.jwtToken, response.data.nickname, response.data.profileImage, response.data.platform, response.data.createdAt);
           }
         })
         .catch(error => {
@@ -33,7 +33,7 @@ const Home = ({ onCheckURL }) => {
         .then(response => {
           if (response.data.isLoggedIn) {
             // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
-            login(response.data.jwtToken, response.data.nickname, response.data.userImage, response.data.platform);
+            login(response.data.jwtToken, response.data.nickname, response.data.userImage, response.data.platform, response.data.createdAt);
           }
         })
         .catch(error => {

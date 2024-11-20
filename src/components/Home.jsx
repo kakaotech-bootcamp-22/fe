@@ -2,11 +2,20 @@ import React, { useEffect, useState } from "react";
 import "./Home.css";
 import mainImage from "../assets/home/home_image.jpeg";
 import { useAuth } from "../context/AuthContext";
+<<<<<<< HEAD
 import axios from 'axios';
 
 const Home = ({ onCheckURL }) => {
   const [url, setUrl] = useState('');
   const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt, email } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
+=======
+import axios from "axios";
+import { useNavigate } from "react-router-dom"; // 페이지 전환을 위한 hook 추가
+
+const Home = ({ onCheckURL }) => {
+  const [url, setUrl] = useState("");
+  const { isLoggedIn, login, logout, nickname, profileImage, platform } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
+>>>>>>> f0d54c1 (KAN-59 chore: 폴더 구조 변경)
   const [errorMessage, setErrorMessage] = useState("");
   const API_URL = process.env.REACT_APP_API_URL;
 

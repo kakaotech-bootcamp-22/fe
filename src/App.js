@@ -4,6 +4,7 @@ import "./App.css";
 import Home from "./components/Home";
 import Navbar from "./components/Navbar/Navbar";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import Loading from "./pages/Loading/Loading";
 import ResultPage from "./pages/Result/Result";
 =======
@@ -15,6 +16,10 @@ import LoadingPage from "./pages/Loading/LoadingPage";
 import ResultPage from "./pages/Result/ResultPage";
 >>>>>>> 9719ff2 (KAN-54 feat: 서버에서 응답을 받으면 결과 페이지로 라우팅 되도록 변경)
 >>>>>>> fe93523 (KAN-59 feat: 서버에서 응답을 받으면 결과 페이지로 라우팅 되도록 변경)
+=======
+import LoadingPage from "./pages/Loading/LoadingPage";
+import ResultPage from "./pages/Result/ResultPage";
+>>>>>>> f0d54c1 (KAN-59 chore: 폴더 구조 변경)
 import LoginPage from "./pages/login/LoginPage";
 import MyPage from "./pages/mypage/MyPage";
 import EditMyPage from "./pages/mypage/EditMyPage";

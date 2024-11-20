@@ -2,20 +2,6 @@ import React, { useEffect, useState } from "react";
 import "./Home.css";
 import mainImage from "../assets/home/home_image.jpeg";
 import { useAuth } from "../context/AuthContext";
-<<<<<<< HEAD
-
-const Home = ({ onCheckURL }) => {
-  const [url, setUrl] = useState('');
-  const [accessToken, setAccessToken] = useState(null);
-  const { token, login, logout } = useAuth();
-  
-
-  useEffect(() => {
-    const { Kakao } = window;
-    // Kakao SDK 초기화 여부 확인 후 초기화
-    if (Kakao && !Kakao.isInitialized()) {
-      Kakao.init("826a723547312cf55037f1bf217f293b"); // 실제 자바스크립트 키로 변경
-=======
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; // 페이지 전환을 위한 hook 추가
 
@@ -50,7 +36,6 @@ const Home = ({ onCheckURL }) => {
         .catch(() => {
           setErrorMessage("로그인 상태를 확인할 수 없습니다.");
         });
->>>>>>> 9719ff2 (KAN-54 feat: 서버에서 응답을 받으면 결과 페이지로 라우팅 되도록 변경)
     }
 
     // 토큰 확인

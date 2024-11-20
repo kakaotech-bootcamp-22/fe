@@ -1,9 +1,9 @@
-// src/components/Loading.jsx
 import React, { useEffect, useState } from 'react';
-import './Loading.css';
+import { useNavigate } from 'react-router-dom';
+import './LoadingPage.css';
 import chunshikImage from '../../assets/loading/loading_image.webp'; // 춘식이 이미지
 
-const LoadingPage = () => {
+const LoadingPage = ({ requestId }) => { // requestId를 props로 가져옴
   const [activeDot, setActiveDot] = useState(0);
   const navigate = useNavigate();
 
@@ -16,12 +16,12 @@ const LoadingPage = () => {
   }, []);
 
   useEffect(() => {
-    const pollingInterval = 5000; //  5초 간격으로 폴링
+    const pollingInterval = 5000; // 5초 간격으로 폴링
     let intervalId;
 
     const checkResultStatus = async () => {
       try {
-        const response = await fetch('http://localhost:8080/result'); // 백엔드 API URL
+        const response = await fetch(`http://localhost:8080/result/${requestId}`); // requestId 사용
         const result = await response.json();
 
         if (result.status === 'READY') {
@@ -38,7 +38,7 @@ const LoadingPage = () => {
 
     // 컴포넌트가 언마운트 되면 폴링 중지
     return () => clearInterval(intervalId);
-  }, [requestId, navigate]);
+  }, [requestId, navigate]); // requestId 추가
 
   return (
     <div className="loading-container">

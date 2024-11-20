@@ -1,0 +1,102 @@
+.result-container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  
+  .url-section {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .url {
+    font-size: 18px;
+  }
+  
+  .highlight-url {
+    color: green;
+    font-weight: bold;
+  }
+  
+  .main-content {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  .left-content {
+    width: 60%;
+  }
+  
+  .title {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .review-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .review-content {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .judgement-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .judgement-reason {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .fake-report {
+    color: green;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  
+  .go-back {
+    color: gray;
+    cursor: pointer;
+  }
+  
+  .right-content {
+    width: 35%;
+    text-align: center;
+  }
+  
+  .score-image {
+    width: 100px;
+    margin: 0 auto 10px auto;
+  }
+  
+  .score {
+    font-size: 40px;
+  }
+  
+  .check-criteria {
+    font-size: 16px;
+    margin: 10px 0;
+    cursor: pointer;
+  }
+  
+  .feedback-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  
+  .feedback-button {
+    font-size: 20px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    margin: 0 5px;
+  }
+  

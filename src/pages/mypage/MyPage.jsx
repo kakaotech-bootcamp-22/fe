@@ -170,45 +170,27 @@ function MyPage(props) {
   const [findedReview, setfindedReview] = useState("13");
   const [writedReview, setwritedReview] = useState("4");
   const [errorMessage, setErrorMessage] = useState("");
-  const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt } = useAuth();
+  const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt, email } = useAuth();
   const [newNickname, setNickname] = useState(nickname);
   const [newProfileImage, setProfileImage] = useState(profileImage);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get("code");
-    if (platform==="kakao" && code) {
-      //console.log("Received Kakao authorization code(인가코드):", code);
-      // 받은 인가 코드를 백엔드로 보내어 액세스 토큰 요청
-      axios.post('http://localhost:8080/auth/kakao/token', { code: code })
-        .then(response => {
-          // JWT 토큰을 Context에 저장하여 로그인 처리
-          if (response.data.jwtToken) {
-            login(response.data.jwtToken, response.data.nickname, response.data.profileImage, response.data.platform, response.data.createdAt);
-          }
-        })
-        .catch(error => {
-          setErrorMessage("로그인 상태를 확인할 수 없습니다.");
-        });
-    } else {
-      axios.get('http://localhost:8080/auth/status', { withCredentials: true })
-        .then(response => {
-          if (response.data.loggedIn) {
-            // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
-            login(response.data.jwtToken, response.data.nickname, response.data.userImage, response.data.platform, response.data.createdAt);
-            // setNickname(response.data.nickname)
-            // setProfileImage(response.data.userImage)
 
-          }
-        })
-        .catch(error => {
-          setErrorMessage("로그인 상태를 확인할 수 없습니다.");
-        });
-    }
+  useEffect(() => {
+    axios.get('http://localhost:8080/auth/status', { withCredentials: true })
+      .then(response => {
+        if (response.data.loggedIn) {
+          // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
+          login(response.data.jwtToken, response.data.nickname, response.data.userImage, response.data.platform, response.data.createdAt, response.data.email);
+        }
+      })
+      .catch(error => {
+        setErrorMessage("로그인 상태를 확인할 수 없습니다.");
+      });
+    //}
   }, []); // 한 번만 실행되도록 빈 배열을 의존성 배열에 추가
 
-  
+
 
   return (
     <EntireContainer>
@@ -218,12 +200,12 @@ function MyPage(props) {
           {platform === "kakao" ? (
             <KakaoButton>
               <IconImage src={KakaoIcon} alt="Kakao Icon" />
-              <KakaoText>tmp@kakao.com</KakaoText>
+              <KakaoText>{email}</KakaoText>
             </KakaoButton>
           ) : (
             <GoogleButton>
               <IconImage src={GoogleIcon} alt="Google Icon" />
-              <GoogleText>tmp@gmail.com</GoogleText>
+              <GoogleText>{email}</GoogleText>
             </GoogleButton>
           )}
 
@@ -233,9 +215,9 @@ function MyPage(props) {
           <ProfileDetails>
             <ProfileName>{nickname}</ProfileName>
             {platform === "kakao" ? (
-              <ProfileEmail>tmp@kakao.com</ProfileEmail>
+              <ProfileEmail>{email}</ProfileEmail>
             ) : (
-              <ProfileEmail>tmp@gmail.com</ProfileEmail>
+              <ProfileEmail>{email}</ProfileEmail>
             )}
           </ProfileDetails>
           <EditButton onClick={() => navigate("/edit-mypage")}>수정</EditButton>

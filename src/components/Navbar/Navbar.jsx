@@ -7,7 +7,7 @@ import { useAuth } from "../../context/AuthContext";
 import axios from 'axios';
 
 const Navbar = () => {
-  const { isLoggedIn, logout, nickname, profileImage, platform, createdAt } = useAuth(); // AuthContext의 isLoggedIn 상태 사용
+  const { isLoggedIn, logout, nickname, profileImage, platform, createdAt, email } = useAuth(); // AuthContext의 isLoggedIn 상태 사용
   const [showLogout, setShowLogout] = useState(false);
 
   const handleProfileClick = () => {
@@ -41,8 +41,9 @@ const Navbar = () => {
     }
   };
 
-  useEffect(() => {
-  });
+  // useEffect(() => {
+  //   console.log("Navbar updated:", isLoggedIn, profileImage);
+  // }, [profileImage, isLoggedIn]); // 상태 변경 시 감지
 
   return (
     <nav className="navbar">

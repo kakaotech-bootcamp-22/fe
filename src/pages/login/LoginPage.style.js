@@ -51,18 +51,12 @@ export const Subtitle = styled.h2`
     width: 100%; /* 부모 컨테이너 전체 너비 사용 */
 `;
 
-export const GoogleImage = styled.img`
-    width: 70px; 
-    height: auto;
-    margin-right: 20px; /* 텍스트와 간격 조절 */
-
-`
-
 export const KakaologinButton = styled.button`
     cursor: pointer;
     border: none;
     background-color: #F5F5F5;
 `
+
 
 export const GoogleloginButton = styled.button`
     margin-top: 30px; /* 버튼 위에 빈 공간 추가 */
@@ -78,6 +72,12 @@ export const GoogleloginButton = styled.button`
     justify-content: center;
 `
 
+export const GoogleImage = styled.img`
+    width: 70px; 
+    height: auto;
+    margin-right: 20px; /* 텍스트와 간격 조절 */
+
+`
 export const GoogleLoginText = styled.span`
     font-family: 'Roboto', sans-serif; /* 글꼴 설정 */
     font-size: 28px; /* 글꼴 크기 설정 */

@@ -3,13 +3,13 @@ import React, { useState } from "react";
 import "./App.css";
 import Home from "./components/Home"; 
 import Navbar from "./components/Navbar/Navbar";
-import Loading from "./components/Loading/Loading";
-import ResultPage from "./components/Result/Result";
+import Loading from "./pages/Loading/Loading";
+import ResultPage from "./pages/Result/Result";
 import LoginPage from "./pages/login/LoginPage";
 import MyPage from "./pages/mypage/MyPage";
 import EditMyPage from "./pages/mypage/EditMyPage";
 import { AuthProvider } from "./context/AuthContext";
-import Review from "./components/Review/Review";
+import Review from "./pages/Review/Review";
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);

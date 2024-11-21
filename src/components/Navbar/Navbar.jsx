@@ -60,7 +60,7 @@ const Navbar = () => {
         </div>
       ) : (
         // 로그인되지 않았을 때
-        <button onClick={() => navigate("/login-signup")} className="login-button">로그인/가입</button>
+        <button onClick={() => navigate("/login-signup")} className="login-button">로그인</button>
       )}
     </nav>
   );

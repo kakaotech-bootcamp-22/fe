@@ -68,7 +68,7 @@ const Home = ({ onCheckURL }) => {
 
     try {
       // 백엔드에 URL을 전송하여 requestId를 가져옴
-      const response = await axios.post("http://localhost:8080/start-analysis", { blogUrl: url });
+      const response = await axios.post("http://localhost:8080/api/review-check", { blogUrl: url });
       if (response.status === 200 && response.data.requestId) {
         const requestId = response.data.requestId; // requestId 추출
         navigate("/loading", { state: { requestId } }); // 로딩 페이지로 이동하며 requestId 전달

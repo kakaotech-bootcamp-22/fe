@@ -46,7 +46,11 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <div className="navbar-logo">
+      <div
+        className="navbar-logo"
+        onClick={() => navigate("/")}
+        style={{ cursor: "pointer" }}
+      >
         <img src={navbarImage} alt="logo" className="logo-icon" />
         <h1>가짜 리뷰 판독기</h1>
       </div>

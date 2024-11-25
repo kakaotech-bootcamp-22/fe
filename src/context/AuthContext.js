@@ -1,9 +1,13 @@
 import { createContext, useState, useContext, useEffect } from 'react';
+import axios from 'axios';
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider =  ({ children }) => {
+  // const response = await axios.get('http://localhost:8080/auth/status', {withCredentials: true})
+  // const [isLoggedIn, setIsLoggedIn] = useState(response.data?.isLoggedIn ===true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
   const [token, setToken] = useState(null);
   const [nickname, setNickname] = useState(null); // 닉네임 상태 추가
   const [profileImage, setProfileImage] = useState(null); // 프로필 이미지 상태 추가

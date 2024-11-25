@@ -17,7 +17,7 @@ const Home = ({ onCheckURL }) => {
     if (code) {
       //console.log("Received Kakao authorization code(인가코드):", code);
       // 받은 인가 코드를 백엔드로 보내어 액세스 토큰 요청
-      axios.post('http://localhost:8080/auth/kakao/token', { code: code })
+      axios.post('http://localhost:8080/auth/kakao/token', { code })
         .then(response => {
           // JWT 토큰을 Context에 저장하여 로그인 처리
           if (response.data.jwtToken) {

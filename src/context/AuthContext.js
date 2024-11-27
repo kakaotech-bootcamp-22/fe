@@ -41,9 +41,6 @@ export const AuthProvider =  ({ children }) => {
     setProfileImage(newImage);
   };
 
-  useEffect(() => {
-  });
-
   return (
     <AuthContext.Provider value={{ isLoggedIn, token, nickname, profileImage, platform, createdAt, email, login, logout, updateProfileImage }}>
       {children}

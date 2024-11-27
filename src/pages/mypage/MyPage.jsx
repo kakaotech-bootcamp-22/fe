@@ -174,10 +174,11 @@ function MyPage(props) {
   const [newNickname, setNickname] = useState(nickname);
   const [newProfileImage, setProfileImage] = useState(profileImage);
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL;
 
 
   useEffect(() => {
-    axios.get('http://localhost:8080/auth/status', { withCredentials: true })
+    axios.get(`${API_URL}/auth/status`, { withCredentials: true })
       .then(response => {
         if (response.data.loggedIn) {
           // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리

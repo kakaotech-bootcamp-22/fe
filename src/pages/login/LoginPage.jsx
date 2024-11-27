@@ -27,8 +27,10 @@ function LoginPage(props) {
     const { login } = useAuth();
     const [isKakaoInitialized, setIsKakaoInitialized] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-
+    const API_URL = process.env.REACT_APP_API_URL;
     const navigate = useNavigate();
+    const redirectUri = process.env.REACT_APP_REDIRECT_URI;
+
 
     useEffect(() => {
         // Kakao SDK 초기화
@@ -52,7 +54,7 @@ function LoginPage(props) {
             return;
         }
         Kakao.Auth.authorize({
-            redirectUri: "http://localhost:3000/", // 리다이렉트할 페이지
+            redirectUri: `${redirectUri}`, // 리다이렉트할 페이지
         });
 
     };
@@ -60,7 +62,7 @@ function LoginPage(props) {
     const GoogleLoginButton = () => {
         const signIn = useGoogleLogin({
             onSuccess: (res) => {
-                axios.post('http://localhost:8080/auth/google/token', {
+                axios.post(`${API_URL}/auth/google/token`, {
                     
                     access_token: res.access_token,
                 })

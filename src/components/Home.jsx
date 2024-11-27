@@ -10,6 +10,7 @@ const Home = ({ onCheckURL }) => {
   const [url, setUrl] = useState('');
   const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt, email } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
   const [errorMessage, setErrorMessage] = useState("");
+  const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -17,7 +18,7 @@ const Home = ({ onCheckURL }) => {
     if (code) {
       //console.log("Received Kakao authorization code(인가코드):", code);
       // 받은 인가 코드를 백엔드로 보내어 액세스 토큰 요청
-      axios.post('http://localhost:8080/auth/kakao/token', { code })
+      axios.post(`${API_URL}/auth/kakao/token`, { code })
         .then(response => {
           // JWT 토큰을 Context에 저장하여 로그인 처리
           if (response.data.jwtToken) {
@@ -31,7 +32,7 @@ const Home = ({ onCheckURL }) => {
     } 
     else {
       if (isLoggedIn===false){
-        axios.get('http://localhost:8080/auth/status', { withCredentials: true })
+        axios.get(`${API_URL}/auth/status`, { withCredentials: true })
           .then(response => {
             if (response.data.loggedIn) {
               // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리

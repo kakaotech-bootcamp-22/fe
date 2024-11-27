@@ -9,6 +9,7 @@ import axios from 'axios';
 const Navbar = () => {
   const { isLoggedIn, logout, nickname, profileImage, platform, createdAt, email } = useAuth(); // AuthContext의 isLoggedIn 상태 사용
   const [showLogout, setShowLogout] = useState(false);
+  const API_URL = process.env.REACT_APP_API_URL;
 
   const handleProfileClick = () => {
     setShowLogout(!showLogout);
@@ -18,7 +19,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     if (platform === "kakao"){
-      axios.post('http://localhost:8080/auth/logout/kakao', {}, { withCredentials: true })
+      axios.post(`${API_URL}/auth/logout/kakao`, {}, { withCredentials: true })
       .then(response => {
         console.log(response.data);  // 서버에서 성공 메시지 받기
         logout(); // AuthContext 상태 리셋
@@ -29,7 +30,7 @@ const Navbar = () => {
       });
 
     }else if (platform === "google"){
-      axios.post('http://localhost:8080/auth/logout/google', {}, { withCredentials: true })
+      axios.post(`${API_URL}/auth/logout/google`, {}, { withCredentials: true })
       .then(response => {
         console.log(response.data);  // 서버에서 성공 메시지 받기
         logout(); // AuthContext 상태 리셋

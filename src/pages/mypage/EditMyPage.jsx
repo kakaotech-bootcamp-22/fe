@@ -42,6 +42,7 @@ function EditMyPage(props) {
     const [encodedProfileURL, setEncodedProfileURL] = useState(null)
     const [nicknameStatus, setNicknameStatus] = useState(false)
     const [profileStatus, setProfileStatus] = useState(false)
+    const API_URL = process.env.REACT_APP_API_URL;
 
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -74,7 +75,7 @@ function EditMyPage(props) {
 
             setFile(file)
             try {
-                const options = { maxSizeMB: 0.5, maxWidthOrHeight: 300, useWebWorker: true }; // 이미지 압축 설정
+                const options = { maxSizeMB: 1, maxWidthOrHeight: 300, useWebWorker: true }; // 이미지 압축 설정
                 const compressedFile = await imageCompression(file, options);
 
                 const blobUrl = URL.createObjectURL(compressedFile);
@@ -96,7 +97,7 @@ function EditMyPage(props) {
                 formData.append('file', file);
             }
 
-            const response = await axios.post("http://localhost:8080/s3/upload", formData, {
+            const response = await axios.post(`${API_URL}/s3/upload`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 

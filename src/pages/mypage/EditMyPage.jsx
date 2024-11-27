@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, createContext, useContext } from "react";
 import {
     EntireContainer,
     ProfileContainer,
@@ -21,20 +21,30 @@ import {
 
 import tmpProfileImage from "../../assets/login/babyCat.png";
 import KakaoIcon from "../../assets/mypage/kakaotalk_sharing_btn_small.png";
+import GoogleIcon from "../../assets/mypage/web_neutral_rd_na@4x.png";
 import cameraIcon from "../../assets/mypage/IconButton.png"; // 카메라 아이콘 이미지 경로
 import { Button, message, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { Flex, Input, Typography } from 'antd';
+import { useAuth } from "../../context/AuthContext";
+import imageCompression from 'browser-image-compression';
+import axios from 'axios';
 
 function EditMyPage(props) {
+    const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt, email } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
-    const [nickname, setNickname] = useState("판교쩝쩝박사");
-    const [tempNickname, setTempNickname] = useState(nickname); // 임시 값 저장
-    const [profileImage, setProfileImage] = useState(tmpProfileImage);
+    const [newNickname, setNickname] = useState(nickname);
+    const [newProfileImage, setProfileImage] = useState(profileImage);
     const [errorMessage, setErrorMessage] = useState("");
-
-
+    const [previewImage, setPreviewImage] = useState(profileImage); // 미리보기 이미지 상태 
     const navigate = useNavigate();
+    const [file, setFile] = useState(null)
+    const [encodedProfileURL, setEncodedProfileURL] = useState(null)
+    const [nicknameStatus, setNicknameStatus] = useState(false)
+    const [profileStatus, setProfileStatus] = useState(false)
+    const API_URL = process.env.REACT_APP_API_URL;
+
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
     const toggleEdit = () => {
         setIsEditing(!isEditing); // 편집 모드 전환
@@ -50,36 +60,127 @@ function EditMyPage(props) {
         } else {
             setErrorMessage(""); // 에러 메시지 초기화
         }
-
-        setTempNickname(value); // 입력값 업데이트
+        setNickname(value); // 입력값 업데이트
     };
 
-    const handleSave = () => {
-        // 저장 로직 실행
+    const handleImageChange = async (event) => {
+        
+        if (event.target.files && event.target.files.length > 0) {
+            const file = event.target.files[0]; // 선택된 파일
 
+            if (file.size > MAX_FILE_SIZE) {
+                message.error("이미지 파일 크기는 5MB를 초과할 수 없습니다."); // 경고 메시지
+                return; // 업로드 중단
+            }    
+
+            setFile(file)
+            try {
+                const options = { maxSizeMB: 1, maxWidthOrHeight: 300, useWebWorker: true }; // 이미지 압축 설정
+                const compressedFile = await imageCompression(file, options);
+
+                const blobUrl = URL.createObjectURL(compressedFile);
+                setPreviewImage(blobUrl);
+                setProfileStatus(true)
+            } catch (error) {
+                console.error("Error compressing image:", error);
+                message.error("이미지 압축 중 오류가 발생했습니다.");
+            }
+        } else {
+            console.error("No file selected"); // 파일이 선택되지 않은 경우 출력
+        }
+    };
+
+    const uploadImageAndGetUrl = async () => {
+        try {
+            const formData = new FormData();
+            if (file) {
+                formData.append('file', file);
+            }
+
+            const response = await axios.post(`${API_URL}/s3/upload`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            const encodedUrl = encodeURI(response.data.url); // URL 인코딩
+            console.log("Raw URL:", response.data.url);
+            console.log("Encoded URL:", encodedUrl);
+
+            return encodedUrl; // URL 반환
+        } catch (error) {
+            console.error("이미지 업로드 실패:", error);
+            message.error("이미지 업로드 중 오류가 발생했습니다.");
+            return null;
+        }
+    };
+
+    const { updateProfileImage } = useAuth();
+
+    const tmpSetNickname = () => {
+        setNickname(newNickname);
+        setNicknameStatus(true);
+        setIsEditing(false); // 편집 모드 종료
+    }
+
+    const handleSave = async () => {
         if (errorMessage) {
-            message.error("유효한 닉네임을 입력해주세요."); // 에러가 있을 때 메시지 표시
+            message.error("유효한 닉네임을 입력해주세요.");
             return;
         }
 
-        setNickname(tempNickname); // 닉네임 갱신
-        message.success("변경이 완료되었습니다!"); // 성공 메시지 표시
-        setIsEditing(false); // 편집 모드 종료
-    };
+        try {
+            // 2. 프로필 업데이트
+            const totalformData = new FormData();
+            if (nicknameStatus === true) {
+                totalformData.append("nickname", newNickname);
+            } else {
+                totalformData.append("nickname", nickname);
+            }
 
-    const handleImageChange = (event) => {
-        if (event.target.files && event.target.files.length > 0) {
-            const file = event.target.files[0]; // 선택된 파일
-            const reader = new FileReader();
+            let encodedUrl = profileImage
+            if (profileStatus === true) {
+                // 1. 이미지 업로드 및 URL 반환
+                encodedUrl = await uploadImageAndGetUrl();
 
-            reader.onloadend = () => {
-                setProfileImage(reader.result); // 선택된 이미지로 프로필 이미지 업데이트
-            };
+                if (!encodedUrl) {
+                    message.error("URL을 반환받지 못했습니다.");
+                    setProfileStatus(false)
+                }
+                totalformData.append("profileImage", encodedUrl);
+            } else {
+                totalformData.append("profileImage", profileImage);
+            }
 
-            reader.readAsDataURL(file); // 파일을 데이터 URL로 읽기
-        } else {
-            console.error("No file selected"); // 파일이 선택되지 않은 경우 로그 출력
+            console.log("프로필 업데이트 요청 데이터:");
+            for (let [key, value] of totalformData.entries()) {
+                console.log(`${key}:`, value);
+            }
+
+            const response = await fetch("/api/update-profile", {
+                method: "POST",
+                body: totalformData,
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                message.success("프로필이 성공적으로 업데이트되었습니다!");
+                console.log("변경 완료 결과:", result);
+                setNickname(result.updatedNickname);
+                setProfileImage(encodedUrl);
+                updateProfileImage(encodedUrl);
+            } else {
+                console.error("프로필 업데이트 실패:", response);
+                message.error("프로필을 업데이트하는 데 실패했습니다.");
+                setNickname(nickname); // 기존 닉네임 복구
+                setProfileImage(profileImage); // 기존 이미지 복구
+            }
+        } catch (error) {
+            console.error("프로필 업데이트 중 오류:", error);
+            message.error("프로필 업데이트 중 오류가 발생했습니다.");
+            setNickname(nickname);
+            setProfileImage(profileImage);
         }
+
+        setIsEditing(false); // 편집 모드 종료
     };
 
     return (
@@ -93,7 +194,7 @@ function EditMyPage(props) {
                     </InfoRowProfile>
                     <InfoRow>
                         <ProfileImageContainer>
-                            <ProfileImage src={profileImage} alt="Profile" />
+                            <ProfileImage src={previewImage} alt="Profile" />
                             <ChangeImageButton onClick={handleImageChange}>
                                 <label htmlFor="file-input" style={{ cursor: "pointer", background: "none", border: "none" }}>
                                     <CameraIcon src={cameraIcon} alt="Change Profile" />
@@ -117,39 +218,44 @@ function EditMyPage(props) {
                                         count={{
                                             show: true,
                                             max: 20,
-
                                         }}
-                                        value={tempNickname}
+                                        value={newNickname}
                                         onChange={handleInputChange}
                                         style={{ width: 270, flex: 1 }}
                                         maxLength={20}
                                     />
                                     {errorMessage && (
-                                        <div style={{ color: 'red', marginTop: '5px', marginRight:'35px', fontSize: '12px' }}>
+                                        <div style={{ color: 'red', marginTop: '5px', marginRight: '35px', fontSize: '12px' }}>
                                             {errorMessage}
                                         </div>
                                     )}
                                 </div>
-                                <ChangeButton onClick={handleSave}>저장</ChangeButton>
-
+                                <ChangeButton onClick={tmpSetNickname}>저장</ChangeButton>
                             </>
                         ) : (
                             <>
-                                <Value>{nickname}</Value>
+                                <Value>{newNickname}</Value>
                                 <ChangeButton onClick={() => toggleEdit()}>변경</ChangeButton>
                             </>
                         )}
                     </InfoRow>
                     <InfoRow>
                         <Label>이메일</Label>
-                        <Value>
-                            22day@kakao.com
-                            <UserTypeIcon src={KakaoIcon} alt="Kakao Icon" />
-                        </Value>
+                        {platform === "kakao" ? (
+                            <Value>
+                                {email}
+                                <UserTypeIcon src={KakaoIcon} alt="Kakao Icon" />
+                            </Value>
+                        ) : (
+                            <Value>
+                                {email}
+                                <UserTypeIcon src={GoogleIcon} alt="Kakao Icon" />
+                            </Value>
+                        )}
                     </InfoRow>
                     <InfoRow>
                         <Label>가입일자</Label>
-                        <Value>2024.10.20</Value>
+                        <Value>{createdAt}</Value>
                     </InfoRow>
                     <ButtonContainer>
                         <CustomButton onClick={() => navigate("/mypage")}>취소</CustomButton>
@@ -159,6 +265,6 @@ function EditMyPage(props) {
             </ProfileContainer>
         </EntireContainer >
     );
-}
+};
 
 export default EditMyPage;

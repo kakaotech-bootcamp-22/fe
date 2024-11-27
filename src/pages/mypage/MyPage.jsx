@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import tmpProfileImage from "../../assets/login/babyCat.png";
 import KakaoIcon from "../../assets/mypage/kakaotalk_sharing_btn_small.png";
+import GoogleIcon from "../../assets/mypage/web_neutral_rd_na@4x.png";
+
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from "../../context/AuthContext";
+import axios from 'axios';
 
 
 const EntireContainer = styled.div`
@@ -128,6 +132,16 @@ const KakaoButton = styled.div`
   border: 1px solid #e0e0e0; /* 외곽선 */
   
 `;
+
+const GoogleButton = styled.div`
+  display: inline-flex; /* inline-flex로 설정하여 너비를 내용에 맞춤 */
+  align-items: center;
+  background-color: #ffffff; /* 노란색 배경 */
+  border-radius: 25px; /* 둥근 모서리 */
+  padding: 10px 20px;
+  border: 1px solid #e0e0e0; /* 외곽선 */
+  
+`;
 const Left = styled.div`
   text-align: left; /* 내부 요소를 왼쪽으로 정렬 */
   margin-bottom: 20px; /* 필요에 따라 여백 설정 */
@@ -145,53 +159,92 @@ const KakaoText = styled.span`
   color: #000;
 `;
 
+const GoogleText = styled.span`
+  font-size: 1rem;
+  color: #000;
+`;
+
 
 function MyPage(props) {
 
-    const [findedReview, setfindedReview] = useState("13");
-    const [writedReview, setwritedReview] = useState("4");
-    const navigate = useNavigate();
+  const [findedReview, setfindedReview] = useState("13");
+  const [writedReview, setwritedReview] = useState("4");
+  const [errorMessage, setErrorMessage] = useState("");
+  const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt, email } = useAuth();
+  const [newNickname, setNickname] = useState(nickname);
+  const [newProfileImage, setProfileImage] = useState(profileImage);
+  const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL;
 
-    return (
-        <EntireContainer>
-            <ProfileContainer>
-                <EntireTitle>내 프로필</EntireTitle>
-                <Left>
-                    <KakaoButton>
-                        <IconImage src={KakaoIcon} alt="Kakao Icon" />
-                        <KakaoText>22day@kakao.com</KakaoText>
-                    </KakaoButton>
-                </Left>
-                <ProfileInfo>
-                    <ProfileImage src={tmpProfileImage} alt="Profile Image" />
-                    <ProfileDetails>
-                        <ProfileName>판교쩝쩝박사</ProfileName>
-                        <ProfileEmail>22day@kakao.com</ProfileEmail>
-                    </ProfileDetails>
-                    <EditButton onClick={() => navigate("/edit-mypage")}>수정</EditButton>
-                </ProfileInfo>
-                <InfoBoxes>
-                    <InfoBox>
-                        <InfoBoxTitle>발견한 가짜 리뷰</InfoBoxTitle>
-                        <InfoBoxCount>
-                            {findedReview}
-                            <span style={{ fontWeight: 'normal' }}>개</span>
-                        </InfoBoxCount>
-                    </InfoBox>
-                    <InfoBox>
-                        <InfoBoxTitle>작성한 후기</InfoBoxTitle>
-                        <InfoBoxCount>
-                            {writedReview}
-                            <span style={{ fontWeight: 'normal' }}>개</span>
-                        </InfoBoxCount>
-                    </InfoBox>
-                </InfoBoxes>
-                <>
-                    <FooterButton>회원탈퇴</FooterButton>
-                </>
-            </ProfileContainer>
-        </EntireContainer>
-    );
+
+  useEffect(() => {
+    axios.get(`${API_URL}/auth/status`, { withCredentials: true })
+      .then(response => {
+        if (response.data.loggedIn) {
+          // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
+          login(response.data.jwtToken, response.data.nickname, response.data.userImage, response.data.platform, response.data.createdAt, response.data.email);
+        }
+      })
+      .catch(error => {
+        setErrorMessage("로그인 상태를 확인할 수 없습니다.");
+      });
+    //}
+  }, []); // 한 번만 실행되도록 빈 배열을 의존성 배열에 추가
+
+
+
+  return (
+    <EntireContainer>
+      <ProfileContainer>
+        <EntireTitle>내 프로필</EntireTitle>
+        <Left>
+          {platform === "kakao" ? (
+            <KakaoButton>
+              <IconImage src={KakaoIcon} alt="Kakao Icon" />
+              <KakaoText>{email}</KakaoText>
+            </KakaoButton>
+          ) : (
+            <GoogleButton>
+              <IconImage src={GoogleIcon} alt="Google Icon" />
+              <GoogleText>{email}</GoogleText>
+            </GoogleButton>
+          )}
+
+        </Left>
+        <ProfileInfo>
+          <ProfileImage src={profileImage} alt="Profile Image" />
+          <ProfileDetails>
+            <ProfileName>{nickname}</ProfileName>
+            {platform === "kakao" ? (
+              <ProfileEmail>{email}</ProfileEmail>
+            ) : (
+              <ProfileEmail>{email}</ProfileEmail>
+            )}
+          </ProfileDetails>
+          <EditButton onClick={() => navigate("/edit-mypage")}>수정</EditButton>
+        </ProfileInfo>
+        <InfoBoxes>
+          <InfoBox>
+            <InfoBoxTitle>발견한 가짜 리뷰</InfoBoxTitle>
+            <InfoBoxCount>
+              {findedReview}
+              <span style={{ fontWeight: 'normal' }}>개</span>
+            </InfoBoxCount>
+          </InfoBox>
+          <InfoBox>
+            <InfoBoxTitle>작성한 후기</InfoBoxTitle>
+            <InfoBoxCount>
+              {writedReview}
+              <span style={{ fontWeight: 'normal' }}>개</span>
+            </InfoBoxCount>
+          </InfoBox>
+        </InfoBoxes>
+        <>
+          <FooterButton>회원탈퇴</FooterButton>
+        </>
+      </ProfileContainer>
+    </EntireContainer>
+  );
 }
 
 export default MyPage;

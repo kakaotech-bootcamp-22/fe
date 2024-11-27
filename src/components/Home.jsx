@@ -8,8 +8,9 @@ import axios from 'axios';
 
 const Home = ({ onCheckURL }) => {
   const [url, setUrl] = useState('');
-  const { isLoggedIn, login, logout, nickname, profileImage, platform } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
+  const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt, email } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
   const [errorMessage, setErrorMessage] = useState("");
+  const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -17,28 +18,31 @@ const Home = ({ onCheckURL }) => {
     if (code) {
       //console.log("Received Kakao authorization code(인가코드):", code);
       // 받은 인가 코드를 백엔드로 보내어 액세스 토큰 요청
-      axios.post('http://localhost:8080/auth/kakao/token', { code: code })
+      axios.post(`${API_URL}/auth/kakao/token`, { code })
         .then(response => {
           // JWT 토큰을 Context에 저장하여 로그인 처리
           if (response.data.jwtToken) {
-            login(response.data.jwtToken, response.data.nickname, response.data.profileImage, response.data.platform);
+            login(response.data.jwtToken, response.data.nickname, response.data.profileImage, response.data.platform, response.data.createdAt, response.data.email);
           }
         })
         .catch(error => {
           //console.error("백엔드와 통신 중 에러 발생:", error);
           setErrorMessage("로그인에 실패했습니다.");
         });
-    } else {
-      axios.get('http://localhost:8080/auth/status', { withCredentials: true })
-        .then(response => {
-          if (response.data.isLoggedIn) {
-            // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
-            login(response.data.jwtToken, response.data.nickname, response.data.userImage, response.data.platform);
-          }
-        })
-        .catch(error => {
-          setErrorMessage("로그인 상태를 확인할 수 없습니다.");
-        });
+    } 
+    else {
+      if (isLoggedIn===false){
+        axios.get(`${API_URL}/auth/status`, { withCredentials: true })
+          .then(response => {
+            if (response.data.loggedIn) {
+              // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
+              login(response.data.jwtToken, response.data.nickname, response.data.userImage, response.data.platform, response.data.createdAt, response.data.email);
+            }
+          })
+          .catch(error => {
+            setErrorMessage("로그인 상태를 확인할 수 없습니다.");
+          });
+      }
     }
   }, []); // 한 번만 실행되도록 빈 배열을 의존성 배열에 추가
 

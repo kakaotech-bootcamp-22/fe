@@ -1,12 +1,13 @@
 // Review.js
 import React, { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import "./Review.css";
 import heartImage from "../../assets/review/heart.png";
 import ryanImage from "../../assets/review/ryan_image.png";
 import defaultProfileImage from "../../assets/review/default_profile.png";
 import previousBtn from "../../assets/review/previous_btn.png";
+import axios from "axios";
 
 // Star 컴포넌트
 const Star = React.memo(({ filled, onClick }) => {
@@ -305,45 +306,57 @@ const BackButton = () => {
 
 // 메인 Review 컴포넌트
 export default function Review() {
+  const {
+    isLoggedIn,
+    logout,
+    nickname,
+    profileImage,
+    platform,
+    createdAt,
+    email,
+  } = useAuth();
   const [currentPage, setCurrentPage] = useState(1);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [selectedSort, setSelectedSort] = useState("베스트순");
-  const [url, setUrl] = useState("blog.naver.com/kakao_food_fighter");
-  const [ratingStats, setRatingStats] = useState({
-    1: 1,
-    2: 30,
-    3: 15,
-    4: 30,
-    5: 25,
-  });
+  const [ratingStats, setRatingStats] = useState({});
   const [totalReviews, setTotalReviews] = useState(100);
-  const [reviews, setReviews] = useState([
-    {
-      id: 1,
-      rating: 5,
-      date: "2024.03.19",
-      content:
-        "이 블로거 본 내돈내산으로 찐 리뷰만 남겨 주셔서 좋아요. 전 구독 했음.",
-      author: "농구하는 너구리",
-      profileImage: "",
-      likes: 5,
-    },
-    {
-      id: 2,
-      rating: 4.5,
-      date: "2024.03.19",
-      content:
-        "이 블로거 본 내돈내산으로 찐 리뷰만 남겨 주셔서 좋아요. 전 구독 했음.",
-      author: "익명",
-      profileImage: "",
-      likes: 3,
-    },
-    // 추가 리뷰들...
-  ]);
+  const [reviews, setReviews] = useState([]);
+  const location = useLocation();
+  const blog_id = location.state?.blog_id ?? 1;
+  const url = location.state?.url ?? "blog.naver.com/kakao_food_fighter";
+  const API_URL = process.env.REACT_APP_API_URL;
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/review/${blog_id}`);
+        const data = response.data; // axios는 response 객체에서 data를 포함합니다.
+        console.log(data);
+        setRatingStats(data.ratingStats);
+        setReviews(data.reviews);
+
+        const total = Object.values(data.ratingStats).reduce(
+          (sum, count) => sum + count,
+          0
+        );
+        setTotalReviews(total);
+      } catch (error) {
+        console.error("Error fetching review data:", error);
+      }
+    };
+    fetchReviews();
+  }, []);
+
+  useEffect(() => {
+    console.log("isLoggedIn: ", isLoggedIn);
+    console.log("nickname: ", nickname);
+    console.log("profileImage: ", profileImage);
+    console.log("platform: ", platform);
+    console.log("createdAt: ", createdAt);
+    console.log("email: ", email);
+  }, []);
 
   // 평균 점수 계산
   const calculateAverageRating = useCallback(() => {
@@ -355,21 +368,6 @@ export default function Review() {
   }, [ratingStats, totalReviews]);
 
   const averageRating = calculateAverageRating();
-
-  // URL 데이터 fetching
-  useEffect(() => {
-    const fetchUrl = async () => {
-      try {
-        const response = await fetch("/api/url");
-        const data = await response.json();
-        setUrl(data.url);
-      } catch (error) {
-        console.error("Error fetching URL:", error);
-      }
-    };
-
-    fetchUrl();
-  }, []);
 
   // 리뷰 제출 핸들러
   const handleSubmitReview = useCallback(() => {

@@ -321,7 +321,7 @@ export default function Review() {
   const [reviewText, setReviewText] = useState("");
   const [selectedSort, setSelectedSort] = useState("베스트순");
   const [ratingStats, setRatingStats] = useState({});
-  const [totalReviews, setTotalReviews] = useState(100);
+  const [totalReviews, setTotalReviews] = useState(0);
   const [reviews, setReviews] = useState([]);
   const location = useLocation();
   const blog_id = location.state?.blog_id ?? 1;
@@ -333,7 +333,7 @@ export default function Review() {
       try {
         const response = await axios.get(`${API_URL}/review/${blog_id}`);
         const data = response.data; // axios는 response 객체에서 data를 포함합니다.
-        console.log(data);
+        console.log("data:", data.reviews);
         setRatingStats(data.ratingStats);
         setReviews(data.reviews);
 
@@ -349,14 +349,14 @@ export default function Review() {
     fetchReviews();
   }, []);
 
-  useEffect(() => {
-    console.log("isLoggedIn: ", isLoggedIn);
-    console.log("nickname: ", nickname);
-    console.log("profileImage: ", profileImage);
-    console.log("platform: ", platform);
-    console.log("createdAt: ", createdAt);
-    console.log("email: ", email);
-  }, []);
+  // useEffect(() => {
+  //   console.log("isLoggedIn: ", isLoggedIn);
+  //   console.log("nickname: ", nickname);
+  //   console.log("profileImage: ", profileImage);
+  //   console.log("platform: ", platform);
+  //   console.log("createdAt: ", createdAt);
+  //   console.log("email: ", email);
+  // }, []);
 
   // 평균 점수 계산
   const calculateAverageRating = useCallback(() => {
@@ -369,40 +369,56 @@ export default function Review() {
 
   const averageRating = calculateAverageRating();
 
-  // 리뷰 제출 핸들러
-  const handleSubmitReview = useCallback(() => {
+  const handleSubmitReview = useCallback(async () => {
     if (rating === 0 || reviewText.trim() === "") {
       alert("평점과 리뷰 내용을 입력해주세요.");
       return;
     }
 
     const newReview = {
-      id: reviews.length + 1,
       rating: rating,
-      date: new Date().toISOString().split("T")[0].replace(/-/g, "."),
       content: reviewText,
-      author: "익명", // 실제 사용자 정보로 대체 필요
-      profileImage: "",
-      likes: 0,
+      blogId: blog_id, // 현재 페이지의 blog_id
     };
 
-    setReviews((prevReviews) => [newReview, ...prevReviews]);
-    setRating(0);
-    setReviewText("");
-    setTotalReviews((prevTotal) => prevTotal + 1);
+    try {
+      const response = await axios.post(`${API_URL}/review`, newReview, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true, // 쿠키를 포함
+      });
 
-    // ratingStats 업데이트
-    setRatingStats((prevStats) => {
-      const newStats = { ...prevStats };
-      const roundedRating = Math.round(rating);
-      if (newStats[roundedRating]) {
-        newStats[roundedRating] += 1;
-      } else {
-        newStats[roundedRating] = 1;
-      }
-      return newStats;
-    });
-  }, [rating, reviewText, reviews.length]);
+      const savedReview = {
+        id: reviews.length + 1,
+        rating: rating,
+        date: new Date().toISOString().split("T")[0].replace(/-/g, "."),
+        content: reviewText,
+        author: nickname,
+        profileImage: profileImage,
+        likes: 0,
+      };
+
+      // 상태 업데이트
+      setReviews((prevReviews) => [savedReview, ...prevReviews]);
+      setTotalReviews((prevTotal) => prevTotal + 1);
+
+      // 별점 통계 업데이트
+      setRatingStats((prevStats) => {
+        const newStats = { ...prevStats };
+        const roundedRating = Math.round(savedReview.rating);
+        if (newStats[roundedRating]) {
+          newStats[roundedRating] += 1;
+        } else {
+          newStats[roundedRating] = 1;
+        }
+        return newStats;
+      });
+
+      alert("리뷰가 등록되었습니다!");
+    } catch (error) {
+      console.error("리뷰 등록 중 오류 발생:", error);
+      alert("리뷰 등록에 실패했습니다. 다시 시도해주세요.");
+    }
+  }, [rating, reviewText, reviews, blog_id, API_URL]);
 
   // 리뷰 좋아요 클릭 핸들러
   const handleLikeClick = useCallback((id) => {

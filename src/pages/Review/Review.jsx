@@ -186,7 +186,10 @@ const ReviewItem = React.memo(({ review, handleLikeClick, renderStars }) => (
       <span className="trust-label">{review.rating}점</span>
       <p className="review-content">{review.content}</p>
     </div>
-    <button className="like-button" onClick={() => handleLikeClick(review.id)}>
+    <button
+      className="like-button"
+      onClick={() => handleLikeClick(review.blogReviewId)}
+    >
       <img src={heartImage} alt="Heart" className="heart-icon" /> {review.likes}
     </button>
     <div className="review-info">
@@ -420,14 +423,38 @@ export default function Review() {
     }
   }, [rating, reviewText, reviews, blog_id, API_URL]);
 
-  // 리뷰 좋아요 클릭 핸들러
-  const handleLikeClick = useCallback((id) => {
-    setReviews((prevReviews) =>
-      prevReviews.map((review) =>
-        review.id === id ? { ...review, likes: review.likes + 1 } : review
-      )
-    );
-  }, []);
+  // // 리뷰 좋아요 클릭 핸들러
+  // const handleLikeClick = useCallback((id) => {
+  //   setReviews((prevReviews) =>
+  //     prevReviews.map((review) =>
+  //       review.id === id ? { ...review, likes: review.likes + 1 } : review
+  //     )
+  //   );
+  // }, []);
+  const handleLikeClick = useCallback(
+    async (id) => {
+      try {
+        await axios.patch(
+          `${API_URL}/review/like`,
+          { reviewId: id }, // Body로 전달
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          } // 쿠키 인증 포함
+        );
+        setReviews((prevReviews) =>
+          prevReviews.map((review) =>
+            review.blogReviewId === id
+              ? { ...review, likes: review.likes + 1 }
+              : review
+          )
+        );
+      } catch (error) {
+        console.error("좋아요 업데이트 중 오류 발생:", error);
+      }
+    },
+    [API_URL]
+  );
 
   // 페이지 클릭 핸들러
   const handlePageClick = useCallback((page) => {

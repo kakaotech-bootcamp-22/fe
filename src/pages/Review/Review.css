@@ -120,6 +120,8 @@
 }
 
 .avatar-img {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
 }
 
@@ -198,7 +200,7 @@
 .review-stars {
   flex: 0 0 auto; /* 왼쪽 영역 고정 크기 */
   align-self: center;
-  margin-right: 10px;
+  margin-right: 20px;
 }
 
 .review-content-wrapper {

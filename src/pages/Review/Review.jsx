@@ -1,5 +1,5 @@
 // Review.js
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./Review.css";
@@ -235,20 +235,62 @@ const ReviewList = ({
 
 // Pagination 컴포넌트
 const Pagination = React.memo(
-  ({ currentPage, totalPages, handlePageClick }) => (
-    <div className="pagination">
-      {[...Array(totalPages)].map((_, index) => (
-        <button
-          key={index + 1}
-          onClick={() => handlePageClick(index + 1)}
-          className={`page-button ${currentPage === index + 1 ? "active" : ""}`}
-        >
-          {index + 1}
-        </button>
-      ))}
-      <button className="page-button">{" >> "}</button>
-    </div>
-  )
+  ({ currentPage, totalPages, handlePageClick }) => {
+    const windowSize = 5; // 한 번에 표시할 페이지 수
+    const totalWindows = Math.ceil(totalPages / windowSize);
+    const currentWindow = Math.floor((currentPage - 1) / windowSize);
+
+    const startPage = currentWindow * windowSize + 1;
+    const endPage = Math.min(startPage + windowSize - 1, totalPages);
+
+    const handlePrevWindow = () => {
+      if (currentWindow > 0) {
+        const newPage = startPage - 1;
+        handlePageClick(newPage);
+      }
+    };
+
+    const handleNextWindow = () => {
+      if (currentWindow < totalWindows - 1) {
+        const newPage = endPage + 1;
+        handlePageClick(newPage);
+      }
+    };
+
+    return (
+      <div className="pagination">
+        {/* "<<" 버튼 */}
+        {currentWindow > 0 && (
+          <button className="page-button" onClick={handlePrevWindow}>
+            {"<<"}
+          </button>
+        )}
+
+        {/* 페이지 번호 버튼 */}
+        {[...Array(endPage - startPage + 1)].map((_, index) => {
+          const pageNumber = startPage + index;
+          return (
+            <button
+              key={pageNumber}
+              onClick={() => handlePageClick(pageNumber)}
+              className={`page-button ${
+                currentPage === pageNumber ? "active" : ""
+              }`}
+            >
+              {pageNumber}
+            </button>
+          );
+        })}
+
+        {/* ">>" 버튼 */}
+        {currentWindow < totalWindows - 1 && (
+          <button className="page-button" onClick={handleNextWindow}>
+            {">>"}
+          </button>
+        )}
+      </div>
+    );
+  }
 );
 
 // ReviewForm 컴포넌트
@@ -311,6 +353,7 @@ const BackButton = () => {
 export default function Review() {
   const {
     isLoggedIn,
+    login,
     logout,
     nickname,
     profileImage,
@@ -326,20 +369,44 @@ export default function Review() {
   const [ratingStats, setRatingStats] = useState({});
   const [totalReviews, setTotalReviews] = useState(0);
   const [reviews, setReviews] = useState([]);
+  const [sortEndpoint, setSortEndpoint] = useState("/likes"); // 기본 정렬: 베스트순
+  const [totalPages, setTotalPages] = useState(1);
+
   const location = useLocation();
   const blog_id = location.state?.blog_id ?? 1;
   const url = location.state?.url ?? "blog.naver.com/kakao_food_fighter";
   const API_URL = process.env.REACT_APP_API_URL;
+  useEffect(() => {
+    // 쿠키 기반 로그인 상태 확인
+    axios
+      .get(`${API_URL}/auth/status`, { withCredentials: true })
+      .then((response) => {
+        if (response.data.loggedIn) {
+          // 로그인 상태 업데이트
+          login(
+            response.data.jwtToken,
+            response.data.nickname,
+            response.data.userImage,
+            response.data.platform,
+            response.data.createdAt,
+            response.data.email
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("로그인 상태 확인 중 오류 발생:", error);
+      });
+  }, [API_URL, login]);
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
         const response = await axios.get(`${API_URL}/review/${blog_id}`);
         const data = response.data; // axios는 response 객체에서 data를 포함합니다.
-        console.log("data:", data.reviews);
+        // console.log("data:", data.reviews);
         setRatingStats(data.ratingStats);
-        setReviews(data.reviews);
-
+        setReviews(data.reviews.content);
+        setTotalPages(data.reviews.totalPages);
         const total = Object.values(data.ratingStats).reduce(
           (sum, count) => sum + count,
           0
@@ -360,6 +427,50 @@ export default function Review() {
   //   console.log("createdAt: ", createdAt);
   //   console.log("email: ", email);
   // }, []);
+
+  useEffect(() => {
+    switch (selectedSort) {
+      case "베스트순":
+        setSortEndpoint("/likes");
+        break;
+      case "최근 등록순":
+        setSortEndpoint("/recent");
+        break;
+      case "평점 높은순":
+        setSortEndpoint("/rating-desc");
+        break;
+      case "평점 낮은순":
+        setSortEndpoint("/rating-asc");
+        break;
+      default:
+        setSortEndpoint("/likes");
+    }
+    setCurrentPage(1); // 정렬 변경 시 페이지 초기화
+  }, [selectedSort]);
+
+  useEffect(() => {
+    const fetchSortedReviews = async () => {
+      try {
+        const response = await axios.get(
+          `${API_URL}/review/${blog_id}${sortEndpoint}`,
+          {
+            params: {
+              page: currentPage - 1,
+              size: 5, // 필요에 따라 조정 가능
+            },
+          }
+        );
+        const data = response.data;
+        setReviews(data.content);
+        setTotalReviews(data.totalElements);
+        setTotalPages(data.totalPages);
+      } catch (error) {
+        console.error("Error fetching sorted reviews:", error);
+      }
+    };
+
+    fetchSortedReviews();
+  }, [sortEndpoint, currentPage, blog_id, API_URL]);
 
   // 평균 점수 계산
   const calculateAverageRating = useCallback(() => {
@@ -389,8 +500,9 @@ export default function Review() {
         headers: { "Content-Type": "application/json" },
         withCredentials: true, // 쿠키를 포함
       });
-
+      // console.log("response:", response.data.blogReviewId);
       const savedReview = {
+        blogReviewId: response.data.blogReviewId,
         id: reviews.length + 1,
         rating: rating,
         date: new Date().toISOString().split("T")[0].replace(/-/g, "."),
@@ -401,7 +513,7 @@ export default function Review() {
       };
 
       // 상태 업데이트
-      setReviews((prevReviews) => [savedReview, ...prevReviews]);
+      setReviews((prevReviews) => [...prevReviews, savedReview]);
       setTotalReviews((prevTotal) => prevTotal + 1);
 
       // 별점 통계 업데이트
@@ -423,14 +535,6 @@ export default function Review() {
     }
   }, [rating, reviewText, reviews, blog_id, API_URL]);
 
-  // // 리뷰 좋아요 클릭 핸들러
-  // const handleLikeClick = useCallback((id) => {
-  //   setReviews((prevReviews) =>
-  //     prevReviews.map((review) =>
-  //       review.id === id ? { ...review, likes: review.likes + 1 } : review
-  //     )
-  //   );
-  // }, []);
   const handleLikeClick = useCallback(
     async (id) => {
       try {
@@ -477,30 +581,7 @@ export default function Review() {
     return stars;
   }, []);
 
-  // 정렬된 리뷰 리스트 생성 (베스트순, 최근 등록순, 평점 높은순, 평점 낮은순)
-  const sortedReviews = React.useMemo(() => {
-    let sorted = [...reviews];
-    switch (selectedSort) {
-      case "베스트순":
-        sorted.sort((a, b) => b.likes - a.likes);
-        break;
-      case "최근 등록순":
-        sorted.sort((a, b) => new Date(b.date) - new Date(a.date));
-        break;
-      case "평점 높은순":
-        sorted.sort((a, b) => b.rating - a.rating);
-        break;
-      case "평점 낮은순":
-        sorted.sort((a, b) => a.rating - b.rating);
-        break;
-      default:
-        break;
-    }
-    return sorted;
-  }, [reviews, selectedSort]);
-
   const sortOptions = ["베스트순", "최근 등록순", "평점 높은순", "평점 낮은순"];
-  const totalPages = 5;
 
   return (
     <div className="review-system">
@@ -523,7 +604,7 @@ export default function Review() {
       />
 
       <ReviewList
-        reviews={sortedReviews}
+        reviews={reviews}
         handleLikeClick={handleLikeClick}
         renderStars={renderStars}
         currentPage={currentPage}

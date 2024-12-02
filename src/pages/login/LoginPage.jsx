@@ -33,6 +33,7 @@ function LoginPage(props) {
 
 
     useEffect(() => {
+        console.log("useEffect 실행됨");
         // Kakao SDK 초기화
         const { Kakao } = window;
         const kakaoJsKey = process.env.REACT_APP_KAKAO_JS_KEY;
@@ -51,6 +52,7 @@ function LoginPage(props) {
         const { Kakao } = window;
         if (!Kakao || !Kakao.isInitialized()) {
             setErrorMessage("Kakao SDK가 로드되지 않았거나 초기화되지 않았습니다.");
+            console.log("Kakao SDK가 제대로 로드되지 않았거나 초기화되지 않았습니다.");
             return;
         }
         Kakao.Auth.authorize({

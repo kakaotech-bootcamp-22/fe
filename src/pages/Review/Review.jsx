@@ -151,11 +151,13 @@ const SortOptions = ({ sortOptions, selectedSort, setSelectedSort }) => (
   <div className="sort-options">
     {sortOptions.map((option) => (
       <button
-        key={option}
-        className={`sort-option ${selectedSort === option ? "active" : ""}`}
-        onClick={() => setSelectedSort(option)}
+        key={option.value}
+        className={`sort-option ${
+          selectedSort === option.value ? "active" : ""
+        }`}
+        onClick={() => setSelectedSort(option.value)}
       >
-        {option}
+        {option.label}
       </button>
     ))}
   </div>
@@ -365,11 +367,10 @@ export default function Review() {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
-  const [selectedSort, setSelectedSort] = useState("베스트순");
+  const [selectedSort, setSelectedSort] = useState("likes");
   const [ratingStats, setRatingStats] = useState({});
   const [totalReviews, setTotalReviews] = useState(0);
   const [reviews, setReviews] = useState([]);
-  const [sortEndpoint, setSortEndpoint] = useState("/likes"); // 기본 정렬: 베스트순
   const [totalPages, setTotalPages] = useState(1);
 
   const location = useLocation();
@@ -429,48 +430,31 @@ export default function Review() {
   // }, []);
 
   useEffect(() => {
-    switch (selectedSort) {
-      case "베스트순":
-        setSortEndpoint("/likes");
-        break;
-      case "최근 등록순":
-        setSortEndpoint("/recent");
-        break;
-      case "평점 높은순":
-        setSortEndpoint("/rating-desc");
-        break;
-      case "평점 낮은순":
-        setSortEndpoint("/rating-asc");
-        break;
-      default:
-        setSortEndpoint("/likes");
-    }
-    setCurrentPage(1); // 정렬 변경 시 페이지 초기화
-  }, [selectedSort]);
-
-  useEffect(() => {
     const fetchSortedReviews = async () => {
       try {
         const response = await axios.get(
-          `${API_URL}/review/${blog_id}${sortEndpoint}`,
+          `${API_URL}/review/${blog_id}/reviews`,
           {
             params: {
               page: currentPage - 1,
               size: 5, // 필요에 따라 조정 가능
+              sortBy: selectedSort, // 정렬 조건 추가
             },
+            withCredentials: true, // 쿠키 인증 포함 (필요 시)
           }
         );
         const data = response.data;
         setReviews(data.content);
         setTotalReviews(data.totalElements);
         setTotalPages(data.totalPages);
+        // 별점 통계 업데이트가 필요한 경우 추가
       } catch (error) {
         console.error("Error fetching sorted reviews:", error);
       }
     };
 
     fetchSortedReviews();
-  }, [sortEndpoint, currentPage, blog_id, API_URL]);
+  }, [selectedSort, currentPage, blog_id, API_URL]);
 
   // 평균 점수 계산
   const calculateAverageRating = useCallback(() => {
@@ -581,8 +565,13 @@ export default function Review() {
     return stars;
   }, []);
 
-  const sortOptions = ["베스트순", "최근 등록순", "평점 높은순", "평점 낮은순"];
-
+  // 수정된 sortOptions과 sortBy 매핑
+  const sortOptions = [
+    { label: "베스트순", value: "likes" },
+    { label: "최근 등록순", value: "recent" },
+    { label: "평점 높은순", value: "rating-desc" },
+    { label: "평점 낮은순", value: "rating-asc" },
+  ];
   return (
     <div className="review-system">
       <ReviewHeader url={url} />

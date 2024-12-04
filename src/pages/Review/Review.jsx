@@ -373,7 +373,7 @@ const ReviewForm = ({
 const BackButton = () => {
   const navigate = useNavigate();
   return (
-    <button className="back-button" onClick={() => navigate(-1)}>
+    <button className="back-button" onClick={() => navigate("/")}>
       <img src={previousBtn} alt="뒤로 가기" className="back-arrow-icon" />
     </button>
   );
@@ -542,6 +542,10 @@ export default function Review() {
           return newStats;
         });
 
+        // 입력 필드 초기화
+        setRating(0);
+        setReviewText("");
+
         alert("리뷰가 성공적으로 등록되었습니다!");
       }
     } catch (error) {
@@ -552,6 +556,9 @@ export default function Review() {
             alert("이미 리뷰를 등록하셨습니다.");
             break;
           case 401: // JWT 검증 실패
+            alert("로그인 정보가 유효하지 않습니다. 다시 로그인해주세요.");
+            break;
+          case 500:
             alert("로그인 정보가 유효하지 않습니다. 다시 로그인해주세요.");
             break;
           case 404: // 해당 블로그 ID가 없는 경우
@@ -567,6 +574,7 @@ export default function Review() {
       }
     }
   }, [rating, reviewText, reviews, blog_id, API_URL, nickname, profileImage]);
+
   const handleLikeClick = useCallback(
     async (id, isLiked) => {
       try {

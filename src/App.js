@@ -14,23 +14,7 @@ import Review from "./pages/Review/Review";
 function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [resultData, setResultData] = useState(null);
-
-  // URL 검사 함수 (임시 로딩 상태 추가)
-  const handleCheckURL = (url) => {
-    setIsLoading(true); // 로딩 페이지로 전환
-    setResultData(null); // 기존 결과 초기화
-
-    // 2초 후에 로딩 종료 및 결과 페이지로 이동 (백엔드 없이 임시 테스트)
-    setTimeout(() => {
-      setIsLoading(false);
-      setResultData({
-        url,
-        reviewScore: 85,
-        summaryTitle: "검사 결과",
-        summaryContent: "이 리뷰는 신뢰할 수 있습니다.",
-      });
-    }, 2000);
-  };
+  const [requestId, setRequestId] = useState(null); // 요청 ID 저장
 
   return (
     <AuthProvider>
@@ -51,11 +35,17 @@ function App() {
             path="/"
             element={
               isLoading ? (
-                <LoadingPage />
+                <LoadingPage requestId={requestId} /> // 로딩 페이지로 requestId 전달
               ) : resultData ? (
                 <ResultPage data={resultData} />
               ) : (
-                <Home onCheckURL={handleCheckURL} />
+                <Home
+                  onCheckURL={(url) => {
+                    setIsLoading(true); // 로딩 상태 활성화
+                    setResultData(null); // 기존 결과 초기화
+                    setRequestId(url); // Mock 처리 (실제는 로직 작성 필요)
+                  }}
+                />
               )
             }
           />

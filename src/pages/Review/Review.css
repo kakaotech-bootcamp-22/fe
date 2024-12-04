@@ -270,7 +270,7 @@
   border: none;
   display: flex;
   align-items: center;
-  gap: 4px; /* 아이콘과 숫자 간격 조절 */
+  gap: 10px; /* 아이콘과 숫자 간격 조절 */
   cursor: pointer;
   font-size: 14px;
   align-self: center; /* 아래쪽 정렬 */

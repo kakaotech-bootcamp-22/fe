@@ -9,6 +9,30 @@ import defaultProfileImage from "../../assets/review/default_profile.png";
 import previousBtn from "../../assets/review/previous_btn.png";
 import axios from "axios";
 
+// Heart 컴포넌트 추가
+const Heart = ({ filled, onClick }) => (
+  <svg
+    onClick={onClick}
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill={filled ? "#FF0000" : "none"}
+    stroke="#FF0000"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{ cursor: "pointer" }}
+  >
+    <path
+      d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
+         2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09 
+         C13.09 3.81 14.76 3 16.5 3 
+         19.58 3 22 5.42 22 8.5 
+         c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+    />
+  </svg>
+);
+
 // Star 컴포넌트
 const Star = React.memo(({ filled, onClick }) => {
   const id = React.useId();
@@ -181,32 +205,36 @@ const SortContainer = ({
 );
 
 // ReviewItem 컴포넌트
-const ReviewItem = React.memo(({ review, handleLikeClick, renderStars }) => (
-  <div className="review-item">
-    <div className="review-stars">{renderStars(review.rating)}</div>
-    <div className="review-content-wrapper">
-      <span className="trust-label">{review.rating}점</span>
-      <p className="review-content">{review.content}</p>
-    </div>
-    <button
-      className="like-button"
-      onClick={() => handleLikeClick(review.blogReviewId)}
-    >
-      <img src={heartImage} alt="Heart" className="heart-icon" /> {review.likes}
-    </button>
-    <div className="review-info">
-      <div className="review-author">
-        <img
-          src={review.profileImage || defaultProfileImage}
-          alt={`${review.author} Profile`}
-          className="avatar-img"
-        />
-        <span className="author-name">{review.author}</span>
+const ReviewItem = React.memo(({ review, handleLikeClick, renderStars }) => {
+  const toggleLike = () => {
+    handleLikeClick(review.blogReviewId, review.liked);
+  };
+
+  return (
+    <div className="review-item">
+      <div className="review-stars">{renderStars(review.rating)}</div>
+      <div className="review-content-wrapper">
+        <span className="trust-label">{review.rating}점</span>
+        <p className="review-content">{review.content}</p>
       </div>
-      <span className="review-date">{review.date}</span>
+      <button className="like-button" onClick={toggleLike}>
+        <Heart filled={review.liked} />
+        <span>{review.likes}</span>
+      </button>
+      <div className="review-info">
+        <div className="review-author">
+          <img
+            src={review.profileImage || defaultProfileImage}
+            alt={`${review.author} Profile`}
+            className="avatar-img"
+          />
+          <span className="author-name">{review.author}</span>
+        </div>
+        <span className="review-date">{review.date}</span>
+      </div>
     </div>
-  </div>
-));
+  );
+});
 
 // ReviewList 컴포넌트
 const ReviewList = ({
@@ -520,20 +548,24 @@ export default function Review() {
   }, [rating, reviewText, reviews, blog_id, API_URL]);
 
   const handleLikeClick = useCallback(
-    async (id) => {
+    async (id, isLiked) => {
       try {
         await axios.patch(
           `${API_URL}/review/like`,
-          { reviewId: id }, // Body로 전달
+          { reviewId: id },
           {
             headers: { "Content-Type": "application/json" },
             withCredentials: true,
-          } // 쿠키 인증 포함
+          }
         );
         setReviews((prevReviews) =>
           prevReviews.map((review) =>
             review.blogReviewId === id
-              ? { ...review, likes: review.likes + 1 }
+              ? {
+                  ...review,
+                  likes: isLiked ? review.likes - 1 : review.likes + 1,
+                  liked: !isLiked, // liked 상태를 토글
+                }
               : review
           )
         );

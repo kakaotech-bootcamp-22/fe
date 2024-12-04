@@ -3,9 +3,11 @@ import "./Home.css";
 import mainImage from "../assets/home/home_image.jpeg";
 import { useAuth } from "../context/AuthContext";
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 const Home = ({ onCheckURL }) => {
   const [url, setUrl] = useState('');
+  const navigate = useNavigate();
   const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt, email } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
   const [errorMessage, setErrorMessage] = useState("");
   const API_URL = process.env.REACT_APP_API_URL;
@@ -63,7 +65,7 @@ const Home = ({ onCheckURL }) => {
 
     try {
       // 백엔드에 URL을 전송하여 requestId를 가져옴
-      const response = await axios.post("http://localhost:8080/api/review-check", { blogUrl: url });
+      const response = await axios.post("http://localhost:8080/review-check", { blogUrl: url });
       if (response.status === 200 && response.data.requestId) {
         const requestId = response.data.requestId; // requestId 추출
         navigate("/loading", { state: { requestId } }); // 로딩 페이지로 이동하며 requestId 전달

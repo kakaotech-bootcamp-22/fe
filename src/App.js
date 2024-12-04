@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import "./App.css";
 import Home from "./components/Home"; 
 import Navbar from "./components/Navbar/Navbar";
-import Loading from "./pages/Loading/Loading";
+import LoadingPage from "./pages/Loading/LoadingPage";
 import ResultPage from "./pages/Result/Result";
 import LoginPage from "./pages/login/LoginPage";
 import MyPage from "./pages/mypage/MyPage";
@@ -51,7 +51,7 @@ function App() {
             path="/"
             element={
               isLoading ? (
-                <Loading />
+                <LoadingPage />
               ) : resultData ? (
                 <ResultPage data={resultData} />
               ) : (

@@ -512,41 +512,61 @@ export default function Review() {
         headers: { "Content-Type": "application/json" },
         withCredentials: true, // 쿠키를 포함
       });
-      // console.log("response:", response.data.blogReviewId);
-      const savedReview = {
-        blogReviewId: response.data.blogReviewId,
-        id: reviews.length + 1,
-        rating: rating,
-        date: new Date().toISOString().split("T")[0].replace(/-/g, "."),
-        content: reviewText,
-        author: nickname,
-        profileImage: profileImage,
-        likes: 0,
-      };
 
-      // 상태 업데이트
-      setReviews((prevReviews) => [...prevReviews, savedReview]);
-      setTotalReviews((prevTotal) => prevTotal + 1);
+      // 성공적으로 리뷰가 등록된 경우
+      if (response.status === 201) {
+        const savedReview = {
+          blogReviewId: response.data.blogReviewId,
+          id: reviews.length + 1,
+          rating: rating,
+          date: new Date().toISOString().split("T")[0].replace(/-/g, "."),
+          content: reviewText,
+          author: nickname,
+          profileImage: profileImage,
+          likes: 0,
+        };
 
-      // 별점 통계 업데이트
-      setRatingStats((prevStats) => {
-        const newStats = { ...prevStats };
-        const roundedRating = Math.round(savedReview.rating);
-        if (newStats[roundedRating]) {
-          newStats[roundedRating] += 1;
-        } else {
-          newStats[roundedRating] = 1;
-        }
-        return newStats;
-      });
+        // 상태 업데이트
+        setReviews((prevReviews) => [...prevReviews, savedReview]);
+        setTotalReviews((prevTotal) => prevTotal + 1);
 
-      alert("리뷰가 등록되었습니다!");
+        // 별점 통계 업데이트
+        setRatingStats((prevStats) => {
+          const newStats = { ...prevStats };
+          const roundedRating = Math.round(savedReview.rating);
+          if (newStats[roundedRating]) {
+            newStats[roundedRating] += 1;
+          } else {
+            newStats[roundedRating] = 1;
+          }
+          return newStats;
+        });
+
+        alert("리뷰가 성공적으로 등록되었습니다!");
+      }
     } catch (error) {
-      console.error("리뷰 등록 중 오류 발생:", error);
-      alert("리뷰 등록에 실패했습니다. 다시 시도해주세요.");
+      // 응답 상태에 따른 처리
+      if (error.response) {
+        switch (error.response.status) {
+          case 409: // 이미 리뷰를 등록한 경우
+            alert("이미 리뷰를 등록하셨습니다.");
+            break;
+          case 401: // JWT 검증 실패
+            alert("로그인 정보가 유효하지 않습니다. 다시 로그인해주세요.");
+            break;
+          case 404: // 해당 블로그 ID가 없는 경우
+            alert("해당 블로그를 찾을 수 없습니다.");
+            break;
+          default: // 기타 에러
+            alert("리뷰 등록 중 오류가 발생했습니다. 다시 시도해주세요.");
+        }
+      } else {
+        // 네트워크 오류 또는 기타 예외 처리
+        console.error("리뷰 등록 중 예기치 않은 오류 발생:", error);
+        alert("알 수 없는 오류가 발생했습니다. 다시 시도해주세요.");
+      }
     }
-  }, [rating, reviewText, reviews, blog_id, API_URL]);
-
+  }, [rating, reviewText, reviews, blog_id, API_URL, nickname, profileImage]);
   const handleLikeClick = useCallback(
     async (id, isLiked) => {
       try {

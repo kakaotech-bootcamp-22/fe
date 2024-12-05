@@ -1,5 +1,7 @@
 /* 기존 스타일 유지 */
+
 .review-system {
+  min-width: 1300px;
   margin: 0 50px;
   background-color: white;
   padding: 32px;
@@ -19,7 +21,7 @@
 }
 
 .rating-overview {
-  min-width: 500px;
+  /* min-width: 800px; */
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   align-items: center;

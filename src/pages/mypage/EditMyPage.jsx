@@ -167,6 +167,7 @@ function EditMyPage(props) {
                 setNickname(result.updatedNickname);
                 setProfileImage(encodedUrl);
                 updateProfileImage(encodedUrl);
+                navigate("/mypage");
             } else {
                 console.error("프로필 업데이트 실패:", response);
                 message.error("프로필을 업데이트하는 데 실패했습니다.");

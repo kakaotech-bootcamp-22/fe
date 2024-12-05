@@ -1,7 +1,8 @@
-// Review.js
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+// Review.jsx
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { message } from "antd"; // Import message from Ant Design
 import "./Review.css";
 import heartImage from "../../assets/review/heart.png";
 import ryanImage from "../../assets/review/ryan_image.png";
@@ -443,19 +444,11 @@ export default function Review() {
         setTotalReviews(total);
       } catch (error) {
         console.error("Error fetching review data:", error);
+        message.error("리뷰 데이터를 가져오는 중 오류가 발생했습니다.");
       }
     };
     fetchReviews();
-  }, []);
-
-  // useEffect(() => {
-  //   console.log("isLoggedIn: ", isLoggedIn);
-  //   console.log("nickname: ", nickname);
-  //   console.log("profileImage: ", profileImage);
-  //   console.log("platform: ", platform);
-  //   console.log("createdAt: ", createdAt);
-  //   console.log("email: ", email);
-  // }, []);
+  }, [API_URL, blog_id]);
 
   useEffect(() => {
     const fetchSortedReviews = async () => {
@@ -478,6 +471,7 @@ export default function Review() {
         // 별점 통계 업데이트가 필요한 경우 추가
       } catch (error) {
         console.error("Error fetching sorted reviews:", error);
+        message.error("정렬된 리뷰를 가져오는 중 오류가 발생했습니다.");
       }
     };
 
@@ -497,7 +491,7 @@ export default function Review() {
 
   const handleSubmitReview = useCallback(async () => {
     if (rating === 0 || reviewText.trim() === "") {
-      alert("평점과 리뷰 내용을 입력해주세요.");
+      message.error("평점과 리뷰 내용을 입력해주세요.");
       return;
     }
 
@@ -524,6 +518,7 @@ export default function Review() {
           author: nickname,
           profileImage: profileImage,
           likes: 0,
+          liked: false, // Initialize liked status
         };
 
         // 상태 업데이트
@@ -546,31 +541,33 @@ export default function Review() {
         setRating(0);
         setReviewText("");
 
-        alert("리뷰가 성공적으로 등록되었습니다!");
+        message.success("리뷰가 성공적으로 등록되었습니다!");
       }
     } catch (error) {
-      // 응답 상태에 따른 처리
+      // Handle response status
       if (error.response) {
         switch (error.response.status) {
-          case 409: // 이미 리뷰를 등록한 경우
-            alert("이미 리뷰를 등록하셨습니다.");
+          case 409: // Already reviewed
+            message.error("이미 리뷰를 등록하셨습니다.");
             break;
-          case 401: // JWT 검증 실패
-            alert("로그인 정보가 유효하지 않습니다. 다시 로그인해주세요.");
-            break;
+          case 401: // JWT validation failed
           case 500:
-            alert("로그인 정보가 유효하지 않습니다. 다시 로그인해주세요.");
+            message.error(
+              "로그인 정보가 유효하지 않습니다. 다시 로그인해주세요."
+            );
             break;
-          case 404: // 해당 블로그 ID가 없는 경우
-            alert("해당 블로그를 찾을 수 없습니다.");
+          case 404: // Blog ID not found
+            message.error("해당 블로그를 찾을 수 없습니다.");
             break;
-          default: // 기타 에러
-            alert("리뷰 등록 중 오류가 발생했습니다. 다시 시도해주세요.");
+          default: // Other errors
+            message.error(
+              "리뷰 등록 중 오류가 발생했습니다. 다시 시도해주세요."
+            );
         }
       } else {
         // 네트워크 오류 또는 기타 예외 처리
         console.error("리뷰 등록 중 예기치 않은 오류 발생:", error);
-        alert("알 수 없는 오류가 발생했습니다. 다시 시도해주세요.");
+        message.error("알 수 없는 오류가 발생했습니다. 다시 시도해주세요.");
       }
     }
   }, [rating, reviewText, reviews, blog_id, API_URL, nickname, profileImage]);
@@ -599,6 +596,7 @@ export default function Review() {
         );
       } catch (error) {
         console.error("좋아요 업데이트 중 오류 발생:", error);
+        message.error("좋아요를 업데이트하는 중 오류가 발생했습니다.");
       }
     },
     [API_URL]
@@ -632,6 +630,7 @@ export default function Review() {
     { label: "평점 높은순", value: "rating-desc" },
     { label: "평점 낮은순", value: "rating-asc" },
   ];
+
   return (
     <div className="review-system">
       <ReviewHeader url={url} />

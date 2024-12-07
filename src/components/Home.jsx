@@ -3,14 +3,24 @@ import "./Home.css";
 import mainImage from "../assets/home/home_image.jpeg";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { message } from "antd"; // Ant Design message 추가
 
 const Home = ({ onCheckURL }) => {
   const [url, setUrl] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
   const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt, email } = useAuth();
-  const [errorMessage, setErrorMessage] = useState("");
   const API_URL = process.env.REACT_APP_API_URL;
+
+  // location.state에서 에러 메시지 확인
+  useEffect(() => {
+    if (location.state?.error) {
+      message.error(location.state.error);
+      // 에러 메시지를 표시한 후 state 초기화
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -33,7 +43,7 @@ const Home = ({ onCheckURL }) => {
           }
         })
         .catch(() => {
-          setErrorMessage("로그인에 실패했습니다.");
+          message.error("로그인에 실패했습니다.");
         });
     } else if (!isLoggedIn) {
       // 로그인 상태 확인
@@ -52,42 +62,37 @@ const Home = ({ onCheckURL }) => {
           }
         })
         .catch(() => {
-          setErrorMessage("로그인 상태를 확인할 수 없습니다.");
+          message.error("로그인 상태를 확인할 수 없습니다.");
         });
     }
   }, [isLoggedIn, API_URL, login]);
 
-  const handleInputChange = (e) => {
-    setUrl(e.target.value);
-  };
-
   const handleCheckButtonClick = async () => {
     if (!url) {
-      alert("URL을 입력해주세요.");
+      message.error("URL을 입력해주세요.");
       return;
     }
 
     // 네이버 블로그 URL 형식 검사
     const naverBlogUrlPattern = /^https:\/\/blog\.naver\.com\/[a-zA-Z0-9_-]+\/[0-9]+$/;
     if (!naverBlogUrlPattern.test(url)) {
-      alert("올바른 네이버 블로그 URL을 입력해주세요! 다른 블로그는 추후 서비스 예정입니다.");
+      message.error("올바른 네이버 블로그 URL을 입력해주세요! 다른 블로그는 추후 서비스 예정입니다.");
       return;
     }
 
     try {
-      // 백엔드에 URL 전송 후 requestId 확인
       const response = await axios.post(`${API_URL}/review-check`, { blogUrl: url });
 
       if (response.status === 202 && response.data.requestId) {
         const { requestId } = response.data;
         console.log("Navigating to /loading with requestId:", requestId);
-        navigate("/loading", { state: { requestId } }); // LoadingPage로 이동
+        navigate("/loading", { state: { requestId } });
       } else {
-        alert("AI 분석 요청에 실패했습니다.");
+        message.error("AI 분석 요청에 실패했습니다.");
       }
     } catch (error) {
       console.error("AI 분석 요청 중 오류 발생:", error);
-      alert("AI 분석 요청 중 문제가 발생했습니다.");
+      message.error(error.response?.data?.message || "AI 분석 요청 중 문제가 발생했습니다.");
     }
   };
 

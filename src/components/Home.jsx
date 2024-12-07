@@ -80,6 +80,7 @@ const Home = ({ onCheckURL }) => {
 
       if (response.status === 202 && response.data.requestId) {
         const { requestId } = response.data;
+        console.log("Navigating to /loading with requestId:", requestId);
         navigate("/loading", { state: { requestId } }); // LoadingPage로 이동
       } else {
         alert("AI 분석 요청에 실패했습니다.");

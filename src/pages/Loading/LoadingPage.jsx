@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './LoadingPage.css';
-import chunshikImage from '../../assets/loading/loading_image.webp'; // 춘식이 이미지
+import chunshikImage from '../../assets/loading/loading_image.webp';
 
 const LoadingPage = () => {
-  const { state } = useLocation(); // useLocation을 통해 전달된 state 접근
-  const { requestId } = state || {}; // state에서 requestId 추출
+  const { state } = useLocation();
+  const { requestId } = state || {};
   const [activeDot, setActiveDot] = useState(0);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,20 +14,24 @@ const LoadingPage = () => {
 
   useEffect(() => {
     const dotInterval = setInterval(() => {
-      setActiveDot((prevDot) => (prevDot + 1) % 3); // 0, 1, 2 반복
-    }, 500); // 0.5초마다 변경
+      setActiveDot((prevDot) => (prevDot + 1) % 3);
+    }, 500);
 
     return () => clearInterval(dotInterval);
   }, []);
 
   useEffect(() => {
     if (!requestId) {
-      setError("Request ID가 전달되지 않았습니다.");
-      setLoading(false);
+      console.error('LoadingPage Error: requestId is missing from state');
+      alert('요청 처리 중 오류가 발생했습니다. 메인 페이지로 이동합니다.');
+      navigate('/', { 
+        replace: true,
+        state: { error: '유효하지 않은 검사 요청입니다.' }  // 홈 컴포넌트에서 에러 메시지 표시 가능
+      });
       return;
     }
 
-    const pollingInterval = 5000; // 5초 간격으로 폴링
+    const pollingInterval = 5000;
     let intervalId;
 
     const checkResultStatus = async () => {
@@ -36,31 +40,50 @@ const LoadingPage = () => {
         const data = response.data;
 
         if (data.score >= 0) {
-          // 결과가 준비되었으면 페이지 이동
+          console.log('Result ready:', data);
           navigate('/result', { state: data });
           setLoading(false);
         } else {
-          console.log('결과 생성 중...');
+          console.log('Result pending... Polling will continue');
         }
       } catch (err) {
-        console.error('결과 확인 중 오류 발생:', err);
-        setError('결과를 가져오는 중 문제가 발생했습니다.');
+        const errorMessage = err.response?.data?.message || err.message || '알 수 없는 오류가 발생했습니다.';
+        console.error('LoadingPage Error:', {
+          message: errorMessage,
+          requestId,
+          error: err
+        });
+        
+        setError(errorMessage);
         setLoading(false);
+        
+        alert('결과를 가져오는 중 오류가 발생했습니다. 메인 페이지로 이동합니다.');
+        navigate('/', { 
+          replace: true,
+          state: { error: errorMessage }
+        });
       }
     };
 
-    // 폴링 시작
     intervalId = setInterval(checkResultStatus, pollingInterval);
-    checkResultStatus(); // 첫 번째 요청 즉시 호출
+    checkResultStatus();
 
-    // 컴포넌트가 언마운트 되면 폴링 중지
-    return () => clearInterval(intervalId);
+    return () => {
+      console.log('Cleaning up polling interval');
+      clearInterval(intervalId);
+    };
   }, [requestId, navigate]);
 
   if (error) {
     return (
       <div className="loading-container">
         <p className="error-text">{error}</p>
+        <button 
+          className="retry-button"
+          onClick={() => navigate('/')}
+        >
+          홈으로 돌아가기
+        </button>
       </div>
     );
   }

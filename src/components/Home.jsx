@@ -67,6 +67,10 @@ const Home = ({ onCheckURL }) => {
     }
   }, [isLoggedIn, API_URL, login]);
 
+  const handleInputChange = (e) => {
+    setUrl(e.target.value);
+  };
+
   const handleCheckButtonClick = async () => {
     if (!url) {
       message.error("URL을 입력해주세요.");

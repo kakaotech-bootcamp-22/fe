@@ -1,32 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { Spin, message } from 'antd'; // Ant Design 컴포넌트 추가
 import './LoadingPage.css';
 import chunshikImage from '../../assets/loading/loading_image.webp';
 
 const LoadingPage = () => {
   const { state } = useLocation();
   const { requestId } = state || {};
-  const [activeDot, setActiveDot] = useState(0);
-  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const dotInterval = setInterval(() => {
-      setActiveDot((prevDot) => (prevDot + 1) % 3);
-    }, 500);
-
-    return () => clearInterval(dotInterval);
-  }, []);
-
-  useEffect(() => {
     if (!requestId) {
       console.error('LoadingPage Error: requestId is missing from state');
-      alert('요청 처리 중 오류가 발생했습니다. 메인 페이지로 이동합니다.');
+      message.error('유효하지 않은 검사 요청입니다.');
       navigate('/', { 
         replace: true,
-        state: { error: '유효하지 않은 검사 요청입니다.' }  // 홈 컴포넌트에서 에러 메시지 표시 가능
+        state: { error: '유효하지 않은 검사 요청입니다.' }
       });
       return;
     }
@@ -41,6 +32,7 @@ const LoadingPage = () => {
 
         if (data.score >= 0) {
           console.log('Result ready:', data);
+          message.success('분석이 완료되었습니다!');
           navigate('/result', { state: data });
           setLoading(false);
         } else {
@@ -54,10 +46,7 @@ const LoadingPage = () => {
           error: err
         });
         
-        setError(errorMessage);
-        setLoading(false);
-        
-        alert('결과를 가져오는 중 오류가 발생했습니다. 메인 페이지로 이동합니다.');
+        message.error('결과를 가져오는 중 오류가 발생했습니다.');
         navigate('/', { 
           replace: true,
           state: { error: errorMessage }
@@ -74,39 +63,16 @@ const LoadingPage = () => {
     };
   }, [requestId, navigate]);
 
-  if (error) {
-    return (
-      <div className="loading-container">
-        <p className="error-text">{error}</p>
-        <button 
-          className="retry-button"
-          onClick={() => navigate('/')}
-        >
-          홈으로 돌아가기
-        </button>
+  return (
+    <div className="loading-container">
+      <img src={chunshikImage} alt="Loading character" className="loading-image" />
+      <Spin size="large" />
+      <div className="loading-text">
+        <h2>URL을 AI 모델이 분석하고 있어요!</h2>
+        <p>잠시만 기다려 주세요...</p>
       </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <img src={chunshikImage} alt="Loading character" className="loading-image" />
-        <p>Loading...</p>
-        <div className="dots">
-          {[0, 1, 2].map((dot) => (
-            <span
-              key={dot}
-              className={`dot ${dot === activeDot ? 'active' : ''}`}
-            ></span>
-          ))}
-        </div>
-        <p className="loading-text">URL을 AI 모델이 분석하고 있어요!</p>
-      </div>
-    );
-  }
-
-  return null;
+    </div>
+  );
 };
 
 export default LoadingPage;

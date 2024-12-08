@@ -27,7 +27,12 @@ const LoadingPage = () => {
 
     const checkResultStatus = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/review-check/status/${requestId}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/review-check/status/${requestId}`, {
+          // 요청 헤더 로깅을 위한 인터셉터 추가
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
         const data = response.data;
 
         if (data.score >= 0) {

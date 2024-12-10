@@ -154,8 +154,8 @@ const ReviewSummary = ({ averageRating }) => {
     text = (
       <>
         <span>대부분 </span>
-        <span className="highlight">찐 리뷰를 남겼다</span>
-        <span>고 남겨줬어요</span>
+        <span className="highlight">찐 리뷰</span>
+        <span>라고 남겨줬어요</span>
       </>
     );
   } else if (averageRating >= 2) {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import "./ResultPage.css";
 import greenLion from "../../assets/result/green-choonsik.png";
 import yellowLion from "../../assets/result/yellow-choonsik.png";
@@ -9,9 +9,18 @@ const ResultPage = () => {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
+    // Mock 데이터를 location.state로 전달했는지 확인
+    if (location.state) {
+      console.log("Mock Data Detected:", location.state);
+      setData(location.state); // Mock 데이터를 설정
+      setIsLoading(false);
+      return;
+    }
+
+    // Mock 데이터가 없으면 API 요청
     const fetchData = async () => {
       try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/result`);
@@ -28,7 +37,7 @@ const ResultPage = () => {
     };
 
     fetchData();
-  }, []);
+  }, [location.state]);
 
   if (isLoading) return <div className="loading-text">결과를 불러오는 중...</div>;
   if (error) return <div className="error-text">{error}</div>;

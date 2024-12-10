@@ -1,11 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./ResultPage.css";
 import greenLion from "../../assets/result/green-choonsik.png";
 import yellowLion from "../../assets/result/yellow-choonsik.png";
 import redLion from "../../assets/result/red-choonsik.png";
 
-const ResultPage = ({ blogUrl, summaryTitle, summaryText, score, evidence }) => {
-  // 점수에 따라 스타일 및 이미지 변경
+const ResultPage = () => {
+  const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/result`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch result data.");
+        }
+        const result = await response.json();
+        setData(result);
+      } catch (err) {
+        setError("결과 데이터를 가져오는 데 실패했습니다.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (isLoading) return <div className="loading-text">결과를 불러오는 중...</div>;
+  if (error) return <div className="error-text">{error}</div>;
+
+  const { blogUrl = "URL 없음", summaryTitle = "제목 없음", summaryText = "요약 없음", score = 0, evidence = "근거 없음" } = data;
+
   const getScoreStyle = (score) => {
     if (score >= 70) {
       return {
@@ -46,7 +75,6 @@ const ResultPage = ({ blogUrl, summaryTitle, summaryText, score, evidence }) => 
           <h4 className="judgement-title">왜 이렇게 판단했나요? 🤔</h4>
           <p className="judgement-reason">{evidence}</p>
           <p className="fake-report">▶ 가짜 리뷰로 제보하기</p>
-          <p className="go-back">← 뒤로가기</p>
         </div>
         <div className="right-content">
           <h3>이 리뷰의 점수는?</h3>

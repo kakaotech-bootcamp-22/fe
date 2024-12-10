@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Spin, message } from 'antd'; // Ant Design 컴포넌트 추가
+import { LoadingOutlined } from '@ant-design/icons';
 import './LoadingPage.css';
 import chunshikImage from '../../assets/loading/loading_image.webp';
 
@@ -10,6 +11,15 @@ const LoadingPage = () => {
   const { requestId } = state || {};
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // Spin 컴포넌트 커스텀
+  const CustomDotSpin = () => (
+    <div className="custom-dot-spin">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  );
 
   useEffect(() => {
     if (!requestId) {
@@ -71,7 +81,7 @@ const LoadingPage = () => {
   return (
     <div className="loading-container">
       <img src={chunshikImage} alt="Loading character" className="loading-image" />
-      <Spin size="large" />
+      <Spin indicator={<CustomDotSpin />} spinning={true}/>
       <div className="loading-text">
         <h2>URL을 AI 모델이 분석하고 있어요!</h2>
         <p>잠시만 기다려 주세요...</p>

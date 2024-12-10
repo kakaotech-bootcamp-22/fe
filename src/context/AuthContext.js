@@ -1,10 +1,10 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../api/axios';
+import requests from '../api/requests';
 
 const AuthContext = createContext();
 
 export const AuthProvider =  ({ children }) => {
-  // const response = await axios.get('http://localhost:8080/auth/status', {withCredentials: true})
   // const [isLoggedIn, setIsLoggedIn] = useState(response.data?.isLoggedIn ===true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
@@ -52,15 +52,13 @@ export const AuthProvider =  ({ children }) => {
   };
 
   const fetchUserActivity = async () => {
-    await axios
-      .get(`${API_URL}/mypage/activity-counts`, { withCredentials: true }) // 쿠키 전송
-      .then(response => {
-        setWrittenReviewCount(response.data.reviewCount);
-        setReceivedLikeCount(response.data.likeCount);
-      })
-      .catch(error => {
-        console.error("활동 데이터를 가져오는 중 오류 발생: ", error);
-      });
+    try{
+      const response = await axios.get(requests.fetchUserActivity);
+      setWrittenReviewCount(response.data.reviewCount);
+      setReceivedLikeCount(response.data.likeCount);
+    } catch(error) {
+      console.error("활동 데이터를 가져오는 중 오류 발생: ", error);
+    };
   };
 
   return (

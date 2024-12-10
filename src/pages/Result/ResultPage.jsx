@@ -48,7 +48,7 @@ const ResultPage = ({ data }) => {
 
   return (
     <div className="outer-container">
-      <div className="result-container">
+      <div className="result-container" style={{ maxWidth: "60%" }}>
         <div className="url-section">
           <h4 className="url-title">입력하신 URL</h4>
           <h2 className="blog-url">[ {blogUrl} ]</h2>
@@ -57,7 +57,7 @@ const ResultPage = ({ data }) => {
         </div>
 
         <div className={`main-content ${scoreClass}`} style={{ borderColor: circleBorderColor }}>
-          <div className="left-content">
+          <div className="left-content" style={{ flex: "0 0 60%" }}>
             <div>
               <h3 className="section-title">AI 리뷰 요약 🤖</h3>
               <h4 className="summary-title">{summaryTitle}</h4>
@@ -76,12 +76,15 @@ const ResultPage = ({ data }) => {
 
           <div className="right-content">
             <h3 className="section-title mb-4">이 리뷰의 점수는?</h3>
+            <br></br>
 
             <div className="score-visual">
-              <div className="character-wrapper">
-                <img src={characterImage} alt="Score Character" className="score-character" />
-              </div>
-              <svg viewBox="0 0 36 36" className="circular-chart">
+              <img
+                src={characterImage}
+                alt="Score Character"
+                className="score-character"
+              />
+              <svg viewBox="0 0 36 36" className="circular-chart" style={{ width: "150px", height: "150px" }}>
                 <path
                   className="circle-bg"
                   d="M18 2.0845
@@ -91,7 +94,7 @@ const ResultPage = ({ data }) => {
                 <path
                   className="circle"
                   strokeDasharray={`${score}, 100`}
-                  style={{ stroke: circleBorderColor, strokeWidth: 6 }}
+                  style={{ stroke: circleBorderColor }}
                   d="M18 2.0845
                     a 15.9155 15.9155 0 0 1 0 31.831
                     a 15.9155 15.9155 0 0 1 0 -31.831"
@@ -99,7 +102,7 @@ const ResultPage = ({ data }) => {
                 <text x="18" y="20.35" className="percentage">{score}</text>
               </svg>
             </div>
-
+            <br></br>
             <button
               className="criteria-button mt-4 mb-6"
               style={{ color: circleBorderColor }}

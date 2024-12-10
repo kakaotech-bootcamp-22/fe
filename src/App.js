@@ -40,7 +40,7 @@ function App() {
                   blogUrl: "https://blog.naver.com/kakao_food_fighter/1038913",
                   summaryTitle: "판교역 돈까스 맛집 추천, 직장인들 점심 해결!",
                   summaryText: "판교역 근처 돈까스 가게 다녀왔어요. 고기는 부드럽고 튀김은 바삭, 소스가 진짜 맛있었어요! 가게도 깔끔해서 직장인들 점심으로 딱이더라구요. 맛있는 돈까스 찾는 분들께 강추!",
-                  score: 90,
+                  score: 60,
                   evidence: "가짜 리뷰를 의심할 만한 근거가 발견되지 않았습니다.",
                 }}
               />

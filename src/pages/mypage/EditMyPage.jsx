@@ -163,7 +163,6 @@ function EditMyPage(props) {
                 totalformData.append("profileImage", profileImage);
             }
 
-            console.log("프로필 업데이트 요청 데이터:");
             for (let [key, value] of totalformData.entries()) {
                 console.log(`${key}:`, value);
             }
@@ -176,19 +175,16 @@ function EditMyPage(props) {
             if (response.ok) {
                 const result = await response.json();
                 message.success("프로필이 성공적으로 업데이트되었습니다!");
-                console.log("변경 완료 결과:", result);
                 setNickname(result.updatedNickname);
                 setProfileImage(encodedUrl);
                 updateProfileImage(encodedUrl);
                 navigate("/mypage");
             } else {
-                console.error("프로필 업데이트 실패:", response);
                 message.error("프로필을 업데이트하는 데 실패했습니다.");
                 setNickname(nickname); // 기존 닉네임 복구
                 setPreviewImage(profileImage); // 기존 이미지 복구
             }
         } catch (error) {
-            console.error("프로필 업데이트 중 오류:", error);
             message.error("프로필 업데이트 중 오류가 발생했습니다.");
             setNickname(nickname);
             setPreviewImage(profileImage);

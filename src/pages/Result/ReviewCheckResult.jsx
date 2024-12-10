@@ -10,7 +10,7 @@ const ReviewCheckResult = () => {
     // 데이터를 가져오는 비동기 함수
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/result"); // 백엔드 API URL
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/result`); // 백엔드 API URL
         const result = await response.json();
         setData(result); // 받아온 데이터 설정
       } catch (err) {

@@ -166,23 +166,37 @@ const GoogleText = styled.span`
 
 
 function MyPage(props) {
-
-  const [findedReview, setfindedReview] = useState("13");
-  const [writedReview, setwritedReview] = useState("4");
   const [errorMessage, setErrorMessage] = useState("");
-  const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt, email } = useAuth();
+  const {
+    isLoggedIn,
+    login,
+    logout,
+    nickname,
+    profileImage,
+    platform,
+    createdAt,
+    email,
+    writtenReviewCount, 
+    receivedLikeCount 
+  } = useAuth();
   const [newNickname, setNickname] = useState(nickname);
   const [newProfileImage, setProfileImage] = useState(profileImage);
   const navigate = useNavigate();
   const API_URL = process.env.REACT_APP_API_URL;
-
 
   useEffect(() => {
     axios.get(`${API_URL}/auth/status`, { withCredentials: true })
       .then(response => {
         if (response.data.loggedIn) {
           // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
-          login(response.data.jwtToken, response.data.nickname, response.data.userImage, response.data.platform, response.data.createdAt, response.data.email);
+          login(
+            response.data.jwtToken,
+            response.data.nickname,
+            response.data.userImage,
+            response.data.platform,
+            response.data.createdAt,
+            response.data.email
+          );
         }
       })
       .catch(error => {
@@ -190,8 +204,6 @@ function MyPage(props) {
       });
     //}
   }, []); // 한 번만 실행되도록 빈 배열을 의존성 배열에 추가
-
-
 
   return (
     <EntireContainer>
@@ -225,16 +237,16 @@ function MyPage(props) {
         </ProfileInfo>
         <InfoBoxes>
           <InfoBox>
-            <InfoBoxTitle>발견한 가짜 리뷰</InfoBoxTitle>
+            <InfoBoxTitle>작성한 후기 수</InfoBoxTitle>
             <InfoBoxCount>
-              {findedReview}
+              {writtenReviewCount}
               <span style={{ fontWeight: 'normal' }}>개</span>
             </InfoBoxCount>
           </InfoBox>
           <InfoBox>
-            <InfoBoxTitle>작성한 후기</InfoBoxTitle>
+            <InfoBoxTitle>받은 좋아요 수</InfoBoxTitle>
             <InfoBoxCount>
-              {writedReview}
+              {receivedLikeCount}
               <span style={{ fontWeight: 'normal' }}>개</span>
             </InfoBoxCount>
           </InfoBox>

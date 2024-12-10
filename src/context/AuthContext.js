@@ -1,10 +1,10 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../api/axios';
+import requests from '../api/requests';
 
 const AuthContext = createContext();
 
 export const AuthProvider =  ({ children }) => {
-  // const response = await axios.get('http://localhost:8080/auth/status', {withCredentials: true})
   // const [isLoggedIn, setIsLoggedIn] = useState(response.data?.isLoggedIn ===true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
@@ -15,8 +15,13 @@ export const AuthProvider =  ({ children }) => {
   const [createdAt, setCreatedAt] = useState(null); // 플랫폼 추가
   const [email, setEmail] = useState(null);
 
+  const [writtenReviewCount, setWrittenReviewCount] = useState(null);
+  const [receivedLikeCount, setReceivedLikeCount] = useState(null);
+  const API_URL = process.env.REACT_APP_API_URL;
+
+
   // 로그인 메서드
-  const login = (newToken, newNickname, newProfileImage, newPlatform, newCreatedAt, newEmail) => {
+  const login = (newToken, newNickname, newProfileImage, newPlatform, newCreatedAt, newEmail,) => {
     setToken(newToken);
     setNickname(newNickname); // 닉네임 저장
     setProfileImage(newProfileImage); // 프로필 이미지 저장
@@ -24,6 +29,8 @@ export const AuthProvider =  ({ children }) => {
     setCreatedAt(newCreatedAt)
     setIsLoggedIn(true);
     setEmail(newEmail)
+
+    fetchUserActivity();
   };
 
   // 로그아웃 메서드
@@ -35,14 +42,42 @@ export const AuthProvider =  ({ children }) => {
     setIsLoggedIn(false);
     setCreatedAt(null);
     setEmail(null);
+
+    setWrittenReviewCount(null);
+    setReceivedLikeCount(null);
   };
 
   const updateProfileImage = (newImage) => {
     setProfileImage(newImage);
   };
 
+  const fetchUserActivity = async () => {
+    try{
+      const response = await axios.get(requests.fetchUserActivity);
+      setWrittenReviewCount(response.data.reviewCount);
+      setReceivedLikeCount(response.data.likeCount);
+    } catch(error) {
+      console.error("활동 데이터를 가져오는 중 오류 발생: ", error);
+    };
+  };
+
   return (
-    <AuthContext.Provider value={{ isLoggedIn, token, nickname, profileImage, platform, createdAt, email, login, logout, updateProfileImage }}>
+    <AuthContext.Provider 
+      value={{ 
+        isLoggedIn, 
+        token, 
+        nickname, 
+        profileImage, 
+        platform, 
+        createdAt, 
+        email, 
+        writtenReviewCount, 
+        receivedLikeCount, 
+        login, 
+        logout, 
+        updateProfileImage 
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

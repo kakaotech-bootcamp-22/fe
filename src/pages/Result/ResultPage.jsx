@@ -1,102 +1,126 @@
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import React from "react";
+import { ThumbsUp, ThumbsDown, AlertCircle, HelpCircle } from "lucide-react";
 import "./ResultPage.css";
 import greenLion from "../../assets/result/green-choonsik.png";
 import yellowLion from "../../assets/result/yellow-choonsik.png";
 import redLion from "../../assets/result/red-choonsik.png";
 
-const ResultPage = () => {
-  const [data, setData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const location = useLocation();
+const ResultPage = ({ data }) => {
+  const {
+    blogUrl = "URL 없음",
+    summaryTitle = "제목 없음",
+    summaryText = "요약 없음",
+    score = 0,
+    evidence = "근거 없음",
+  } = data;
 
-  useEffect(() => {
-    // Mock 데이터를 location.state로 전달했는지 확인
-    if (location.state) {
-      console.log("Mock Data Detected:", location.state);
-      setData(location.state); // Mock 데이터를 설정
-      setIsLoading(false);
-      return;
-    }
-
-    // Mock 데이터가 없으면 API 요청
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/result`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch result data.");
-        }
-        const result = await response.json();
-        setData(result);
-      } catch (err) {
-        setError("결과 데이터를 가져오는 데 실패했습니다.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [location.state]);
-
-  if (isLoading) return <div className="loading-text">결과를 불러오는 중...</div>;
-  if (error) return <div className="error-text">{error}</div>;
-
-  const { blogUrl = "URL 없음", summaryTitle = "제목 없음", summaryText = "요약 없음", score = 0, evidence = "근거 없음" } = data;
+  const darkenColor = (color) => {
+    const num = parseInt(color.slice(1), 16);
+    const r = (num >> 16) - 20;
+    const g = ((num >> 8) & 0x00ff) - 20;
+    const b = (num & 0x0000ff) - 20;
+    return `#${(r < 0 ? 0 : r).toString(16)}${(g < 0 ? 0 : g).toString(16)}${(b < 0 ? 0 : b).toString(16)}`;
+  };  
 
   const getScoreStyle = (score) => {
     if (score >= 70) {
       return {
-        backgroundColor: "#e9f5e9",
-        color: "green",
+        scoreClass: "score-high",
         characterImage: greenLion,
+        circleBorderColor: "#4CAF50", // Green
       };
     } else if (score >= 40) {
       return {
-        backgroundColor: "#fff8e1",
-        color: "orange",
+        scoreClass: "score-medium",
         characterImage: yellowLion,
+        circleBorderColor: "#FFA000", // Orange
       };
     } else {
       return {
-        backgroundColor: "#ffe6e6",
-        color: "red",
+        scoreClass: "score-low",
         characterImage: redLion,
+        circleBorderColor: "#FF5252", // Red
       };
     }
   };
 
-  const { backgroundColor, color, characterImage } = getScoreStyle(score);
+  const { scoreClass, characterImage, circleBorderColor } = getScoreStyle(score);
 
   return (
-    <div className="result-container">
+    <div className="result-container max-w-4xl">
       <div className="url-section">
-        <h2>입력하신 URL</h2>
-        <p className="url">
-          [ <span className="highlight-url">{blogUrl}</span> ]에 작성된 리뷰 검사 결과입니다.
-        </p>
+        <h4 className="url-title">입력하신 URL</h4>
+        <h2 className="blog-url">[ {blogUrl} ]</h2>
+        <h4 className="url-title">에 작성된 리뷰 검사 결과입니다.</h4>
+        <div className="divider" />
       </div>
-      <div className="main-content" style={{ backgroundColor }}>
-        <div className="left-content">
-          <h3 className="title">AI 리뷰 요약 🤖</h3>
-          <h4 className="review-title">{summaryTitle}</h4>
-          <p className="review-content">{summaryText}</p>
-          <h4 className="judgement-title">왜 이렇게 판단했나요? 🤔</h4>
-          <p className="judgement-reason">{evidence}</p>
-          <p className="fake-report">▶ 가짜 리뷰로 제보하기</p>
+
+      <div className={`main-content ${scoreClass} rounded-3xl border-4`} style={{ borderColor: circleBorderColor }}>
+        <div className="left-content space-y-6">
+          <div>
+            <h3 className="section-title">
+            AI 리뷰 요약 🤖
+            </h3>
+            <h4 className="summary-title">{summaryTitle}</h4>
+            <p className="summary-text">{summaryText}</p>
+          </div>
+
+          <div>
+            <h3 className="section-title">
+              왜 이렇게 판단했나요? 🧐
+            </h3>
+            <p className="evidence-text">{evidence}</p>
+          </div>
+
+          <button className="report-button" style={{ color: circleBorderColor }}>
+            ▶ 가짜 리뷰로 제보하기
+          </button>
         </div>
+
         <div className="right-content">
-          <h3>이 리뷰의 점수는?</h3>
-          <img src={characterImage} alt="점수 캐릭터" className="score-image" />
-          <h1 className="score" style={{ color }}>
-            {score} / 100
-          </h1>
-          <p className="check-criteria" style={{ color }}>
+          <h3 className="section-title mb-4">이 리뷰의 점수는?</h3>
+
+          <div className="score-visual">
+            <img
+              src={characterImage}
+              alt="Score Character"
+              className="score-character"
+            />
+            <svg viewBox="0 0 36 36" className="circular-chart">
+              <path
+                className="circle-bg"
+                d="M18 2.0845
+                  a 15.9155 15.9155 0 0 1 0 31.831
+                  a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+              <path
+                className="circle"
+                strokeDasharray={`${score}, 100`}
+                style={{ stroke: circleBorderColor, strokeWidth: 4 }}
+                d="M18 2.0845
+                  a 15.9155 15.9155 0 0 1 0 31.831
+                  a 15.9155 15.9155 0 0 1 0 -31.831"
+              />
+              <text x="18" y="20.35" className="percentage">{score}</text>
+            </svg>
+          </div>
+
+          <button
+            className="criteria-button mt-4 mb-6"
+            style={{ color: circleBorderColor }}
+            onMouseEnter={(e) => (e.target.style.color = darkenColor(circleBorderColor))}
+            onMouseLeave={(e) => (e.target.style.color = circleBorderColor)}
+          >
             ▶ 검사 기준이 궁금하신가요?
-          </p>
+          </button>
+
           <div className="feedback-buttons">
-            <button className="feedback-button">👍</button>
-            <button className="feedback-button">👎</button>
+            <button className="feedback-button">
+              <ThumbsUp size={24} />
+            </button>
+            <button className="feedback-button">
+              <ThumbsDown size={24} />
+            </button>
           </div>
         </div>
       </div>

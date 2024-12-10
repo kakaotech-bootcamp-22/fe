@@ -1,105 +1,196 @@
 .result-container {
+  max-width: 72rem;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
   font-family: Arial, sans-serif;
-  padding: 20px;
 }
 
 .url-section {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 2rem;
 }
 
-.url {
-  font-size: 18px;
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
 }
 
-.highlight-url {
-  color: green; /* 기존 색상 유지 */
-  font-weight: bold;
+.url-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.blog-url {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #4CAF50;
+  word-break: break-word;
+}
+
+.description {
+  font-size: 1rem;
+}
+
+.divider {
+  width: 30%;
+  height: 2px;
+  background-color: #e5e7eb;
+  margin: 1.5rem auto;
 }
 
 .main-content {
+  border-radius: 1.5rem;
+  padding: 2rem;
   display: flex;
-  justify-content: space-between;
-  padding: 20px;
-  border-radius: 10px;
+  flex-direction: column;
+  gap: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 768px) {
+  .main-content {
+    flex-direction: row;
+  }
+}
+
+.score-high {
+  background-color: #F4F9F4;
+}
+
+.score-medium {
+  background-color: #FFF8E1;
+}
+
+.score-low {
+  background-color: #FFF6F6;
 }
 
 .left-content {
-  width: 60%;
+  flex: 1;
 }
 
-.title {
-  font-size: 24px;
-  margin-bottom: 10px;
+.summary-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
 
-.review-title {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 10px;
+.summary-text, .evidence-text {
+  color: #4a5568;
+  line-height: 1.6;
 }
 
-.review-content {
-  font-size: 16px;
-  margin-bottom: 20px;
-}
-
-.judgement-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.judgement-reason {
-  font-size: 16px;
-  margin-bottom: 20px;
-}
-
-.fake-report {
-  color: green; /* 기존 색상 유지 */
+.report-button {
+  color: #4CAF50;
+  text-align: left;
+  background: none;
+  border: none;
   cursor: pointer;
-  margin-bottom: 10px;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  transition: color 0.3s ease;
 }
 
-.go-back {
-  color: gray; /* 기존 색상 유지 */
-  cursor: pointer;
+.report-button:hover {
+  color: #45a049;
 }
 
 .right-content {
-  width: 35%;
+  width: 100%;
   text-align: center;
 }
 
-.score-image {
-  width: 100px;
-  margin: 0 auto 10px auto;
+@media (min-width: 768px) {
+  .right-content {
+    width: 250px;
+  }
 }
 
-.score {
-  font-size: 40px;
+.score-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative; /* 상대 위치 설정 */
+  margin-bottom: 1rem;
 }
 
-.check-criteria {
-  font-size: 16px;
-  margin: 10px 0;
+.score-character {
+  position: absolute; /* 절대 위치 설정 */
+  top: -20%; /* 원형 시각화와 겹치도록 조정 */
+  z-index: 1; /* 원보다 위에 표시되도록 설정 */
+  width: 6rem;
+  height: 6rem;
+}
+
+.circular-chart {
+  display: block;
+  margin: 0 auto;
+  max-width: 150px;
+  max-height: 150px;
+  z-index: 0; /* Lion 이미지 아래에 표시 */
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 3;
+}
+
+.circle {
+  fill: none;
+  stroke-linecap: round;
+  animation: progress 1s ease-out forwards;
+}
+
+.percentage {
+  fill: #333;
+  font-family: Arial, sans-serif;
+  font-size: 0.75em;
+  text-anchor: middle;
+  font-weight: bold;
+}
+
+.criteria-button {
+  margin: 1.5rem 0;
+  display: block;
+  width: 100%;
+  text-align: center;
+  color: #4CAF50;
+  background: none;
+  border: none;
   cursor: pointer;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.criteria-button:hover {
+  color: #45a049;
 }
 
 .feedback-buttons {
   display: flex;
   justify-content: center;
-  margin-top: 10px;
+  gap: 1rem;
 }
 
 .feedback-button {
-  font-size: 20px;
-  cursor: pointer;
-  border: none;
+  padding: 0.5rem;
   background: none;
-  margin: 0 5px;
+  border: none;
+  cursor: pointer;
+  border-radius: 9999px;
+  transition: background-color 0.2s, transform 0.2s;
 }
 
 .feedback-button:hover {
-  transform: scale(1.2);
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: scale(1.1);
+}
+
+.feedback-button svg {
+  color: #a0aec0;
 }

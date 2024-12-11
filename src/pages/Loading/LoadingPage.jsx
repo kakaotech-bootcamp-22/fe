@@ -32,7 +32,7 @@ const LoadingPage = () => {
       return;
     }
 
-    const pollingInterval = 5000;
+    const pollingInterval = 10000;
     let intervalId;
 
     const checkResultStatus = async () => {

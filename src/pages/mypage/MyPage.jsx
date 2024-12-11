@@ -7,12 +7,15 @@ import GoogleIcon from "../../assets/mypage/web_neutral_rd_na@4x.png";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from "../../context/AuthContext";
 import axios from 'axios';
+import { Button, message, Popconfirm } from 'antd';
+
+
 
 
 const EntireContainer = styled.div`
   background-color: #f5f5f5;
   text-align: center;
-  min-height: 100vh
+  min-height: 90vh
 `
 
 /* 프로필 컨테이너 */
@@ -22,7 +25,7 @@ const ProfileContainer = styled.div`
   padding: 20px;
   background-color: #ffffff;
   text-align: center;
-  min-height: 100vh;
+  min-height: 90vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* 위아래로 공간을 분배 */
@@ -176,16 +179,41 @@ function MyPage(props) {
     platform,
     createdAt,
     email,
-    writtenReviewCount, 
+    writtenReviewCount,
     receivedLikeCount,
     loading,
     settingLoading,
-    loginFail, 
+    loginFail,
   } = useAuth();
   const [newNickname, setNickname] = useState(nickname);
   const [newProfileImage, setProfileImage] = useState(profileImage);
   const navigate = useNavigate();
   const API_URL = process.env.REACT_APP_API_URL;
+
+  const confirm = (e) => {
+    console.log(e);
+    accountDeactivation();
+  };
+
+  const cancel = (e) => {
+    console.log(e);
+    message.error('회원탈퇴가 취소되었습니다.');
+  };
+
+  const accountDeactivation = (() => {
+    axios.get(`${API_URL}/mypage/delete`, { withCredentials: true })
+      .then(response => {
+        //로그 아웃
+        logout(); // AuthContext 상태 리셋
+        navigate("/login-signup")
+        settingLoading(false);
+        message.success('회원탈퇴가 완료되었습니다.');
+      })
+      .catch(error => {
+        console.error("회원탈퇴 중 에러 발생", error);
+        message.error('회원탈퇴 중 문제가 발생했습니다. 다시 시도해 주세요.');
+      });
+  });
 
   useEffect(() => {
     axios.get(`${API_URL}/auth/status`, { withCredentials: true })
@@ -256,7 +284,17 @@ function MyPage(props) {
           </InfoBox>
         </InfoBoxes>
         <>
-          <FooterButton>회원탈퇴</FooterButton>
+          <Popconfirm
+            title="주의"
+            description={<>탈퇴를 진행하시겠습니까?<br />
+              탈퇴 후 계정은 비활성화 상태로 전환되며, 데이터는 복구를 원하실 경우 일정 기간 동안 보관됩니다.</>}
+            onConfirm={confirm}
+            onCancel={cancel}
+            okText="회원 탈퇴"
+            cancelText="취소"
+          >
+            <FooterButton>회원탈퇴</FooterButton>
+          </Popconfirm>
         </>
       </ProfileContainer>
     </EntireContainer>

@@ -31,7 +31,21 @@ import imageCompression from 'browser-image-compression';
 import axios from 'axios';
 
 function EditMyPage(props) {
-    const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt, email } = useAuth();
+    const {
+        isLoggedIn,
+        login,
+        logout,
+        nickname,
+        profileImage,
+        platform,
+        createdAt,
+        email,
+        writtenReviewCount, 
+        receivedLikeCount,
+        loading,
+        settingLoading,
+        loginFail, 
+      } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [newNickname, setNickname] = useState(nickname);
     const [newProfileImage, setProfileImage] = useState(profileImage);
@@ -64,7 +78,6 @@ function EditMyPage(props) {
     };
 
     const handleImageChange = async (event) => {
-        
         if (event.target.files && event.target.files.length > 0) {
             const file = event.target.files[0]; // 선택된 파일
 
@@ -150,12 +163,11 @@ function EditMyPage(props) {
                 totalformData.append("profileImage", profileImage);
             }
 
-            console.log("프로필 업데이트 요청 데이터:");
             for (let [key, value] of totalformData.entries()) {
                 console.log(`${key}:`, value);
             }
 
-            const response = await fetch("/api/update-profile", {
+            const response = await fetch("/mypage/update-profile", {
                 method: "POST",
                 body: totalformData,
             });
@@ -163,26 +175,51 @@ function EditMyPage(props) {
             if (response.ok) {
                 const result = await response.json();
                 message.success("프로필이 성공적으로 업데이트되었습니다!");
-                console.log("변경 완료 결과:", result);
                 setNickname(result.updatedNickname);
                 setProfileImage(encodedUrl);
                 updateProfileImage(encodedUrl);
                 navigate("/mypage");
             } else {
-                console.error("프로필 업데이트 실패:", response);
                 message.error("프로필을 업데이트하는 데 실패했습니다.");
                 setNickname(nickname); // 기존 닉네임 복구
-                setProfileImage(profileImage); // 기존 이미지 복구
+                setPreviewImage(profileImage); // 기존 이미지 복구
             }
         } catch (error) {
-            console.error("프로필 업데이트 중 오류:", error);
             message.error("프로필 업데이트 중 오류가 발생했습니다.");
             setNickname(nickname);
-            setProfileImage(profileImage);
+            setPreviewImage(profileImage);
         }
 
         setIsEditing(false); // 편집 모드 종료
     };
+
+    useEffect(() => {
+        axios.get(`${API_URL}/auth/status`, { withCredentials: true })
+          .then((response) => {
+            if (response.data.loggedIn) {
+              // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
+              login(
+                response.data.jwtToken,
+                response.data.nickname,
+                response.data.userImage,
+                response.data.platform,
+                response.data.createdAt,
+                response.data.email
+              );
+              settingLoading(false);
+            }
+          })
+          .catch(error => {
+            setErrorMessage("로그인 상태를 확인할 수 없습니다.");
+          });
+        //}
+      }, []); // 한 번만 실행되도록 빈 배열을 의존성 배열에 추가
+    
+    useEffect(() => {
+        // AuthContext의 최신 상태를 가져와 동기화
+        setNickname(nickname);
+        setPreviewImage(profileImage);
+    }, [nickname, profileImage]);
 
     return (
 

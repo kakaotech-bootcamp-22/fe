@@ -8,7 +8,8 @@ import axios from 'axios';
 
 const Home = ({ onCheckURL }) => {
   const [url, setUrl] = useState('');
-  const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt, email } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
+  const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt, email, writtenReviewCount,
+    receivedLikeCount, loading, settingLoading, loginFail, } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
   const [errorMessage, setErrorMessage] = useState("");
   const API_URL = process.env.REACT_APP_API_URL;
 
@@ -24,14 +25,22 @@ const Home = ({ onCheckURL }) => {
           if (response.data.jwtToken) {
             login(response.data.jwtToken, response.data.nickname, response.data.profileImage, response.data.platform, response.data.createdAt, response.data.email);
           }
+          settingLoading(false);
+
+          // URL에서 "code" 파라미터 제거
+          const url = new URL(window.location.href);
+          url.searchParams.delete("code"); // "code" 파라미터 제거
+          window.history.replaceState(null, "", url.toString());
+
         })
         .catch(error => {
           //console.error("백엔드와 통신 중 에러 발생:", error);
           setErrorMessage("로그인에 실패했습니다.");
+
         });
-    } 
+    }
     else {
-      if (isLoggedIn===false){
+      if (isLoggedIn === false) {
         axios.get(`${API_URL}/auth/status`, { withCredentials: true })
           .then(response => {
             if (response.data.loggedIn) {
@@ -39,9 +48,14 @@ const Home = ({ onCheckURL }) => {
               login(response.data.jwtToken, response.data.nickname, response.data.userImage, response.data.platform, response.data.createdAt, response.data.email);
             }
           })
-          .catch(error => {
+          .catch((error) => {
             setErrorMessage("로그인 상태를 확인할 수 없습니다.");
-          });
+            loginFail(false);
+            settingLoading(false);
+          })
+          .finally(() => {
+            settingLoading(false);
+          })
       }
     }
   }, []); // 한 번만 실행되도록 빈 배열을 의존성 배열에 추가

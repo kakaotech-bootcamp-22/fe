@@ -6,14 +6,15 @@ const AuthContext = createContext();
 
 export const AuthProvider =  ({ children }) => {
   // const [isLoggedIn, setIsLoggedIn] = useState(response.data?.isLoggedIn ===true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
   const [token, setToken] = useState(null);
   const [nickname, setNickname] = useState(null); // 닉네임 상태 추가
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profileImage, setProfileImage] = useState(null); // 프로필 이미지 상태 추가
   const [platform, setPlatform] = useState(null); // 플랫폼 추가
   const [createdAt, setCreatedAt] = useState(null); // 플랫폼 추가
   const [email, setEmail] = useState(null);
+  
+  const [loading, setLoading] = useState(true); // 로딩 상태
 
   const [writtenReviewCount, setWrittenReviewCount] = useState(null);
   const [receivedLikeCount, setReceivedLikeCount] = useState(null);
@@ -31,6 +32,14 @@ export const AuthProvider =  ({ children }) => {
     setEmail(newEmail)
 
     fetchUserActivity();
+  };
+
+  const loginFail = (newLogin) => {
+    setIsLoggedIn(newLogin);
+  };
+
+  const settingLoading = (newLoading) => {
+    setLoading(newLoading);
   };
 
   // 로그아웃 메서드
@@ -73,9 +82,12 @@ export const AuthProvider =  ({ children }) => {
         email, 
         writtenReviewCount, 
         receivedLikeCount, 
+        loading,
         login, 
         logout, 
-        updateProfileImage 
+        updateProfileImage,
+        loginFail,
+        settingLoading,
       }}
     >
       {children}

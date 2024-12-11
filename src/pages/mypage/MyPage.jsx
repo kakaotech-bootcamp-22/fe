@@ -177,7 +177,10 @@ function MyPage(props) {
     createdAt,
     email,
     writtenReviewCount, 
-    receivedLikeCount 
+    receivedLikeCount,
+    loading,
+    settingLoading,
+    loginFail, 
   } = useAuth();
   const [newNickname, setNickname] = useState(nickname);
   const [newProfileImage, setProfileImage] = useState(profileImage);
@@ -197,6 +200,7 @@ function MyPage(props) {
             response.data.createdAt,
             response.data.email
           );
+          settingLoading(false);
         }
       })
       .catch(error => {

@@ -38,7 +38,7 @@ function LoginPage(props) {
         const kakaoJsKey = process.env.REACT_APP_KAKAO_JS_KEY;
 
         if (Kakao) {
-            if (!Kakao.isInitialized()) {
+            if(!window.Kakao.isInitialized()){
                 Kakao.init(kakaoJsKey);
                 setIsKakaoInitialized(true); // 초기화 성공 시 상태 업데이트
             }

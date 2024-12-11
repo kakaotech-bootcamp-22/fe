@@ -4,8 +4,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { message } from "antd"; // Import message from Ant Design
 import "./Review.css";
-import heartImage from "../../assets/review/heart.png";
-import ryanImage from "../../assets/review/ryan_image.png";
+import ryanImage1 from "../../assets/review/ryan_image1.png";
+import ryanImage2 from "../../assets/review/ryan_image2.png";
+import ryanImage3 from "../../assets/review/ryan_image3.png";
 import defaultProfileImage from "../../assets/review/default_profile.png";
 import previousBtn from "../../assets/review/previous_btn.png";
 import axios from "axios";
@@ -143,21 +144,51 @@ const RatingDistribution = React.memo(({ ratingStats, totalReviews }) => (
   </div>
 ));
 
-// ReviewSummary 컴포넌트
-const ReviewSummary = () => (
-  <div className="review-summary">
-    <div className="character-avatar">
-      <img src={ryanImage} alt="Ryan Avatar" className="review-img" />
-    </div>
-    <div className="review-text">
-      <span>대부분</span>
-      <span className="highlight"> 찐 리뷰를 남겼다</span>
-      <span>고 남겨줬어요</span>
-    </div>
-  </div>
-);
+// ReviewSummary 컴포넌트 수정
+const ReviewSummary = ({ averageRating }) => {
+  let image;
+  let text;
 
-// RatingOverview 컴포넌트
+  if (averageRating >= 4) {
+    image = ryanImage1;
+    text = (
+      <>
+        <span>대부분 </span>
+        <span className="highlight">찐 리뷰</span>
+        <span>라고 남겨줬어요</span>
+      </>
+    );
+  } else if (averageRating >= 2) {
+    image = ryanImage2;
+    text = (
+      <>
+        <span>대부분 </span>
+        <span className="highlight">가짜리뷰가 의심된다</span>
+        <span>고 남겨줬어요</span>
+      </>
+    );
+  } else {
+    image = ryanImage3;
+    text = (
+      <>
+        <span>대부분 </span>
+        <span className="highlight">가짜리뷰</span>
+        <span>라고 남겨줬어요</span>
+      </>
+    );
+  }
+
+  return (
+    <div className="review-summary">
+      <div className="character-avatar">
+        <img src={image} alt="Ryan Avatar" className="review-img" />
+      </div>
+      <div className="review-text">{text}</div>
+    </div>
+  );
+};
+
+// RatingOverview 컴포넌트 수정
 const RatingOverview = ({
   averageRating,
   renderStars,
@@ -167,7 +198,7 @@ const RatingOverview = ({
   <div className="rating-overview">
     <AverageRating averageRating={averageRating} renderStars={renderStars} />
     <RatingDistribution ratingStats={ratingStats} totalReviews={totalReviews} />
-    <ReviewSummary />
+    <ReviewSummary averageRating={averageRating} />
   </div>
 );
 
@@ -406,6 +437,7 @@ export default function Review() {
   const blog_id = location.state?.blog_id ?? 1;
   const url = location.state?.url ?? "blog.naver.com/kakao_food_fighter";
   const API_URL = process.env.REACT_APP_API_URL;
+
   useEffect(() => {
     // 쿠키 기반 로그인 상태 확인
     axios

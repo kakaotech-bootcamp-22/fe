@@ -25,12 +25,7 @@ function App() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/edit-mypage" element={<EditMyPage />} />
           <Route path="/loading" element={<LoadingPage />} />
-          <Route
-            path="/result"
-            element={
-              resultData ? <ResultPage data={resultData} /> : <Home />
-            }
-          />
+          <Route path="/result" element={<ResultPage /> } />
           {/* Mock Data 경로 */}
           <Route
             path="/mock-result"

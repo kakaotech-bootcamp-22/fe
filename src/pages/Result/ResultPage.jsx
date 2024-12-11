@@ -1,18 +1,24 @@
 import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import "./ResultPage.css";
 import greenLion from "../../assets/result/green-choonsik.png";
 import yellowLion from "../../assets/result/yellow-choonsik.png";
 import redLion from "../../assets/result/red-choonsik.png";
 
-const ResultPage = ({ data }) => {
-  const {
-    blogUrl = "URL 없음",
-    summaryTitle = "제목 없음",
-    summaryText = "요약 없음",
-    score = 0,
-    evidence = "근거 없음",
-  } = data;
+const ResultPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const data = location.state;
+
+  if (!data) {
+    // 데이터가 없으면 홈으로 리다이렉트
+    console.warn("No data received. Redirecting to home...");
+    navigate("/", { replace: true });
+    return null;
+  }
+
+  const { blogUrl, summaryTitle, summaryText, score, evidence } = data;
 
   const darkenColor = (color) => {
     const num = parseInt(color.slice(1), 16);

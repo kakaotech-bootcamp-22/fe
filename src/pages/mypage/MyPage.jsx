@@ -6,9 +6,9 @@ import GoogleIcon from "../../assets/mypage/web_neutral_rd_na@4x.png";
 
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from "../../context/AuthContext";
-import axios from 'axios';
 import { Button, message, Popconfirm } from 'antd';
-
+import axios from '../../api/axios';
+import requests from '../../api/requests';
 
 
 
@@ -20,7 +20,7 @@ const EntireContainer = styled.div`
 
 /* 프로필 컨테이너 */
 const ProfileContainer = styled.div`
-  max-width: 500px;
+  max-width: 60%;
   margin: 0 auto;
   padding: 10px;
   background-color: #ffffff;
@@ -29,6 +29,8 @@ const ProfileContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* 위아래로 공간을 분배 */
+  min-width: 500px; 
+
 `
 
 /* 프로필 정보 */
@@ -200,24 +202,22 @@ function MyPage(props) {
     message.error('회원탈퇴가 취소되었습니다.');
   };
 
-  const accountDeactivation = (() => {
-    axios.get(`${API_URL}/mypage/delete`, { withCredentials: true })
-      .then(response => {
-        //로그 아웃
+  const accountDeactivation = async () => {
+      try{ //로그 아웃
+        await axios.get(requests.fetchUserDelete);
         logout(); // AuthContext 상태 리셋
         navigate("/login-signup")
         settingLoading(false);
         message.success('회원탈퇴가 완료되었습니다.');
-      })
-      .catch(error => {
+      } catch(error) {
         console.error("회원탈퇴 중 에러 발생", error);
         message.error('회원탈퇴 중 문제가 발생했습니다. 다시 시도해 주세요.');
-      });
-  });
+      };
+  };
 
-  useEffect(() => {
-    axios.get(`${API_URL}/auth/status`, { withCredentials: true })
-      .then(response => {
+  useEffect( () => {
+      try{
+        const response = axios.get(requests.fetchAuthStatus);
         if (response.data.loggedIn) {
           // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
           login(
@@ -230,10 +230,9 @@ function MyPage(props) {
           );
           settingLoading(false);
         }
-      })
-      .catch(error => {
+      } catch(error) {
         setErrorMessage("로그인 상태를 확인할 수 없습니다.");
-      });
+      };
     //}
   }, []); // 한 번만 실행되도록 빈 배열을 의존성 배열에 추가
 
@@ -286,8 +285,7 @@ function MyPage(props) {
         <>
           <Popconfirm
             title="주의"
-            description={<>탈퇴를 진행하시겠습니까?<br />
-              탈퇴 후 계정은 비활성화 상태로 전환되며, 데이터는 복구를 원하실 경우 일정 기간 동안 보관됩니다.</>}
+            description={<>회원탈퇴를 진행하시겠습니까?<br /></>}
             onConfirm={confirm}
             onCancel={cancel}
             okText="회원 탈퇴"

@@ -89,9 +89,9 @@ const ResultPage = () => {
               <p className="evidence-text">{evidence}</p>
             </div>
 
-            <button className="report-button" style={{ color: circleBorderColor }}>
+            {/* <button className="report-button" style={{ color: circleBorderColor }}>
               ▶ 가짜 리뷰로 제보하기
-            </button>
+            </button> */}
           </div>
 
           <div className="right-content">

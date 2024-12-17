@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { Modal, Input, Button, message } from "antd";
+import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
 import "./ResultPage.css";
 import greenLion from "../../assets/result/green-choonsik.png";
@@ -14,6 +15,7 @@ const ResultPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const data = location.state;
+  const { isLoggedin } = useAuth();
 
   const [ feedbackModalVisible, setFeedbackModalVisible ] = useState(false);
   const [ feedbackReason, setFeedbackReason ] = useState("");
@@ -26,6 +28,63 @@ const ResultPage = () => {
   }
 
   const { blogUrl, summaryTitle, summaryText, score, evidence } = data;
+
+  // 로그인 상태 확인
+  const showLoginRequiredMessage = () => {
+    message.info("피드백 작성은 로그인이 필요합니다.");
+  }
+
+  // 피드백 모달 열기
+  const showFeedbackModal = (type) => {
+    if (!isLoggedin) {
+      showLoginRequiredMessage();
+      return;
+    }
+    message.success(`${feedbackType === "positive" ? "긍정" : "부정"} 피드백을 작성합니다.`);
+    setFeedbackType(type);
+    setFeedbackModalVisible(true);
+  };
+
+  // 피드백 모달 닫기
+  const handleFeedbackCancel = () => {
+    setFeedbackReason("");
+    setFeedbackModalVisible(false);
+  };
+
+  // 피드백 제출
+  const handleFeedbackSubmit = async () => {
+    console.log("Feedback Type:", feedbackType);
+    console.log("Feedback Reason:", feedbackReason);
+
+    if (!feedbackReason.trim()) {
+      message.error("사유를 입력해주세요!");
+      return;
+    }
+
+    try {
+      // 백엔드에 전송할 데이터 구성
+      const payload = {
+        feedbackType, // 'like' 또는 'dislike'
+        feedbackReason, // 사용자가 입력한 사유
+      };
+  
+      // POST 요청 전송
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/feedback`,
+        payload
+      );
+  
+      console.log("Feedback submitted successfully:", response.data);
+      message.success("피드백이 성공적으로 제출되었습니다!");
+  
+      // 모달 닫기 및 상태 초기화
+      setFeedbackModalVisible(false);
+      setFeedbackReason("");
+    } catch (error) {
+      console.error("Failed to submit feedback:", error);
+      message.error("피드백 제출 중 오류가 발생했습니다.");
+    }
+  };
 
   const darkenColor = (color) => {
     const num = parseInt(color.slice(1), 16);
@@ -73,53 +132,6 @@ const ResultPage = () => {
   };
 
   const { scoreClass, characterImage, circleBorderColor, lionContainerStyle } = getScoreStyle(score);
-
-  // 피드백 모달 열기
-  const showFeedbackModal = (type) => {
-    setFeedbackType(type);
-    setFeedbackModalVisible(true);
-  };
-
-  // 피드백 모달 닫기
-  const handleFeedbackCancel = () => {
-    setFeedbackReason("");
-    setFeedbackModalVisible(false);
-  };
-
-  // 피드백 제출
-  const handleFeedbackSubmit = async () => {
-    console.log("Feedback Type:", feedbackType);
-    console.log("Feedback Reason:", feedbackReason);
-
-    if (!feedbackReason.trim()) {
-      message.error("사유를 입력해주세요!");
-      return;
-    }
-
-    try {
-      // 백엔드에 전송할 데이터 구성
-      const payload = {
-        feedbackType, // 'like' 또는 'dislike'
-        feedbackReason, // 사용자가 입력한 사유
-      };
-  
-      // POST 요청 전송
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/feedback`,
-        payload
-      );
-  
-      console.log("Feedback submitted successfully:", response.data);
-      message.success("피드백이 성공적으로 제출되었습니다!");
-  
-      // 모달 닫기 및 상태 초기화
-      setFeedbackModalVisible(false);
-      setFeedbackReason("");
-    } catch (error) {
-      console.error("Failed to submit feedback:", error);
-      message.error("피드백 제출 중 오류가 발생했습니다.");
-    }
-  };
 
   return (
     <div className="outer-container">

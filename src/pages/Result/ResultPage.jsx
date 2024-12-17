@@ -186,10 +186,10 @@ const ResultPage = () => {
             </button>
 
             <div className="feedback-buttons">
-              <button className="feedback-button">
+              <button className="feedback-button" onClick={() => showFeedbackModal("like")}>
                 <ThumbsUp size={24} />
               </button>
-              <button className="feedback-button">
+              <button className="feedback-button" onClick={() => showFeedbackModal("dislike")}>
                 <ThumbsDown size={24} />
               </button>
             </div>

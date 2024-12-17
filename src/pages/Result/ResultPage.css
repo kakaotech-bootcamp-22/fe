@@ -1,5 +1,5 @@
 .result-container {
-  max-width: 72rem;
+  max-width: 60rem;
   margin: 2rem auto;
   padding: 0 1.5rem;
   font-family: Arial, sans-serif;
@@ -67,7 +67,7 @@
 }
 
 .left-content {
-  flex: 1;
+  flex: 0 0 60%;
 }
 
 .summary-title {
@@ -99,6 +99,7 @@
 }
 
 .right-content {
+  flex: 0 0 40%;
   width: 100%;
   text-align: center;
 }
@@ -204,7 +205,6 @@
   position: absolute;
   z-index: 1;
 }
-
 
 .circle-container {
   display: flex;

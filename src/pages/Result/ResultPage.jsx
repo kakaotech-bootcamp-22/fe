@@ -133,7 +133,7 @@ const ResultPage = () => {
         </div>
 
         <div className={`main-content ${scoreClass}`} style={{ borderColor: circleBorderColor }}>
-          <div className="left-content" style={{ flex: "0 0 60%" }}>
+          <div className="left-content">
             <div>
               <h3 className="section-title" style={{ fontWeight: "bold" }}>AI 리뷰 요약 🤖</h3>
               <h4 className="summary-title">{summaryTitle}</h4>

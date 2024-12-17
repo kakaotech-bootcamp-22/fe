@@ -80,13 +80,16 @@ const ResultPage = () => {
   };
 
   // 피드백 모달 닫기
-  const handleCancel = () => {
+  const handleFeedbackCancel = () => {
     setFeedbackReason("");
     setFeedbackModalVisible(false);
   };
 
   // 피드백 제출
   const handleFeedbackSubmit = async () => {
+    console.log("Feedback Type:", feedbackType);
+    console.log("Feedback Reason:", feedbackReason);
+
     if (!feedbackReason.trim()) {
       message.error("사유를 입력해주세요!");
       return;
@@ -105,7 +108,7 @@ const ResultPage = () => {
         }),
       });
       message.success("피드백이 성공적으로 저장되었습니다!");
-      handleCancel();
+      handleFeedbackCancel();
     } catch (error) {
       message.error("피드백 저장에 실패했습니다.");
       console.error(error);
@@ -200,11 +203,11 @@ const ResultPage = () => {
 
       {/* 피드백 모달 */}
       <Modal
-        title="피드백 사유를 입력해주세요"
+        title="피드백 제출"
         visible={feedbackModalVisible}
-        onCancel={handleCancel}
+        onCancel={handleFeedbackCancel}
         footer={[
-          <Button key="cancel" onClick={handleCancel}>
+          <Button key="cancel" onClick={handleFeedbackCancel}>
             취소
           </Button>,
           <Button key="submit" type="primary" onClick={handleFeedbackSubmit}>
@@ -212,6 +215,10 @@ const ResultPage = () => {
           </Button>,
         ]}
       >
+        <p style={{ fontWeight: "bold", fontSize: "16px", marginBottom: "10px" }}>
+          {feedbackType === "like" ? "긍정 피드백" : "부정 피드백"}
+        </p>
+        <p>검사 결과에 대한 피드백을 입력해주세요.</p>
         <TextArea
           rows={4}
           value={feedbackReason}

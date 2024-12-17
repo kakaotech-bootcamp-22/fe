@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
+import { Modal, Input, Button, message } from "antd";
 import "./ResultPage.css";
 import greenLion from "../../assets/result/green-choonsik.png";
 import yellowLion from "../../assets/result/yellow-choonsik.png";

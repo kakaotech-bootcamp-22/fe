@@ -7,10 +7,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { message } from "antd"; // Ant Design message 추가
 
 const Home = ({ onCheckURL }) => {
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
-  const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt, email } = useAuth();
+  const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt, email, writtenReviewCount,
+    receivedLikeCount, loading, settingLoading, loginFail, } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
+  const [errorMessage, setErrorMessage] = useState("");
   const API_URL = process.env.REACT_APP_API_URL;
 
   // location.state에서 에러 메시지 확인
@@ -41,29 +43,38 @@ const Home = ({ onCheckURL }) => {
               response.data.email
             );
           }
+          settingLoading(false);
+
+          // URL에서 "code" 파라미터 제거
+          const url = new URL(window.location.href);
+          url.searchParams.delete("code"); // "code" 파라미터 제거
+          window.history.replaceState(null, "", url.toString());
+
         })
-        .catch(() => {
-          message.error("로그인에 실패했습니다.");
+        .catch(error => {
+          //console.error("백엔드와 통신 중 에러 발생:", error);
+          setErrorMessage("로그인에 실패했습니다.");
+
         });
-    } else if (!isLoggedIn) {
-      // 로그인 상태 확인
-      axios
-        .get(`${API_URL}/auth/status`, { withCredentials: true })
-        .then((response) => {
-          if (response.data.loggedIn) {
-            login(
-              response.data.jwtToken,
-              response.data.nickname,
-              response.data.userImage,
-              response.data.platform,
-              response.data.createdAt,
-              response.data.email
-            );
-          }
-        })
-        .catch(() => {
-          message.error("로그인 상태를 확인할 수 없습니다.");
-        });
+    }
+    else {
+      if (isLoggedIn === false) {
+        axios.get(`${API_URL}/auth/status`, { withCredentials: true })
+          .then(response => {
+            if (response.data.loggedIn) {
+              // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
+              login(response.data.jwtToken, response.data.nickname, response.data.userImage, response.data.platform, response.data.createdAt, response.data.email);
+            }
+          })
+          .catch((error) => {
+            setErrorMessage("로그인 상태를 확인할 수 없습니다.");
+            loginFail(false);
+            settingLoading(false);
+          })
+          .finally(() => {
+            settingLoading(false);
+          })
+      }
     }
   }, [isLoggedIn, API_URL, login]);
 

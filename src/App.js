@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import "./App.css";
 import Home from "./components/Home"; 
 import Navbar from "./components/Navbar/Navbar";
-import Loading from "./pages/Loading/Loading";
-import ResultPage from "./pages/Result/Result";
+import LoadingPage from "./pages/Loading/LoadingPage";
+import ResultPage from "./pages/Result/ResultPage";
 import LoginPage from "./pages/login/LoginPage";
 import MyPage from "./pages/mypage/MyPage";
 import EditMyPage from "./pages/mypage/EditMyPage";
@@ -15,50 +15,33 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [resultData, setResultData] = useState(null);
 
-  // URL 검사 함수 (임시 로딩 상태 추가)
-  const handleCheckURL = (url) => {
-    setIsLoading(true); // 로딩 페이지로 전환
-    setResultData(null); // 기존 결과 초기화
-
-    // 2초 후에 로딩 종료 및 결과 페이지로 이동 (백엔드 없이 임시 테스트)
-    setTimeout(() => {
-      setIsLoading(false);
-      setResultData({
-        url,
-        reviewScore: 85,
-        summaryTitle: "검사 결과",
-        summaryContent: "이 리뷰는 신뢰할 수 있습니다.",
-      });
-    }, 2000);
-  };
-
   return (
     <AuthProvider>
       <Router>
         <Navbar />
         <Routes>
-          {/* 로그인 및 회원가입 */}
           <Route path="/login-signup" element={<LoginPage />} />
-          {/* 리뷰 */}  
           <Route path="/review" element={<Review />} />
-
-          {/* 마이페이지 */}
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/edit-mypage" element={<EditMyPage />} />
-
-          {/* 로딩 상태에 따른 페이지 전환 */}
+          <Route path="/loading" element={<LoadingPage />} />
+          <Route path="/result" element={<ResultPage /> } />
+          {/* Mock Data 경로 */}
           <Route
-            path="/"
+            path="/mock-result"
             element={
-              isLoading ? (
-                <Loading />
-              ) : resultData ? (
-                <ResultPage data={resultData} />
-              ) : (
-                <Home onCheckURL={handleCheckURL} />
-              )
+              <ResultPage
+                data={{
+                  blogUrl: "https://blog.naver.com/kakao_food_fighter/1038913",
+                  summaryTitle: "판교역 돈까스 맛집 추천, 직장인들 점심 해결!",
+                  summaryText: "판교역 근처 돈까스 가게 다녀왔어요. 고기는 부드럽고 튀김은 바삭, 소스가 진짜 맛있었어요! 가게도 깔끔해서 직장인들 점심으로 딱이더라구요. 맛있는 돈까스 찾는 분들께 강추!",
+                  score: 60,
+                  evidence: "가짜 리뷰를 의심할 만한 근거가 발견되지 않았습니다.",
+                }}
+              />
             }
           />
+          <Route path="/" element={<Home />} />
         </Routes>
       </Router>
     </AuthProvider>

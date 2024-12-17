@@ -1,0 +1,66 @@
+/* src/components/Loading.css */
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: 20px;
+  text-align: center;
+}
+
+.loading-image {
+  width: 200px;
+  height: auto;
+  margin-bottom: 24px;
+}
+
+.loading-text {
+  margin-top: 24px;
+}
+
+.loading-text h2 {
+  font-size: 24px;
+  color: #4CAF50;
+  margin-bottom: 8px;
+}
+
+.loading-text p {
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.45); /* Ant Design의 secondary text color */
+}
+
+/* Spin 컴포넌트를 커스텀하기 위한 CSS */
+.custom-dot-spin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* 점 사이 간격 */
+}
+
+.custom-dot-spin div {
+  width: 15px; /* 점 크기 */
+  height: 15px;
+  background-color: #4CAF50; /* 포인트 색상 */
+  border-radius: 50%;
+  animation: custom-dot-bounce 1.5s infinite ease-in-out;
+}
+
+.custom-dot-spin div:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.custom-dot-spin div:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes custom-dot-bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+

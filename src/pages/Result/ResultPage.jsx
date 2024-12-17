@@ -14,9 +14,9 @@ const ResultPage = () => {
   const navigate = useNavigate();
   const data = location.state;
 
-  const { feedbackModalVisible, setFeedbackModalVisible } = useState(false);
-  const { feedbackReason, setFeedbackReason } = useState("");
-  const { feedbackType, setFeedbackType } = useState("");
+  const [ feedbackModalVisible, setFeedbackModalVisible ] = useState(false);
+  const [ feedbackReason, setFeedbackReason ] = useState("");
+  const [ feedbackType, setFeedbackType ] = useState("");
 
   if (!data) {
     console.warn("No data received. Redirecting to home...");

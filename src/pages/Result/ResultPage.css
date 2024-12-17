@@ -135,12 +135,12 @@
 .circle-bg {
   fill: none;
   stroke: #eee;
-  stroke-width: 5;
+  stroke-width: 4;
 }
 
 .circle {
   fill: none;
-  stroke-width: 5;
+  stroke-width: 4;
   stroke-linecap: round;
   animation: progress 1s ease-out forwards;
 }
@@ -194,4 +194,24 @@
 
 .feedback-button svg {
   color: #a0aec0;
+}
+
+.lion-container {
+  position: absolute;
+  top: -80px; /* 고정된 픽셀 값으로 위치 조정 */
+  left: 50%;
+  transform: translateX(-50%); /* X축으로만 중앙 정렬 */
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.circle-container {
+  display: flex;
+  justify-content: center; /* 가로 정렬 */
+  align-items: center; /* 세로 정렬 */
+  margin-top: 2rem; /* 원과의 간격 */
+  position: relative; /* Lion과 겹치지 않도록 설정 */
+  z-index: 0; /* Lion 뒤로 표시되도록 설정 */
 }

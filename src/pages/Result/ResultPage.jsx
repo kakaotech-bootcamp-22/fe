@@ -12,7 +12,6 @@ const ResultPage = () => {
   const data = location.state;
 
   if (!data) {
-    // 데이터가 없으면 홈으로 리다이렉트
     console.warn("No data received. Redirecting to home...");
     navigate("/", { replace: true });
     return null;
@@ -34,23 +33,38 @@ const ResultPage = () => {
         scoreClass: "score-high",
         characterImage: greenLion,
         circleBorderColor: "#4CAF50", // Green
+        lionContainerStyle: {
+          top: "-80px",
+          width: "160px",
+          height: "160px",
+        },
       };
     } else if (score >= 40) {
       return {
         scoreClass: "score-medium",
         characterImage: yellowLion,
         circleBorderColor: "#FFA000", // Orange
+        lionContainerStyle: {
+          top: "-40px",
+          width: "80px",
+          height: "80px",
+        },
       };
     } else {
       return {
         scoreClass: "score-low",
         characterImage: redLion,
         circleBorderColor: "#FF5252", // Red
+        lionContainerStyle: {
+          top: "-90px",
+          width: "150px",
+          height: "150px",
+        },
       };
     }
   };
 
-  const { scoreClass, characterImage, circleBorderColor } = getScoreStyle(score);
+  const { scoreClass, characterImage, circleBorderColor, lionContainerStyle } = getScoreStyle(score);
 
   return (
     <div className="outer-container">
@@ -82,33 +96,40 @@ const ResultPage = () => {
 
           <div className="right-content">
             <h3 className="section-title mb-4">이 리뷰의 점수는?</h3>
-            <br></br>
 
             <div className="score-visual">
-              <img
-                src={characterImage}
-                alt="Score Character"
-                className="score-character"
-              />
-              <svg viewBox="0 0 36 36" className="circular-chart" style={{ width: "150px", height: "150px" }}>
-                <path
-                  className="circle-bg"
-                  d="M18 2.0845
-                    a 15.9155 15.9155 0 0 1 0 31.831
-                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                />
-                <path
-                  className="circle"
-                  strokeDasharray={`${score}, 100`}
-                  style={{ stroke: circleBorderColor }}
-                  d="M18 2.0845
-                    a 15.9155 15.9155 0 0 1 0 31.831
-                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                />
-                <text x="18" y="20.35" className="percentage">{score}</text>
-              </svg>
+              <div className="circle-container" style={{ position: "relative" }}>
+                <svg viewBox="0 0 36 36" className="circular-chart" style={{ width: "150px", height: "150px" }}>
+                  <path
+                    className="circle-bg"
+                    d="M18 2.0845
+                      a 15.9155 15.9155 0 0 1 0 31.831
+                      a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <path
+                    className="circle"
+                    strokeDasharray={`${score}, 100`}
+                    style={{ stroke: circleBorderColor }}
+                    d="M18 2.0845
+                      a 15.9155 15.9155 0 0 1 0 31.831
+                      a 15.9155 15.9155 0 0 1 0 -31.831"
+                  />
+                  <text x="18" y="20.35" className="percentage">{score}</text>
+                </svg>
+                <div className="lion-container" style={{ top: lionContainerStyle.top }}>
+                  <img
+                    src={characterImage}
+                    alt="Score Character"
+                    className="score-character"
+                    style={{
+                      width: lionContainerStyle.width,
+                      height: lionContainerStyle.height,
+                    }}
+                  />
+                </div>
+              </div>
             </div>
-            <br></br>
+
             <button
               className="criteria-button mt-4 mb-6"
               style={{ color: circleBorderColor }}

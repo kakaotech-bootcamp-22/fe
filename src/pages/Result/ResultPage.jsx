@@ -70,6 +70,7 @@ const ResultPage = () => {
     <div className="outer-container">
       <div className="result-container" style={{ maxWidth: "60%" }}>
         <div className="url-section">
+          <br></br>
           <h4 className="url-title">입력하신 URL</h4>
           <h2 className="blog-url">[ {blogUrl} ]</h2>
           <h4 className="url-title">에 작성된 리뷰 검사 결과입니다.</h4>
@@ -114,7 +115,7 @@ const ResultPage = () => {
                       a 15.9155 15.9155 0 0 1 0 31.831
                       a 15.9155 15.9155 0 0 1 0 -31.831"
                   />
-                  <text x="18" y="20.35" className="percentage">{score}</text>
+                  <text x="18" y="22.1" className="percentage">{score}</text>
                 </svg>
                 <div className="lion-container" style={{ top: lionContainerStyle.top }}>
                   <img

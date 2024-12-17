@@ -7,7 +7,7 @@ import { useAuth } from "../../context/AuthContext";
 import axios from 'axios';
 import { useGoogleLogin } from '@react-oauth/google';
 import Cookies from "js-cookie";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
     Container,
@@ -29,6 +29,7 @@ function LoginPage(props) {
     const [errorMessage, setErrorMessage] = useState("");
     const API_URL = process.env.REACT_APP_API_URL;
     const navigate = useNavigate();
+    const location = useLocation();
     const redirectUri = process.env.REACT_APP_REDIRECT_URI;
 
 
@@ -46,7 +47,7 @@ function LoginPage(props) {
         } else {
             setErrorMessage("Kakao SDK 로드에 실패했습니다.");
         }
-    });
+    }, []); // 의존성 배열 추가 (최적화)
 
     const handleKakaoLogin = () => {
         const { Kakao } = window;
@@ -63,20 +64,25 @@ function LoginPage(props) {
 
     const GoogleLoginButton = () => {
         const signIn = useGoogleLogin({
-            onSuccess: (res) => {
-                axios.post(`${API_URL}/auth/google/token`, {
-                    
-                    access_token: res.access_token,
-                })
-                    .then(response => {
-                        Cookies.set('accessToken', response.data.token);
-                        navigate('/');
-                    })
-                    .catch(error => {
-                        console.log(error);
+            onSuccess: async (res) => {
+                try {
+                    const response = await axios.post(`${API_URL}/auth/google/token`, {
+                        access_token: res.access_token,
                     });
+
+                    // 로그인 성공 시 토큰 저장
+                    Cookies.set("accessToken", response.data.token);
+
+                    // 이전 경로로 리다이렉트 (없으면 메인으로)
+                    const redirectPath = location.state?.from || "/";
+                    navigate(redirectPath);
+                } catch (error) {
+                    console.log(error);
+                }
             },
-            onError: (error) => { console.log(error); }
+            onError: (error) => {
+                console.log(error);
+            },
         });
         return (
             <div onClick={() => signIn()}>

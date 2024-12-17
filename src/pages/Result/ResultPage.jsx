@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { Modal, Input, Button, message } from "antd";
+import axios from "axios";
 import "./ResultPage.css";
 import greenLion from "../../assets/result/green-choonsik.png";
 import yellowLion from "../../assets/result/yellow-choonsik.png";
@@ -96,22 +97,27 @@ const ResultPage = () => {
     }
 
     try {
-      await fetch(`${process.env.REACT_APP_API_URL}/review-feedback`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          reviewId: data.requestId,
-          type: feedbackType,
-          reason: feedbackReason,
-        }),
-      });
-      message.success("피드백이 성공적으로 저장되었습니다!");
-      handleFeedbackCancel();
+      // 백엔드에 전송할 데이터 구성
+      const payload = {
+        feedbackType, // 'like' 또는 'dislike'
+        feedbackReason, // 사용자가 입력한 사유
+      };
+  
+      // POST 요청 전송
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/feedback`,
+        payload
+      );
+  
+      console.log("Feedback submitted successfully:", response.data);
+      message.success("피드백이 성공적으로 제출되었습니다!");
+  
+      // 모달 닫기 및 상태 초기화
+      setFeedbackModalVisible(false);
+      setFeedbackReason("");
     } catch (error) {
-      message.error("피드백 저장에 실패했습니다.");
-      console.error(error);
+      console.error("Failed to submit feedback:", error);
+      message.error("피드백 제출 중 오류가 발생했습니다.");
     }
   };
 

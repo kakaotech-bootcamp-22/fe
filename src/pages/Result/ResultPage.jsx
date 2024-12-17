@@ -80,13 +80,13 @@ const ResultPage = () => {
         <div className={`main-content ${scoreClass}`} style={{ borderColor: circleBorderColor }}>
           <div className="left-content" style={{ flex: "0 0 60%" }}>
             <div>
-              <h3 className="section-title">AI 리뷰 요약 🤖</h3>
+              <h3 className="section-title" style={{ fontWeight: "bold" }}>AI 리뷰 요약 🤖</h3>
               <h4 className="summary-title">{summaryTitle}</h4>
               <p className="summary-text">{summaryText}</p>
             </div>
 
             <div>
-              <h3 className="section-title">왜 이렇게 판단했나요? 🧐</h3>
+              <h3 className="section-title" style={{ fontWeight: "bold" }}>왜 이렇게 판단했나요? 🧐</h3>
               <p className="evidence-text">{evidence}</p>
             </div>
 
@@ -96,7 +96,7 @@ const ResultPage = () => {
           </div>
 
           <div className="right-content">
-            <h3 className="section-title mb-4">이 리뷰의 점수는?</h3>
+            <h3 className="section-title mb-4" style={{ fontWeight: "bold" }}>이 리뷰의 점수는?</h3>
 
             <div className="score-visual">
               <div className="circle-container" style={{ position: "relative" }}>

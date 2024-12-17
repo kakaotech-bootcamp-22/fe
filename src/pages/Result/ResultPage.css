@@ -71,6 +71,7 @@
 }
 
 .summary-title {
+  color: #2d3748;
   font-size: 1.125rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
@@ -197,15 +198,13 @@
 }
 
 .lion-container {
-  position: absolute;
-  top: -80px; /* 고정된 픽셀 값으로 위치 조정 */
-  left: 50%;
-  transform: translateX(-50%); /* X축으로만 중앙 정렬 */
-  z-index: 1;
   display: flex;
   justify-content: center;
   align-items: center;
+  position: absolute;
+  z-index: 1;
 }
+
 
 .circle-container {
   display: flex;

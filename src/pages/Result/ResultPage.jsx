@@ -209,7 +209,7 @@ const ResultPage = () => {
 
       {/* 피드백 모달 */}
       <Modal
-        title="피드백 제출"
+        title={feedbackType === "like" ? "좋아요 😆" : "아쉬워요 😞"}
         visible={feedbackModalVisible}
         onCancel={handleFeedbackCancel}
         footer={[
@@ -221,9 +221,6 @@ const ResultPage = () => {
           </Button>,
         ]}
       >
-        <p style={{ fontWeight: "bold", fontSize: "16px", marginBottom: "10px" }}>
-          {feedbackType === "like" ? "긍정 피드백" : "부정 피드백"}
-        </p>
         <p>검사 결과에 대한 피드백을 입력해주세요.</p>
         <TextArea
           rows={4}

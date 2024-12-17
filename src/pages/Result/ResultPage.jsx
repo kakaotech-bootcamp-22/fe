@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import "./ResultPage.css";
@@ -6,10 +6,16 @@ import greenLion from "../../assets/result/green-choonsik.png";
 import yellowLion from "../../assets/result/yellow-choonsik.png";
 import redLion from "../../assets/result/red-choonsik.png";
 
+const { TextArea } = Input;
+
 const ResultPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const data = location.state;
+
+  const { feedbackModalVisible, setFeedbackModalVisible } = useState(false);
+  const { feedbackReason, setFeedbackReason } = useState("");
+  const { feedbackType, setFeedbackType } = useState("");
 
   if (!data) {
     console.warn("No data received. Redirecting to home...");
@@ -65,6 +71,45 @@ const ResultPage = () => {
   };
 
   const { scoreClass, characterImage, circleBorderColor, lionContainerStyle } = getScoreStyle(score);
+
+  // 피드백 모달 열기
+  const showFeedbackModal = (type) => {
+    setFeedbackType(type);
+    setFeedbackModalVisible(true);
+  };
+
+  // 피드백 모달 닫기
+  const handleCancel = () => {
+    setFeedbackReason("");
+    setFeedbackModalVisible(false);
+  };
+
+  // 피드백 제출
+  const handleFeedbackSubmit = async () => {
+    if (!feedbackReason.trim()) {
+      message.error("사유를 입력해주세요!");
+      return;
+    }
+
+    try {
+      await fetch(`${process.env.REACT_APP_API_URL}/review-feedback`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          reviewId: data.requestId,
+          type: feedbackType,
+          reason: feedbackReason,
+        }),
+      });
+      message.success("피드백이 성공적으로 저장되었습니다!");
+      handleCancel();
+    } catch (error) {
+      message.error("피드백 저장에 실패했습니다.");
+      console.error(error);
+    }
+  };
 
   return (
     <div className="outer-container">
@@ -151,6 +196,28 @@ const ResultPage = () => {
           </div>
         </div>
       </div>
+
+      {/* 피드백 모달 */}
+      <Modal
+        title="피드백 사유를 입력해주세요"
+        visible={feedbackModalVisible}
+        onCancel={handleCancel}
+        footer={[
+          <Button key="cancel" onClick={handleCancel}>
+            취소
+          </Button>,
+          <Button key="submit" type="primary" onClick={handleFeedbackSubmit}>
+            제출하기
+          </Button>,
+        ]}
+      >
+        <TextArea
+          rows={4}
+          value={feedbackReason}
+          onChange={(e) => setFeedbackReason(e.target.value)}
+          placeholder="피드백 사유를 입력해주세요"
+        />
+      </Modal>
     </div>
   );
 };

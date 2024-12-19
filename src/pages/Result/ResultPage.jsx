@@ -15,7 +15,9 @@ const ResultPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const data = location.state;
-  const { isLoggedin } = useAuth();
+  const { isLoggedIn } = useAuth();
+
+  console.log("isLoggedIn:", isLoggedIn); // 로그인 상태 확인 로그 출력
 
   const [ feedbackModalVisible, setFeedbackModalVisible ] = useState(false);
   const [ feedbackReason, setFeedbackReason ] = useState("");
@@ -32,7 +34,7 @@ const ResultPage = () => {
   // 피드백 모달 열기
   const showFeedbackModal = (type) => {
     // 로그인 상태 확인
-    if (!isLoggedin) {
+    if (!isLoggedIn) {
       message.warning("피드백 작성은 로그인이 필요합니다.");
       return;
     }

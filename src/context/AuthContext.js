@@ -7,7 +7,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [nickname, setNickname] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // 초기값 false
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [platform, setPlatform] = useState(null);
   const [createdAt, setCreatedAt] = useState(null);
@@ -16,13 +16,14 @@ export const AuthProvider = ({ children }) => {
 
   const [writtenReviewCount, setWrittenReviewCount] = useState(null);
   const [receivedLikeCount, setReceivedLikeCount] = useState(null);
+
   const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(requests.fetchAuthStatus); // 서버에서 로그인 상태 확인
+        const response = await axios.get(requests.fetchAuthStatus);
         const { isLoggedIn, nickname, profileImage, platform, createdAt, email } = response.data;
 
         setIsLoggedIn(isLoggedIn);
@@ -32,7 +33,7 @@ export const AuthProvider = ({ children }) => {
           setPlatform(platform);
           setCreatedAt(createdAt);
           setEmail(email);
-          fetchUserActivity(); // 사용자 활동 데이터 불러오기
+          fetchUserActivity();
         }
       } catch (error) {
         console.error('로그인 상태 확인 실패:', error);
@@ -78,6 +79,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const settingLoading = (newLoading) => {
+    setLoading(newLoading);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -93,6 +98,8 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         logout,
+        updateProfileImage: setProfileImage,
+        settingLoading,
       }}
     >
       {children}

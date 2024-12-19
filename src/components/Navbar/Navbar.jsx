@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Navbar.css";
-import navbarImage from "../../assets/navbar/navbar_image.png"; // 실제 파일 경로에 맞게 수정
+import navbarImage from "../../assets/navbar/navbar_image_new.png";
 import profileImage from "../../assets/navbar/profile_image.png";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -77,16 +77,13 @@ const Navbar = () => {
         style={{ cursor: "pointer" }}
       >
         <img src={navbarImage} alt="logo" className="logo-icon" />
-        <h1>가짜 리뷰 판독기</h1>
+        <p>가짜 리뷰 검사 서비스</p>
+        <h1>잡았다 요놈!</h1>
       </div>
       <ul className="navbar-menu">
         <li>
           {/* <Link to="/home">가짜 리뷰 판독</Link> */}
           가짜 리뷰 판독
-        </li>
-        <li>
-          {/* <Link to="/tech">사용 기술</Link> */}
-          사용 기술
         </li>
         <li>
           {/* <Link to="/criteria">검사 기준</Link> */}

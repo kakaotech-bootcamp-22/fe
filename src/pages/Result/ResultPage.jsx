@@ -29,15 +29,11 @@ const ResultPage = () => {
 
   const { blogUrl, summaryTitle, summaryText, score, evidence } = data;
 
-  // 로그인 상태 확인
-  const showLoginRequiredMessage = () => {
-    message.info("피드백 작성은 로그인이 필요합니다.");
-  }
-
   // 피드백 모달 열기
   const showFeedbackModal = (type) => {
+    // 로그인 상태 확인
     if (!isLoggedin) {
-      showLoginRequiredMessage();
+      message.warning("피드백 작성은 로그인이 필요합니다.");
       return;
     }
     message.success(`${feedbackType === "positive" ? "긍정" : "부정"} 피드백을 작성합니다.`);

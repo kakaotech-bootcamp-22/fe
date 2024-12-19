@@ -13,14 +13,21 @@
 }
 
 .logo-icon {
-  width: 60px;
+  width: 80px;
   height: auto;
-  margin-right: 10px;
+  margin-right: 20px;
+}
+
+.navbar-logo p {
+  font-size: 1.4rem;
+  color: #333;
+  font-weight: bold;
+  margin-right: 13px;
 }
 
 .navbar-logo h1 {
   font-size: 1.5rem;
-  color: #333;
+  color: #4caf50;
   font-weight: bold;
 }
 

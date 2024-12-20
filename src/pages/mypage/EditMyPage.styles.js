@@ -3,30 +3,33 @@ import styled from "styled-components";
 export const EntireContainer = styled.div`
   background-color: #f5f5f5;
   text-align: center;
-  min-height: 100vh
+  min-height: 100vh;
+  min-width: 1000px; 
 `
 
 export const ProfileContainer = styled.div`
-  max-width: 500px;
+  max-width: 60%;
   margin: 0 auto;
   padding: 20px;
   background-color: #ffffff;
-  min-height: 100vh
-  
+  min-height: 100vh;
+  min-width: 70vh; 
+  width: 60%;
 `;
 
 export const ProfileContainerDetail = styled.div`
-  max-width: 500px;
+  max-width: 94%;
   margin: 20px auto;
   padding: 20px;
   background-color: #f5f5f5;
   border-radius: 15px;
-  
+  min-width: 60vh;
 `;
 
-export const ProfileHeader = styled.h2`
+export const ProfileHeader = styled.h1`
   text-align: left;
   margin-bottom: 80px;
+  font-size: 1.7rem; /* 원하는 크기로 설정 */
 `;
 
 export const ProfileImageContainer = styled.div`
@@ -52,7 +55,8 @@ export const InfoRow = styled.div`
   align-items: center;
   padding: 10px 0;
   border-bottom: 1px solid #e0e0e0;
-
+  min-height: 40px; 
+  max-height: 150px; 
   &:last-child {
     border-bottom: none;
   }
@@ -127,8 +131,9 @@ export const CustomButton = styled.button`
 export const UserTypeIcon = styled.img`
   width: 30px;
   height: 30px;
-  border-radius: 90px;
+  border-radius: 4px;
   object-fit: cover;
+  margin-right: 13px;
 `;
 
 

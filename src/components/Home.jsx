@@ -27,12 +27,22 @@ const Home = ({ onCheckURL }) => {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get("code");
+    const redirectUri = `${API_URL}`;
 
     if (code) {
       // 받은 인가 코드를 백엔드로 전송하여 액세스 토큰 요청
       axios
-        .post(`${API_URL}/auth/kakao/token`, { code })
+        .post(`${API_URL}/auth/kakao/token`,
+          { code, redirectUri },
+          {
+            headers: {
+              "Content-Type": "application/json", // 요청 헤더 명시
+            },
+
+            withCredentials: true
+          })
         .then((response) => {
+          console.log(response.data)
           if (response.data.jwtToken) {
             login(
               response.data.jwtToken,
@@ -44,11 +54,14 @@ const Home = ({ onCheckURL }) => {
             );
           }
           settingLoading(false);
+          console.log(document.cookie);
 
           // URL에서 "code" 파라미터 제거
           const url = new URL(window.location.href);
           url.searchParams.delete("code"); // "code" 파라미터 제거
           window.history.replaceState(null, "", url.toString());
+          window.location.reload();
+
 
         })
         .catch(error => {
@@ -62,8 +75,12 @@ const Home = ({ onCheckURL }) => {
         axios.get(`${API_URL}/auth/status`, { withCredentials: true })
           .then(response => {
             if (response.data.loggedIn) {
-              // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
-              login(response.data.jwtToken, response.data.nickname, response.data.userImage, response.data.platform, response.data.createdAt, response.data.email);
+              let str = response.data.nickname;
+              // 문자열에 \uad가 포함되어 있는지 검사
+              if (str.includes("\u00ad")) {
+                str = str.slice(1); // 인덱스 1부터 자르기
+              }
+              login(response.data.jwtToken, str, response.data.userImage, response.data.platform, response.data.createdAt, response.data.email);
             }
           })
           .catch((error) => {

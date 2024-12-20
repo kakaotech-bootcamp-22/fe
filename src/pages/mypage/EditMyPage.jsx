@@ -40,12 +40,12 @@ function EditMyPage(props) {
         platform,
         createdAt,
         email,
-        writtenReviewCount, 
+        writtenReviewCount,
         receivedLikeCount,
         loading,
         settingLoading,
-        loginFail, 
-      } = useAuth();
+        loginFail,
+    } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [newNickname, setNickname] = useState(nickname);
     const [newProfileImage, setProfileImage] = useState(profileImage);
@@ -65,7 +65,9 @@ function EditMyPage(props) {
     };
 
     const handleInputChange = (e) => {
-        const value = e.target.value;
+        let value = e.target.value
+            .replace(/\s/g, "") // 공백 문자 제거
+            .replace(/[\u200B-\u200D\uFEFF]/g, ""); // 보이지 않는 유니코드 문자 제거
 
         // 유효성 검사: 한글, 영어, 숫자 조합 확인
         const isValid = /^[a-zA-Z0-9가-힣]*$/.test(value);
@@ -84,7 +86,7 @@ function EditMyPage(props) {
             if (file.size > MAX_FILE_SIZE) {
                 message.error("이미지 파일 크기는 5MB를 초과할 수 없습니다."); // 경고 메시지
                 return; // 업로드 중단
-            }    
+            }
 
             setFile(file)
             try {
@@ -178,7 +180,8 @@ function EditMyPage(props) {
                 setNickname(result.updatedNickname);
                 setProfileImage(encodedUrl);
                 updateProfileImage(encodedUrl);
-                navigate("/mypage");
+                navigate("/mypage", { replace: true });
+                window.location.reload();
             } else {
                 message.error("프로필을 업데이트하는 데 실패했습니다.");
                 setNickname(nickname); // 기존 닉네임 복구
@@ -195,26 +198,31 @@ function EditMyPage(props) {
 
     useEffect(() => {
         axios.get(`${API_URL}/auth/status`, { withCredentials: true })
-          .then((response) => {
-            if (response.data.loggedIn) {
-              // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
-              login(
-                response.data.jwtToken,
-                response.data.nickname,
-                response.data.userImage,
-                response.data.platform,
-                response.data.createdAt,
-                response.data.email
-              );
-              settingLoading(false);
-            }
-          })
-          .catch(error => {
-            setErrorMessage("로그인 상태를 확인할 수 없습니다.");
-          });
+            .then((response) => {
+                if (response.data.loggedIn) {
+                    // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
+                    let str = response.data.nickname;
+                    // 문자열에 \uad가 포함되어 있는지 검사
+                    if (str.includes("\u00ad")) {
+                        str = str.slice(1); // 인덱스 1부터 자르기
+                    }
+                    login(
+                        response.data.jwtToken,
+                        str,
+                        response.data.userImage,
+                        response.data.platform,
+                        response.data.createdAt,
+                        response.data.email
+                    );
+                    settingLoading(false);
+                }
+            })
+            .catch(error => {
+                setErrorMessage("로그인 상태를 확인할 수 없습니다.");
+            });
         //}
-      }, []); // 한 번만 실행되도록 빈 배열을 의존성 배열에 추가
-    
+    }, []); // 한 번만 실행되도록 빈 배열을 의존성 배열에 추가
+
     useEffect(() => {
         // AuthContext의 최신 상태를 가져와 동기화
         setNickname(nickname);
@@ -259,11 +267,11 @@ function EditMyPage(props) {
                                         }}
                                         value={newNickname}
                                         onChange={handleInputChange}
-                                        style={{ width: 270, flex: 1 }}
+                                        style={{ width: '95%', flex: 1 }}
                                         maxLength={20}
                                     />
                                     {errorMessage && (
-                                        <div style={{ color: 'red', marginTop: '5px', marginRight: '35px', fontSize: '12px' }}>
+                                        <div style={{ color: 'red', marginTop: '5px', marginRight: '30%', fontSize: '12px', textAlign: 'left' }}>
                                             {errorMessage}
                                         </div>
                                     )}

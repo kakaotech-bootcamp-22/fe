@@ -1,23 +1,135 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import "./ResultPage.css";
 import greenLion from "../../assets/result/green-choonsik.png";
 import yellowLion from "../../assets/result/yellow-choonsik.png";
 import redLion from "../../assets/result/red-choonsik.png";
+import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
+
+const API_URL = process.env.REACT_APP_API_URL;
 
 const ResultPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const data = location.state;
+  const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt, email, writtenReviewCount, receivedLikeCount, loading, settingLoading, loginFail, } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
+  const [errorMessage, setErrorMessage] = useState("");
+  const [resultData, setResultData] = useState(null);
 
-  if (!data) {
-    console.warn("No data received. Redirecting to home...");
-    navigate("/", { replace: true });
-    return null;
+  // 데이터를 임시 저장하는 함수
+  const saveTemporaryData = (data) => {
+    localStorage.setItem("temporaryResult", JSON.stringify(data));
+  };
+
+  // 임시 저장된 데이터를 가져오는 함수
+  const getTemporaryData = () => {
+    const savedData = localStorage.getItem("temporaryResult");
+    return savedData ? JSON.parse(savedData) : null;
+  };
+
+  useEffect(() => {
+    // 데이터를 location.state에서 가져옴
+    const initialData = location.state;
+
+    if (initialData) {
+      setResultData(initialData);
+      saveTemporaryData(initialData); // 데이터를 임시 저장
+    } else {
+      const tempData = getTemporaryData(); // 임시 저장된 데이터 복원
+      if (tempData) {
+        setResultData(tempData);
+      } else {
+        console.warn("No data available. Redirecting to home...");
+        navigate("/", { replace: true });
+      }
+    }
+  }, [location.state, navigate]);
+
+
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get("code");
+    const redirected = urlParams.get("redirected"); // 리다이렉션 여부 확인
+    const redirectUri = `${API_URL}/result?redirected=true`;
+    if (redirected && code) {
+      // 받은 인가 코드를 백엔드로 전송하여 액세스 토큰 요청
+      axios
+        .post(`${API_URL}/auth/kakao/token`,
+          {
+            code,
+            redirectUri,
+          }, {
+          headers: {
+            "Content-Type": "application/json", // 요청 헤더 명시
+          },
+
+          withCredentials: true,
+        }
+        )
+        .then((response) => {
+          console.log(response.data)
+          if (response.data.jwtToken) {
+            login(
+              response.data.jwtToken,
+              response.data.nickname,
+              response.data.profileImage,
+              response.data.platform,
+              response.data.createdAt,
+              response.data.email
+            );
+          }
+          settingLoading(false);
+          // URL에서 "code" 파라미터 제거
+          const url = new URL(window.location.href);
+          url.searchParams.delete("code"); // "code" 파라미터 제거
+          url.searchParams.delete("redirected");
+          window.history.replaceState(null, "", url.toString());
+        })
+        .catch(error => {
+          console.error("백엔드와 통신 중 에러 발생:", error);
+          setErrorMessage("로그인에 실패했습니다.");
+
+        });
+    }
+    else {
+      if (isLoggedIn === false) {
+        axios.get(`${API_URL}/auth/status`, { withCredentials: true })
+          .then(response => {
+            if (response.data.loggedIn) {
+              let str = response.data.nickname;
+              // 문자열에 \uad가 포함되어 있는지 검사
+              if (str.includes("\u00ad")) {
+                str = str.slice(1); // 인덱스 1부터 자르기
+              }
+              login(
+                response.data.jwtToken,
+                str,
+                response.data.userImage,
+                response.data.platform,
+                response.data.createdAt,
+                response.data.email
+              );
+            }
+          })
+          .catch((error) => {
+            setErrorMessage("로그인 상태를 확인할 수 없습니다.");
+            loginFail(false);
+            settingLoading(false);
+          })
+          .finally(() => {
+            settingLoading(false);
+          })
+      }
+    }
+  }, [API_URL, login, settingLoading]);
+
+  if (!resultData) {
+    return <div>Loading...</div>;
   }
 
-  const { blogUrl, summaryTitle, summaryText, score, evidence } = data;
+  const { blogUrl, summaryTitle, summaryText, score, evidence } = resultData;
 
   const darkenColor = (color) => {
     const num = parseInt(color.slice(1), 16);
@@ -64,7 +176,9 @@ const ResultPage = () => {
     }
   };
 
+
   const { scoreClass, characterImage, circleBorderColor, lionContainerStyle } = getScoreStyle(score);
+
 
   return (
     <div className="outer-container">

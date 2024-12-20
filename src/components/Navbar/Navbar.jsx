@@ -23,7 +23,11 @@ const Navbar = () => {
       axios.post(`${API_URL}/auth/logout/kakao`, {}, { withCredentials: true })
         .then(response => {
           logout(); // AuthContext 상태 리셋
-          navigate("/login-signup")
+          if (window.location.pathname === "/edit-mypage" || window.location.pathname === "/mypage") {
+            navigate("/");
+          } else {
+            navigate(0);
+          }
           settingLoading(false);
         })
         .catch(error => {
@@ -34,7 +38,11 @@ const Navbar = () => {
       axios.post(`${API_URL}/auth/logout/google`, {}, { withCredentials: true })
         .then(response => {
           logout(); // AuthContext 상태 리셋
-          navigate("/login-signup")
+          if (window.location.pathname === "/edit-mypage" || window.location.pathname === "/mypage") {
+            navigate("/");
+          } else {
+            navigate(0);
+          }
           settingLoading(false);
         })
         .catch(error => {
@@ -45,19 +53,29 @@ const Navbar = () => {
 
   useEffect(() => {
     if (!isLoggedIn) {
+      if (!document.cookie.includes("jwtToken")) {
+        settingLoading(false);
+        return;
+      }
       settingLoading(true); // 상태 확인 전 로딩 시작
       axios.get(`${API_URL}/auth/status`, { withCredentials: true })
         .then(response => {
           if (response.data.loggedIn) {
+            let str = response.data.nickname;
+            // 문자열에 \uad가 포함되어 있는지 검사
+            if (str.includes("\u00ad")) {
+              str = str.slice(1); // 인덱스 1부터 자르기
+            }
             login(
               response.data.jwtToken,
-              response.data.nickname,
+              str,
               response.data.userImage,
               response.data.platform,
               response.data.createdAt,
               response.data.email
             );
           }
+
         })
         .catch(() => {
           console.log("로그인 상태를 확인할 수 없습니다.");
@@ -67,6 +85,17 @@ const Navbar = () => {
         });
     }
   }, []);
+
+  const handleLoginRedirect = () => {
+    // 현재 페이지 경로를 상태 또는 로컬 스토리지에 저장
+    const currentPath = window.location.pathname;
+    const currentUrl = window.location;
+    localStorage.setItem("redirectAfterLoginPath", currentPath);
+    localStorage.setItem("redirectAfterLoginURL", currentUrl);
+
+    // 로그인 페이지로 이동
+    navigate("/login-signup");
+  };
 
 
   return (
@@ -155,7 +184,9 @@ const Navbar = () => {
         ) : (
           // 로딩 완료되고 비로그인 상태일 때
           <button
-            onClick={() => navigate("/login-signup")}
+
+            //onClick={() => navigate("handleLoginRedirect")}
+            onClick={handleLoginRedirect}
             className="login-button"
           >
             로그인/가입

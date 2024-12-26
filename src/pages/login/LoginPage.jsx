@@ -7,8 +7,7 @@ import { useAuth } from "../../context/AuthContext";
 import axios from 'axios';
 import { useGoogleLogin } from '@react-oauth/google';
 import Cookies from "js-cookie";
-import { useNavigate } from 'react-router-dom';
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import {
     Container,

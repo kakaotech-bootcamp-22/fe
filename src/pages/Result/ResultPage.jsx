@@ -1,17 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { Modal, Input, Button, message } from "antd";
 import { useAuth } from "../../context/AuthContext";
-import axios from "axios";
 import "./ResultPage.css";
 import greenLion from "../../assets/result/green-choonsik.png";
 import yellowLion from "../../assets/result/yellow-choonsik.png";
 import redLion from "../../assets/result/red-choonsik.png";
-import { useAuth } from "../../context/AuthContext";
-import axios from "axios";
-
-const API_URL = process.env.REACT_APP_API_URL;
 import Review from "../Review/Review";
 
 const { TextArea } = Input;
@@ -21,179 +16,26 @@ const ResultPage = () => {
   const navigate = useNavigate();
   const data = location.state;
 
-  const [ feedbackModalVisible, setFeedbackModalVisible ] = useState(false);
-  const [ feedbackReason, setFeedbackReason ] = useState("");
-  const [ feedbackType, setFeedbackType ] = useState("");
-  const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt, email, writtenReviewCount, receivedLikeCount, loading, settingLoading, loginFail, } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
-  const [errorMessage, setErrorMessage] = useState("");
-  const [resultData, setResultData] = useState(null);
+  const { isLoggedIn } = useAuth(); // 로그인 상태 확인
+  const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
+  const [feedbackReason, setFeedbackReason] = useState("");
+  const [feedbackType, setFeedbackType] = useState("");
 
-  // 데이터를 임시 저장하는 함수
-  const saveTemporaryData = (data) => {
-    localStorage.setItem("temporaryResult", JSON.stringify(data));
-  };
-
-  // 임시 저장된 데이터를 가져오는 함수
-  const getTemporaryData = () => {
-    const savedData = localStorage.getItem("temporaryResult");
-    return savedData ? JSON.parse(savedData) : null;
-  };
-
-  useEffect(() => {
-    // 데이터를 location.state에서 가져옴
-    const initialData = location.state;
-
-    if (initialData) {
-      setResultData(initialData);
-      saveTemporaryData(initialData); // 데이터를 임시 저장
-    } else {
-      const tempData = getTemporaryData(); // 임시 저장된 데이터 복원
-      if (tempData) {
-        setResultData(tempData);
-      } else {
-        console.warn("No data available. Redirecting to home...");
-        navigate("/", { replace: true });
-      }
-    }
-  }, [location.state, navigate]);
-
-
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get("code");
-    const redirected = urlParams.get("redirected"); // 리다이렉션 여부 확인
-    const redirectUri = `${API_URL}/result?redirected=true`;
-    if (redirected && code) {
-      // 받은 인가 코드를 백엔드로 전송하여 액세스 토큰 요청
-      axios
-        .post(`${API_URL}/auth/kakao/token`,
-          {
-            code,
-            redirectUri,
-          }, {
-          headers: {
-            "Content-Type": "application/json", // 요청 헤더 명시
-          },
-
-          withCredentials: true,
-        }
-        )
-        .then((response) => {
-          console.log(response.data)
-          if (response.data.jwtToken) {
-            login(
-              response.data.jwtToken,
-              response.data.nickname,
-              response.data.profileImage,
-              response.data.platform,
-              response.data.createdAt,
-              response.data.email
-            );
-          }
-          settingLoading(false);
-          // URL에서 "code" 파라미터 제거
-          const url = new URL(window.location.href);
-          url.searchParams.delete("code"); // "code" 파라미터 제거
-          url.searchParams.delete("redirected");
-          window.history.replaceState(null, "", url.toString());
-        })
-        .catch(error => {
-          console.error("백엔드와 통신 중 에러 발생:", error);
-          setErrorMessage("로그인에 실패했습니다.");
-
-        });
-    }
-    else {
-      if (isLoggedIn === false) {
-        axios.get(`${API_URL}/auth/status`, { withCredentials: true })
-          .then(response => {
-            if (response.data.loggedIn) {
-              let str = response.data.nickname;
-              // 문자열에 \uad가 포함되어 있는지 검사
-              if (str.includes("\u00ad")) {
-                str = str.slice(1); // 인덱스 1부터 자르기
-              }
-              login(
-                response.data.jwtToken,
-                str,
-                response.data.userImage,
-                response.data.platform,
-                response.data.createdAt,
-                response.data.email
-              );
-            }
-          })
-          .catch((error) => {
-            setErrorMessage("로그인 상태를 확인할 수 없습니다.");
-            loginFail(false);
-            settingLoading(false);
-          })
-          .finally(() => {
-            settingLoading(false);
-          })
-      }
-    }
-  }, [API_URL, login, settingLoading]);
-
-  if (!resultData) {
-    return <div>Loading...</div>;
+  if (!data) {
+    console.warn("No data received. Redirecting to home...");
+    navigate("/", { replace: true });
+    return null;
   }
 
-  const { blogUrl, summaryTitle, summaryText, score, evidence } = resultData;
-
-  // 피드백 모달 열기
-  const showFeedbackModal = (type) => {
-    // 로그인 상태 확인
-    if (!isLoggedIn) {
-      message.warning("피드백 작성은 로그인이 필요합니다.");
-      return;
-    }
-    message.success(`${feedbackType === "positive" ? "긍정" : "부정"} 피드백을 작성합니다.`);
-    setFeedbackType(type);
-    setFeedbackModalVisible(true);
-  };
-
-  // 피드백 모달 닫기
-  const handleFeedbackCancel = () => {
-    setFeedbackReason("");
-    setFeedbackModalVisible(false);
-  };
-
-  // 피드백 제출
-  const handleFeedbackSubmit = async () => {
-    console.log("Feedback Type:", feedbackType);
-    console.log("Feedback Reason:", feedbackReason);
-
-    if (!feedbackReason.trim()) {
-      message.error("사유를 입력해주세요!");
-      return;
-    }
-
-    try {
-      // 백엔드에 전송할 데이터 구성
-      const payload = {
-        feedbackType, // 'like' 또는 'dislike'
-        feedbackReason, // 사용자가 입력한 사유
-      };
-  
-      // POST 요청 전송
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/feedback`,
-        payload
-      );
-  
-      console.log("Feedback submitted successfully:", response.data);
-      message.success("피드백이 성공적으로 제출되었습니다!");
-  
-      // 모달 닫기 및 상태 초기화
-      setFeedbackModalVisible(false);
-      setFeedbackReason("");
-    } catch (error) {
-      console.error("Failed to submit feedback:", error);
-      message.error("피드백 제출 중 오류가 발생했습니다.");
-    }
-  };
+  const {
+    blogId,
+    blogBaseUrl,
+    blogUrl,
+    summaryTitle,
+    summaryText,
+    score,
+    evidence,
+  } = data;
 
   const darkenColor = (color) => {
     const num = parseInt(color.slice(1), 16);
@@ -242,9 +84,60 @@ const ResultPage = () => {
     }
   };
 
+  const { scoreClass, characterImage, circleBorderColor, lionContainerStyle } =
+    getScoreStyle(score);
 
-  const { scoreClass, characterImage, circleBorderColor, lionContainerStyle } = getScoreStyle(score);
+  // 피드백 모달 열기
+  const showFeedbackModal = (type) => {
+    if (!isLoggedIn) {
+      message.warning("피드백 작성은 로그인이 필요합니다.");
+      return;
+    }
+    setFeedbackType(type);
+    setFeedbackModalVisible(true);
+  };
 
+  // 피드백 모달 닫기
+  const handleFeedbackCancel = () => {
+    setFeedbackReason("");
+    setFeedbackModalVisible(false);
+  };
+
+  // 피드백 제출
+  const handleFeedbackSubmit = async () => {
+    if (!feedbackReason.trim()) {
+      message.error("사유를 입력해주세요!");
+      return;
+    }
+
+    try {
+      const payload = {
+        feedbackType, // 'like' 또는 'dislike'
+        feedbackReason, // 사용자가 입력한 사유
+        blogId,
+      };
+
+      // POST 요청 전송
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/feedback`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        message.success("피드백이 성공적으로 제출되었습니다!");
+        setFeedbackModalVisible(false);
+        setFeedbackReason("");
+      } else {
+        throw new Error("서버 응답 실패");
+      }
+    } catch (error) {
+      console.error("Failed to submit feedback:", error);
+      message.error("피드백 제출 중 오류가 발생했습니다.");
+    }
+  };
 
   return (
     <div className="outer-container">
@@ -257,7 +150,10 @@ const ResultPage = () => {
           <div className="divider" />
         </div>
 
-        <div className={`main-content ${scoreClass}`} style={{ borderColor: circleBorderColor }}>
+        <div
+          className={`main-content ${scoreClass}`}
+          style={{ borderColor: circleBorderColor }}
+        >
           <div className="left-content">
             <div>
               <h3 className="section-title" style={{ fontWeight: "bold" }}>
@@ -273,10 +169,6 @@ const ResultPage = () => {
               </h3>
               <p className="evidence-text">{evidence}</p>
             </div>
-
-            {/* <button className="report-button" style={{ color: circleBorderColor }}>
-              ▶ 가짜 리뷰로 제보하기
-            </button> */}
           </div>
 
           <div className="right-content">
@@ -329,22 +221,17 @@ const ResultPage = () => {
               </div>
             </div>
 
-            <button
-              className="criteria-button mt-4 mb-6"
-              style={{ color: circleBorderColor }}
-              onMouseEnter={(e) =>
-                (e.target.style.color = darkenColor(circleBorderColor))
-              }
-              onMouseLeave={(e) => (e.target.style.color = circleBorderColor)}
-            >
-              ▶ 검사 기준이 궁금하신가요?
-            </button>
-
             <div className="feedback-buttons">
-              <button className="feedback-button" onClick={() => showFeedbackModal("like")}>
+              <button
+                className="feedback-button"
+                onClick={() => showFeedbackModal("like")}
+              >
                 <ThumbsUp size={24} />
               </button>
-              <button className="feedback-button" onClick={() => showFeedbackModal("dislike")}>
+              <button
+                className="feedback-button"
+                onClick={() => showFeedbackModal("dislike")}
+              >
                 <ThumbsDown size={24} />
               </button>
             </div>
@@ -374,6 +261,7 @@ const ResultPage = () => {
           placeholder="피드백 사유를 입력해주세요"
         />
       </Modal>
+      {/* 해당 블로그 후기 */}
       <Review url={blogBaseUrl} blogId={blogId} />
     </div>
   );

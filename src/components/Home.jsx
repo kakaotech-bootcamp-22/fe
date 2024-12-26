@@ -7,11 +7,24 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { message } from "antd"; // Ant Design message 추가
 
 const Home = ({ onCheckURL }) => {
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-  const { isLoggedIn, login, logout, nickname, profileImage, platform, createdAt, email, writtenReviewCount,
-    receivedLikeCount, loading, settingLoading, loginFail, } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
+  const {
+    isLoggedIn,
+    login,
+    logout,
+    nickname,
+    profileImage,
+    platform,
+    createdAt,
+    email,
+    writtenReviewCount,
+    receivedLikeCount,
+    loading,
+    settingLoading,
+    loginFail,
+  } = useAuth(); // 로그인 상태 및 사용자 정보 가져오기
   const [errorMessage, setErrorMessage] = useState("");
   const API_URL = process.env.REACT_APP_API_URL;
 
@@ -64,16 +77,15 @@ const Home = ({ onCheckURL }) => {
 
 
         })
-        .catch(error => {
+        .catch((error) => {
           //console.error("백엔드와 통신 중 에러 발생:", error);
           setErrorMessage("로그인에 실패했습니다.");
-
         });
-    }
-    else {
+    } else {
       if (isLoggedIn === false) {
-        axios.get(`${API_URL}/auth/status`, { withCredentials: true })
-          .then(response => {
+        axios
+          .get(`${API_URL}/auth/status`, { withCredentials: true })
+          .then((response) => {
             if (response.data.loggedIn) {
               let str = response.data.nickname;
               // 문자열에 \uad가 포함되어 있는지 검사
@@ -90,7 +102,7 @@ const Home = ({ onCheckURL }) => {
           })
           .finally(() => {
             settingLoading(false);
-          })
+          });
       }
     }
   }, [isLoggedIn, API_URL, login]);
@@ -105,26 +117,43 @@ const Home = ({ onCheckURL }) => {
       return;
     }
 
-    // 네이버 블로그 URL 형식 검사
-    const naverBlogUrlPattern = /^https:\/\/blog\.naver\.com\/[a-zA-Z0-9_-]+\/[0-9]+$/;
-    if (!naverBlogUrlPattern.test(url)) {
-      message.error("올바른 네이버 블로그 URL을 입력해주세요! 다른 블로그는 추후 서비스 예정입니다.");
+    // 네이버 블로그 URL 형식 검사 (캡처 그룹 추가)
+    const naverBlogUrlPattern =
+      /^https:\/\/blog\.naver\.com\/([a-zA-Z0-9_-]+)\/[0-9]+$/;
+    const match = url.match(naverBlogUrlPattern);
+
+    if (!match) {
+      message.error(
+        "올바른 네이버 블로그 URL을 입력해주세요! 다른 블로그는 추후 서비스 예정입니다."
+      );
       return;
     }
 
+    const blogBaseUrl = `https://blog.naver.com/${match[1]}`; // ID까지만 추출
+
     try {
-      const response = await axios.post(`${API_URL}/review-check`, { blogUrl: url });
+      const response = await axios.post(`${API_URL}/review-check`, {
+        blogUrl: url,
+      });
 
       if (response.status === 202 && response.data.requestId) {
         const { requestId } = response.data;
+
+        const saveResponse = await axios.post(`${API_URL}/blog/save`, {
+          blogUrl: blogBaseUrl,
+        });
+        const blogId = saveResponse.data;
+
         console.log("Navigating to /loading with requestId:", requestId);
-        navigate("/loading", { state: { requestId } });
+        navigate("/loading", { state: { requestId, blogId, blogBaseUrl } });
       } else {
         message.error("AI 분석 요청에 실패했습니다.");
       }
     } catch (error) {
       console.error("AI 분석 요청 중 오류 발생:", error);
-      message.error(error.response?.data?.message || "AI 분석 요청 중 문제가 발생했습니다.");
+      message.error(
+        error.response?.data?.message || "AI 분석 요청 중 문제가 발생했습니다."
+      );
     }
   };
 

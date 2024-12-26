@@ -17,7 +17,7 @@ const ResultPage = () => {
   const data = location.state;
 
   const { isLoggedIn } = useAuth(); // 로그인 상태 확인
-  const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
+  const [feedbackModalVisible, setFeedbackModalOpen] = useState(false);
   const [feedbackReason, setFeedbackReason] = useState("");
   const [feedbackType, setFeedbackType] = useState("");
 
@@ -94,13 +94,13 @@ const ResultPage = () => {
       return;
     }
     setFeedbackType(type);
-    setFeedbackModalVisible(true);
+    setFeedbackModalOpen(true);
   };
 
   // 피드백 모달 닫기
   const handleFeedbackCancel = () => {
     setFeedbackReason("");
-    setFeedbackModalVisible(false);
+    setFeedbackModalOpen(false);
   };
 
   // 피드백 제출
@@ -128,7 +128,7 @@ const ResultPage = () => {
 
       if (response.ok) {
         message.success("피드백이 성공적으로 제출되었습니다!");
-        setFeedbackModalVisible(false);
+        setFeedbackModalOpen(false);
         setFeedbackReason("");
       } else {
         throw new Error("서버 응답 실패");

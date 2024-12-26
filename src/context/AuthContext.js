@@ -4,59 +4,45 @@ import requests from '../api/requests';
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider =  ({ children }) => {
+  // const [isLoggedIn, setIsLoggedIn] = useState(response.data?.isLoggedIn ===true);
   const [token, setToken] = useState(null);
-  const [nickname, setNickname] = useState(null);
+  const [nickname, setNickname] = useState(null); // 닉네임 상태 추가
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [profileImage, setProfileImage] = useState(null);
-  const [platform, setPlatform] = useState(null);
-  const [createdAt, setCreatedAt] = useState(null);
+  const [profileImage, setProfileImage] = useState(null); // 프로필 이미지 상태 추가
+  const [platform, setPlatform] = useState(null); // 플랫폼 추가
+  const [createdAt, setCreatedAt] = useState(null); // 플랫폼 추가
   const [email, setEmail] = useState(null);
-  const [loading, setLoading] = useState(true);
+  
+  const [loading, setLoading] = useState(true); // 로딩 상태
 
   const [writtenReviewCount, setWrittenReviewCount] = useState(null);
   const [receivedLikeCount, setReceivedLikeCount] = useState(null);
-
   const API_URL = process.env.REACT_APP_API_URL;
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(requests.fetchAuthStatus);
-        const { isLoggedIn, nickname, profileImage, platform, createdAt, email } = response.data;
 
-        setIsLoggedIn(isLoggedIn);
-        if (isLoggedIn) {
-          setNickname(nickname);
-          setProfileImage(profileImage);
-          setPlatform(platform);
-          setCreatedAt(createdAt);
-          setEmail(email);
-          fetchUserActivity();
-        }
-      } catch (error) {
-        console.error('로그인 상태 확인 실패:', error);
-        setIsLoggedIn(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkLoginStatus();
-  }, []);
-
-  const login = (newToken, newNickname, newProfileImage, newPlatform, newCreatedAt, newEmail) => {
+  // 로그인 메서드
+  const login = (newToken, newNickname, newProfileImage, newPlatform, newCreatedAt, newEmail,) => {
     setToken(newToken);
-    setNickname(newNickname);
-    setProfileImage(newProfileImage);
-    setPlatform(newPlatform);
-    setCreatedAt(newCreatedAt);
-    setEmail(newEmail);
+    setNickname(newNickname); // 닉네임 저장
+    setProfileImage(newProfileImage); // 프로필 이미지 저장
+    setPlatform(newPlatform) // 플랫폼 저장
+    setCreatedAt(newCreatedAt)
     setIsLoggedIn(true);
+    setEmail(newEmail)
+
     fetchUserActivity();
   };
 
+  const loginFail = (newLogin) => {
+    setIsLoggedIn(newLogin);
+  };
+
+  const settingLoading = (newLoading) => {
+    setLoading(newLoading);
+  };
+
+  // 로그아웃 메서드
   const logout = () => {
     setToken(null);
     setNickname(null);
@@ -65,40 +51,42 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(false);
     setCreatedAt(null);
     setEmail(null);
+
     setWrittenReviewCount(null);
     setReceivedLikeCount(null);
   };
 
+  const updateProfileImage = (newImage) => {
+    setProfileImage(newImage);
+  };
+
   const fetchUserActivity = async () => {
-    try {
+    try{
       const response = await axios.get(requests.fetchUserActivity);
       setWrittenReviewCount(response.data.reviewCount);
       setReceivedLikeCount(response.data.likeCount);
-    } catch (error) {
-      console.error('활동 데이터를 가져오는 중 오류 발생:', error);
-    }
-  };
-
-  const settingLoading = (newLoading) => {
-    setLoading(newLoading);
+    } catch(error) {
+      console.error("활동 데이터를 가져오는 중 오류 발생: ", error);
+    };
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        isLoggedIn,
-        token,
-        nickname,
-        profileImage,
-        platform,
-        createdAt,
-        email,
-        writtenReviewCount,
-        receivedLikeCount,
+    <AuthContext.Provider 
+      value={{ 
+        isLoggedIn, 
+        token, 
+        nickname, 
+        profileImage, 
+        platform, 
+        createdAt, 
+        email, 
+        writtenReviewCount, 
+        receivedLikeCount, 
         loading,
-        login,
-        logout,
-        updateProfileImage: setProfileImage,
+        login, 
+        logout, 
+        updateProfileImage,
+        loginFail,
         settingLoading,
       }}
     >

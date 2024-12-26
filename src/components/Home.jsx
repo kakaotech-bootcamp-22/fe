@@ -118,8 +118,7 @@ const Home = ({ onCheckURL }) => {
     }
 
     // 네이버 블로그 URL 형식 검사 (캡처 그룹 추가)
-    const naverBlogUrlPattern =
-      /^https:\/\/blog\.naver\.com\/([a-zA-Z0-9_-]+)\/[0-9]+$/;
+    const naverBlogUrlPattern = /^https:\/\/blog\.naver\.com\/[a-zA-Z0-9_-]+\/[0-9]+$/;
     const match = url.match(naverBlogUrlPattern);
 
     if (!match) {

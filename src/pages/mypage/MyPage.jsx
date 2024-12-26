@@ -15,21 +15,22 @@ import requests from '../../api/requests';
 const EntireContainer = styled.div`
   background-color: #f5f5f5;
   text-align: center;
-  min-height: 90vh
+  min-height: 90vh;
+  min-width: 60vh;
+  min-width: 1000px; 
 `
 
 /* 프로필 컨테이너 */
 const ProfileContainer = styled.div`
   max-width: 60%;
   margin: 0 auto;
-  padding: 10px;
   background-color: #ffffff;
   text-align: center;
   min-height: 90vh;
-  display: flex;
   flex-direction: column;
   justify-content: space-between; /* 위아래로 공간을 분배 */
   min-width: 500px; 
+  padding: 20px;
 
 `
 
@@ -40,8 +41,10 @@ const ProfileInfo = styled.div`
   justify-content: space-between;
   margin-bottom: 20px;
   background-color: #f5f5f5;
-  padding: 30px;
-  border-radius: 10px; /* 모서리를 둥글게 하되 원형이 되지 않도록 설정 */
+  padding: 50px;
+  margin: 5px;
+  border-radius: 15px; /* 모서리를 둥글게 하되 원형이 되지 않도록 설정 */
+  
 `
 
 const ProfileImage = styled.img`
@@ -56,7 +59,6 @@ const ProfileDetails = styled.div`
   flex-grow: 1;
   margin-left: 20px;
   text-align: left;
- 
 `;
 
 const ProfileName = styled.h2`
@@ -88,10 +90,9 @@ const InfoBoxes = styled.div`
 
 const InfoBox = styled.div`
   flex: 1;
-  padding: 15px;
+  padding: 25px;
   background-color: #f5f5f5;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
   text-align: center;
   margin: 5px;
   
@@ -112,19 +113,20 @@ const InfoBoxCount = styled.p`
 
 const FooterButton = styled.button`
   margin-top: 20px;
-  padding: 10px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  background-color: #ffffff;
-  cursor: pointer;
-  text-decoration: underline; /* 텍스트 밑줄 추가 */
-  margin-top: auto; /* 나머지 공간을 채우기 위해 추가 */
+  padding: 25px;
+  background-color: #f5f5f5;
+  border-radius: 15px;
+  text-align: center;
+  width: 98%;
+  text-decoration: underline;
 `;
 
 const EntireTitle = styled.h1`
   text-align: left; /* 왼쪽 정렬 */
-  margin-left: 10px; /* 여백이 필요하면 값 조정 */
+  margin-left: 3px; /* 여백이 필요하면 값 조정 */
   font-size: 1.7rem; /* 원하는 크기로 설정 */
 `;
 
@@ -150,6 +152,7 @@ const GoogleButton = styled.div`
 const Left = styled.div`
   text-align: left; /* 내부 요소를 왼쪽으로 정렬 */
   margin-bottom: 20px; /* 필요에 따라 여백 설정 */
+  margin-left: 5px;
 `;
 
 
@@ -203,10 +206,10 @@ function MyPage(props) {
   };
 
   const accountDeactivation = async () => {
-      try{ //로그 아웃
+      try{ //로그아웃
         await axios.get(requests.fetchUserDelete);
         logout(); // AuthContext 상태 리셋
-        navigate("/login-signup")
+        navigate("/")
         settingLoading(false);
         message.success('회원탈퇴가 완료되었습니다.');
       } catch(error) {
@@ -217,12 +220,23 @@ function MyPage(props) {
 
   useEffect( () => {
       try{
+        if (!document.cookie.includes("jwtToken")) {
+          console.log("No valid JWT cookie. Skipping status check.");
+          navigate("/");
+          settingLoading(false);
+          return;
+        }
         const response = axios.get(requests.fetchAuthStatus);
         if (response.data.loggedIn) {
           // 쿠키에서 JWT 토큰을 가져와 로그인 상태 처리
+          let str = response.data.nickname;
+              // 문자열에 \uad가 포함되어 있는지 검사
+              if (str.includes("\u00ad")) {
+                str = str.slice(1); // 인덱스 1부터 자르기
+              }
           login(
             response.data.jwtToken,
-            response.data.nickname,
+            str,
             response.data.userImage,
             response.data.platform,
             response.data.createdAt,
@@ -230,6 +244,7 @@ function MyPage(props) {
           );
           settingLoading(false);
         }
+        document.cookie = "jwtToken=; path=/; max-age=0";
       } catch(error) {
         setErrorMessage("로그인 상태를 확인할 수 없습니다.");
       };

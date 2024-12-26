@@ -1,6 +1,6 @@
 const requests = {
     fetchUserActivity: `/mypage/activity-counts`,
-    fetchUserDelete: `/mypage/delete`,
+    fetchUserDelete: `/auth/delete`,
     fetchAuthStatus: `/auth/status`,
 
 };

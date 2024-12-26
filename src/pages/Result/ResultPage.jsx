@@ -8,6 +8,7 @@ import "./ResultPage.css";
 import greenLion from "../../assets/result/green-choonsik.png";
 import yellowLion from "../../assets/result/yellow-choonsik.png";
 import redLion from "../../assets/result/red-choonsik.png";
+import Review from "../Review/Review";
 
 const { TextArea } = Input;
 
@@ -29,7 +30,15 @@ const ResultPage = () => {
     return null;
   }
 
-  const { blogUrl, summaryTitle, summaryText, score, evidence } = data;
+  const {
+    blogId,
+    blogBaseUrl,
+    blogUrl,
+    summaryTitle,
+    summaryText,
+    score,
+    evidence,
+  } = data;
 
   // 피드백 모달 열기
   const showFeedbackModal = (type) => {
@@ -89,7 +98,9 @@ const ResultPage = () => {
     const r = (num >> 16) - 30;
     const g = ((num >> 8) & 0x00ff) - 30;
     const b = (num & 0x0000ff) - 30;
-    return `#${(r < 0 ? 0 : r).toString(16)}${(g < 0 ? 0 : g).toString(16)}${(b < 0 ? 0 : b).toString(16)}`;
+    return `#${(r < 0 ? 0 : r).toString(16)}${(g < 0 ? 0 : g).toString(
+      16
+    )}${(b < 0 ? 0 : b).toString(16)}`;
   };
 
   const getScoreStyle = (score) => {
@@ -129,7 +140,8 @@ const ResultPage = () => {
     }
   };
 
-  const { scoreClass, characterImage, circleBorderColor, lionContainerStyle } = getScoreStyle(score);
+  const { scoreClass, characterImage, circleBorderColor, lionContainerStyle } =
+    getScoreStyle(score);
 
   return (
     <div className="outer-container">
@@ -145,13 +157,17 @@ const ResultPage = () => {
         <div className={`main-content ${scoreClass}`} style={{ borderColor: circleBorderColor }}>
           <div className="left-content">
             <div>
-              <h3 className="section-title" style={{ fontWeight: "bold" }}>AI 리뷰 요약 🤖</h3>
+              <h3 className="section-title" style={{ fontWeight: "bold" }}>
+                AI 리뷰 요약 🤖
+              </h3>
               <h4 className="summary-title">{summaryTitle}</h4>
               <p className="summary-text">{summaryText}</p>
             </div>
 
             <div>
-              <h3 className="section-title" style={{ fontWeight: "bold" }}>왜 이렇게 판단했나요? 🧐</h3>
+              <h3 className="section-title" style={{ fontWeight: "bold" }}>
+                왜 이렇게 판단했나요? 🧐
+              </h3>
               <p className="evidence-text">{evidence}</p>
             </div>
 
@@ -161,11 +177,20 @@ const ResultPage = () => {
           </div>
 
           <div className="right-content">
-            <h3 className="section-title mb-4" style={{ fontWeight: "bold" }}>이 리뷰의 점수는?</h3>
+            <h3 className="section-title mb-4" style={{ fontWeight: "bold" }}>
+              이 리뷰의 점수는?
+            </h3>
 
             <div className="score-visual">
-              <div className="circle-container" style={{ position: "relative" }}>
-                <svg viewBox="0 0 36 36" className="circular-chart" style={{ width: "150px", height: "150px" }}>
+              <div
+                className="circle-container"
+                style={{ position: "relative" }}
+              >
+                <svg
+                  viewBox="0 0 36 36"
+                  className="circular-chart"
+                  style={{ width: "150px", height: "150px" }}
+                >
                   <path
                     className="circle-bg"
                     d="M18 2.0845
@@ -180,9 +205,14 @@ const ResultPage = () => {
                       a 15.9155 15.9155 0 0 1 0 31.831
                       a 15.9155 15.9155 0 0 1 0 -31.831"
                   />
-                  <text x="18" y="22.1" className="percentage">{score}</text>
+                  <text x="18" y="22.1" className="percentage">
+                    {score}
+                  </text>
                 </svg>
-                <div className="lion-container" style={{ top: lionContainerStyle.top }}>
+                <div
+                  className="lion-container"
+                  style={{ top: lionContainerStyle.top }}
+                >
                   <img
                     src={characterImage}
                     alt="Score Character"
@@ -199,7 +229,9 @@ const ResultPage = () => {
             <button
               className="criteria-button mt-4 mb-6"
               style={{ color: circleBorderColor }}
-              onMouseEnter={(e) => (e.target.style.color = darkenColor(circleBorderColor))}
+              onMouseEnter={(e) =>
+                (e.target.style.color = darkenColor(circleBorderColor))
+              }
               onMouseLeave={(e) => (e.target.style.color = circleBorderColor)}
             >
               ▶ 검사 기준이 궁금하신가요?
@@ -239,6 +271,7 @@ const ResultPage = () => {
           placeholder="피드백 사유를 입력해주세요"
         />
       </Modal>
+      <Review url={blogBaseUrl} blogId={blogId} />
     </div>
   );
 };

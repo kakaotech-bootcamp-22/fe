@@ -412,7 +412,7 @@ const BackButton = () => {
 };
 
 // 메인 Review 컴포넌트
-export default function Review() {
+export default function Review({ url, blogId }) {
   const {
     isLoggedIn,
     login,
@@ -434,8 +434,8 @@ export default function Review() {
   const [totalPages, setTotalPages] = useState(1);
 
   const location = useLocation();
-  const blog_id = location.state?.blog_id ?? 1;
-  const url = location.state?.url ?? "blog.naver.com/kakao_food_fighter";
+  // const blogId = location.state?.blog_id ?? 1;
+  // const url = location.state?.url ?? "blog.naver.com/kakao_food_fighter";
   const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
@@ -463,7 +463,7 @@ export default function Review() {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await axios.get(`${API_URL}/review/${blog_id}`);
+        const response = await axios.get(`${API_URL}/review/${blogId}`);
         const data = response.data; // axios는 response 객체에서 data를 포함합니다.
         // console.log("data:", data.reviews);
         setRatingStats(data.ratingStats);
@@ -480,13 +480,13 @@ export default function Review() {
       }
     };
     fetchReviews();
-  }, [API_URL, blog_id]);
+  }, [API_URL, blogId]);
 
   useEffect(() => {
     const fetchSortedReviews = async () => {
       try {
         const response = await axios.get(
-          `${API_URL}/review/${blog_id}/reviews`,
+          `${API_URL}/review/${blogId}/reviews`,
           {
             params: {
               page: currentPage - 1,
@@ -508,7 +508,7 @@ export default function Review() {
     };
 
     fetchSortedReviews();
-  }, [selectedSort, currentPage, blog_id, API_URL]);
+  }, [selectedSort, currentPage, blogId, API_URL]);
 
   // 평균 점수 계산
   const calculateAverageRating = useCallback(() => {
@@ -530,7 +530,7 @@ export default function Review() {
     const newReview = {
       rating: rating,
       content: reviewText,
-      blogId: blog_id, // 현재 페이지의 blog_id
+      blogId: blogId, // 현재 페이지의 blog_id
     };
 
     try {
@@ -602,7 +602,7 @@ export default function Review() {
         message.error("알 수 없는 오류가 발생했습니다. 다시 시도해주세요.");
       }
     }
-  }, [rating, reviewText, reviews, blog_id, API_URL, nickname, profileImage]);
+  }, [rating, reviewText, reviews, blogId, API_URL, nickname, profileImage]);
 
   const handleLikeClick = useCallback(
     async (id, isLiked) => {

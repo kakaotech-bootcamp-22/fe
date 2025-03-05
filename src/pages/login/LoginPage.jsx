@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useGoogleLogin } from '@react-oauth/google';
 import Cookies from "js-cookie";
 import { useNavigate } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 
 import {
     Container,
@@ -24,28 +25,29 @@ import {
 } from './LoginPage.style.js';
 
 function LoginPage(props) {
-    const { login } = useAuth();
+    const { login, settingLoading } = useAuth();
     const [isKakaoInitialized, setIsKakaoInitialized] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const API_URL = process.env.REACT_APP_API_URL;
     const navigate = useNavigate();
-    const redirectUri = process.env.REACT_APP_REDIRECT_URI;
-
+    let redirectUri = process.env.REACT_APP_REDIRECT_URI;
+    const location = useLocation();
 
     useEffect(() => {
-        console.log("useEffect 실행됨");
         // Kakao SDK 초기화
         const { Kakao } = window;
         const kakaoJsKey = process.env.REACT_APP_KAKAO_JS_KEY;
 
         if (Kakao) {
-            if(!window.Kakao.isInitialized()){
+            if (!window.Kakao.isInitialized()) {
                 Kakao.init(kakaoJsKey);
                 setIsKakaoInitialized(true); // 초기화 성공 시 상태 업데이트
             }
         } else {
             setErrorMessage("Kakao SDK 로드에 실패했습니다.");
         }
+
+
     });
 
     const handleKakaoLogin = () => {
@@ -55,8 +57,17 @@ function LoginPage(props) {
             console.log("Kakao SDK가 제대로 로드되지 않았거나 초기화되지 않았습니다.");
             return;
         }
+
+        const redirectPath = localStorage.getItem("redirectAfterLoginPath");
+
+        if (redirectPath === "/result") {
+            redirectUri = `${redirectUri}/result?redirected=true`;
+        } else {
+            redirectUri = `${redirectUri}`; // 기본 리다이렉션
+        }
+
         Kakao.Auth.authorize({
-            redirectUri: `${redirectUri}`, // 리다이렉트할 페이지
+            redirectUri: `${redirectUri}`
         });
 
     };
@@ -64,13 +75,33 @@ function LoginPage(props) {
     const GoogleLoginButton = () => {
         const signIn = useGoogleLogin({
             onSuccess: (res) => {
+                console.log(res)
                 axios.post(`${API_URL}/auth/google/token`, {
-                    
                     access_token: res.access_token,
                 })
                     .then(response => {
                         Cookies.set('accessToken', response.data.token);
-                        navigate('/');
+                        if (window.location.pathname === "/" || window.location.pathname === "/login-signup") {
+                            if (window.location.pathname === "/login-signup") {
+                                const prevPage = localStorage.getItem("redirectAfterLoginURL");
+                                const prevPagePath = localStorage.getItem("redirectAfterLoginPath");
+                                if (prevPage) {
+                                    const referrerUrl = new URL(prevPage);
+                                    if (referrerUrl.pathname === "/result") {
+                                        navigate(`${prevPagePath}`);
+                                    } else {
+                                        navigate("/");
+                                    }
+                                }
+                            } else {
+                                navigate("/");
+                            }
+                        } else {
+                            navigate("/");
+                        }
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 100);
                     })
                     .catch(error => {
                         console.log(error);
@@ -99,7 +130,7 @@ function LoginPage(props) {
                     </TextBox>
                     <KakaologinButton onClick={handleKakaoLogin}>
                         <img src={kakaologinImage} />
-                    </KakaologinButton>         
+                    </KakaologinButton>
                     <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
                         <GoogleLoginButton />
                     </GoogleOAuthProvider>
